@@ -26,4 +26,6 @@ The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflar
 
 - Run the local workflow with `npx agent-ci run --workflow .github/workflows/ci.yml`.
 - Run all relevant workflows with `npx agent-ci run --all`.
+- Format the repo with `npm run format`.
+- Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npx agent-ci retry --name <runner-name>`.
