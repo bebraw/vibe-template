@@ -22,10 +22,12 @@
     "ci:local": "agent-ci run --workflow .github/workflows/ci.yml",
     "ci:local:quiet": "agent-ci run --quiet --workflow .github/workflows/ci.yml",
     "ci:local:all": "agent-ci run --all",
+    "e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@playwright/test": "1.58.2",
     "@redwoodjs/agent-ci": "0.6.0",
     "prettier": "3.8.1",
     "wrangler": "4.77.0"

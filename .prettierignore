@@ -1,3 +1,5 @@
 node_modules
 .wrangler
 .asdlc
+playwright-report
+test-results

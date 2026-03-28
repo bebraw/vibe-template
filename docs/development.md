@@ -26,6 +26,10 @@ The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflar
 
 - Run the local workflow with `npx agent-ci run --workflow .github/workflows/ci.yml`.
 - Run all relevant workflows with `npx agent-ci run --all`.
+- Install the Playwright browser with `npx playwright install chromium`.
+- Run end-to-end tests with `npm run e2e`.
 - Format the repo with `npm run format`.
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npx agent-ci retry --name <runner-name>`.
+
+The template includes a generic `playwright.config.ts` and `tests/e2e/` directory, but it does not assume a specific local app command. Add your project's `baseURL` and `webServer` settings once the app surface exists.
