@@ -25,6 +25,7 @@ Skip an ADR for small, reversible, or purely tactical choices.
 | [ADR-006](./ADR-006-adopt-tailwind-for-starter-ui.md)                   | Accepted | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.             |
 | [ADR-008](./ADR-008-allow-static-readme-screenshots-without-tooling.md) | Accepted | Allow committed README screenshots without restoring screenshot tooling or automation.       |
 | [ADR-009](./ADR-009-split-fast-and-browser-verification.md)             | Accepted | Split fast and browser verification so checks can fail earlier and CI can cancel stale runs. |
+| [ADR-010](./ADR-010-adopt-pnpm-for-package-management.md)               | Accepted | Use pnpm with a committed lockfile and Corepack-backed CI/local workflows instead of npm.    |
 
 ## Creating A New ADR
 

@@ -8,10 +8,10 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 ### Architecture
 
-- **Fast gate:** `npm run quality:gate:fast`
-- **Browser gate:** `npm run quality:gate:browser`
-- **Full gate:** `npm run quality:gate`
-- **Local workflow:** `npm run ci:local:quiet`
+- **Fast gate:** `pnpm run quality:gate:fast`
+- **Browser gate:** `pnpm run quality:gate:browser`
+- **Full gate:** `pnpm run quality:gate`
+- **Local workflow:** `pnpm run ci:local:quiet`
 - **Remote workflow:** `.github/workflows/ci.yml`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.58.2-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
@@ -34,15 +34,15 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 ### Regression Guardrails
 
-- `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
-- `npm run quality:gate` must continue to represent the full baseline verification path.
+- `pnpm run quality:gate:fast` must remain a useful faster signal than the full gate.
+- `pnpm run quality:gate` must continue to represent the full baseline verification path.
 - The CI workflow must cancel superseded runs for the same ref.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 
 ### Verification
 
-- **Automated checks:** `npm run quality:gate` and `npm run ci:local:quiet`
+- **Automated checks:** `pnpm run quality:gate` and `pnpm run ci:local:quiet`
 - **Workflow shape:** `.github/workflows/ci.yml` should show separate fast and browser jobs, with repository-shape validation in the fast job
 
 ### Scenarios
@@ -50,13 +50,13 @@ The template needs a verification baseline that stays strict enough for end-to-e
 **Scenario: Contributor wants a fast local signal**
 
 - Given: a change that does not need immediate browser verification
-- When: the contributor runs `npm run quality:gate:fast`
+- When: the contributor runs `pnpm run quality:gate:fast`
 - Then: formatting, typing, audit, and unit coverage run without waiting for Playwright
 
 **Scenario: Full verification before landing**
 
 - Given: a change is ready for review or merge
-- When: the contributor runs `npm run quality:gate` and `npm run ci:local:quiet`
+- When: the contributor runs `pnpm run quality:gate` and `pnpm run ci:local:quiet`
 - Then: both the fast and browser verification paths pass
 
 **Scenario: New push supersedes an old CI run**

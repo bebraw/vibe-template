@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import process from "node:process";
 
 const args = process.argv.slice(2);
+const pnpmCommand = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 
 if (!args.includes("--all")) {
   warnWhenCommandFails(
@@ -18,7 +19,7 @@ ensureCommandSucceeds(
   ["Local CI requires a reachable Docker engine.", "Start Docker Desktop, OrbStack, or another Docker runtime before running local CI."],
 );
 
-const result = spawnSync("npx", ["agent-ci", "run", ...args], {
+const result = spawnSync(pnpmCommand, ["exec", "agent-ci", "run", ...args], {
   encoding: "utf8",
   stdio: "pipe",
   env: process.env,

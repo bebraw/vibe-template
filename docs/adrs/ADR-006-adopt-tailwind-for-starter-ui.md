@@ -24,7 +24,7 @@ We will adopt the same lightweight Tailwind v4 setup pattern for the starter Wor
 The template now uses:
 
 - `tailwindcss` and `@tailwindcss/cli` pinned in `devDependencies`
-- `npm run build:css` to generate `.generated/styles.css`
+- `pnpm run build:css` to generate `.generated/styles.css`
 - `src/tailwind-input.css` as the single Tailwind entry file
 - Wrangler build configuration to run the CSS build automatically
 - `/styles.css` served by the Worker from the generated stylesheet

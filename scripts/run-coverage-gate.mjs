@@ -14,11 +14,13 @@ if (sourceFiles.length === 0) {
 
 if (testFiles.length === 0) {
   console.error("Coverage gate failed: src/ contains source files, but no unit test files were found under src/.");
-  console.error("Add unit tests and rerun `npm run test:coverage`.");
+  console.error("Add unit tests and rerun `pnpm run test:coverage`.");
   process.exit(1);
 }
 
-const result = spawnSync("npx", ["vitest", "run", "--coverage", "--passWithNoTests"], {
+const pnpmCommand = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+
+const result = spawnSync(pnpmCommand, ["exec", "vitest", "run", "--coverage", "--passWithNoTests"], {
   stdio: "inherit",
   env: process.env,
 });

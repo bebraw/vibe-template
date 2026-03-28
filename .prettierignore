@@ -1,5 +1,7 @@
 node_modules
+.cache
 .generated
+.npm
 .wrangler
 .asdlc
 playwright-report

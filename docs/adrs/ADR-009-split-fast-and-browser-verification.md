@@ -40,7 +40,7 @@ The repo had reached the point where slow browser setup was the dominant verific
 - Fast failures return earlier in remote CI.
 - The browser job avoids repeated Chromium setup work by starting from the Playwright image.
 - Superseded CI runs stop consuming time once a newer push exists.
-- Local contributors gain a lighter `npm run quality:gate:fast` iteration path.
+- Local contributors gain a lighter `pnpm run quality:gate:fast` iteration path.
 - The coverage gate's source detection better reflects actual runtime code.
 
 **Negative:**

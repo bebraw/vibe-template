@@ -12,7 +12,7 @@ The template README is the first surface contributors see. It should show the cu
 - **Committed screenshot asset:** `docs/screenshots/home.png`
 - **Current workflow summary:** runtime, verification, and source layout notes in `README.md`
 - **Update model:** manual refresh when the starter UI changes materially
-- **Non-goal:** no screenshot-specific npm scripts or screenshot-sync workflows
+- **Non-goal:** no screenshot-specific package scripts or screenshot-sync workflows
 
 ### Anti-Patterns
 
@@ -40,7 +40,7 @@ The template README is the first surface contributors see. It should show the cu
 
 - **Manual check:** verify the README image renders from `docs/screenshots/home.png`
 - **Repo check:** `git diff --check`
-- **Baseline gate:** `npm run quality:gate` and `npm run ci:local:quiet`
+- **Baseline gate:** `pnpm run quality:gate` and `pnpm run ci:local:quiet`
 
 ### Scenarios
 
