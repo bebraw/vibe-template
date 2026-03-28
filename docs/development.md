@@ -32,6 +32,7 @@ The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflar
 - Run unit and integration tests with `npm test`.
 - Run TypeScript checks with `npm run typecheck`.
 - Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:3000 npm run lighthouse`.
+- Capture README screenshots with `npm run screenshots:readme`.
 - Format the repo with `npm run format`.
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npx agent-ci retry --name <runner-name>`.
@@ -43,6 +44,8 @@ The Lighthouse setup is also generic. Point it at an existing URL through `LIGHT
 The Vitest setup is generic as well. `vitest.config.ts` targets `tests/**/*.test.ts` while excluding `tests/e2e/**`. The default `npm test` command uses `--passWithNoTests` so the template remains usable before a project adds its first test file.
 
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `tests/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
+
+The screenshot utility is generic too. `npm run screenshots:readme` captures one or more pages into `docs/screenshots/` using Playwright. Override `SCREENSHOT_BASE_URL`, `SCREENSHOT_OUTPUT_DIR`, or `SCREENSHOT_PAGES` when a project needs different routes or filenames.
 
 ## Quality Gate
 
