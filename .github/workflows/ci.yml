@@ -30,3 +30,6 @@ jobs:
           test -f .asdlc/SKILL.md
           test -f .nvmrc
           git diff --check
+
+      - name: Run quality gate
+        run: npm run quality:gate

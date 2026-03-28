@@ -19,13 +19,14 @@
     }
   },
   "scripts": {
-    "ci:local": "agent-ci run --workflow .github/workflows/ci.yml",
-    "ci:local:quiet": "agent-ci run --quiet --workflow .github/workflows/ci.yml",
-    "ci:local:all": "agent-ci run --all",
-    "e2e": "playwright test",
+    "ci:local": "node ./scripts/run-local-ci.mjs --workflow .github/workflows/ci.yml",
+    "ci:local:quiet": "node ./scripts/run-local-ci.mjs --quiet --workflow .github/workflows/ci.yml",
+    "ci:local:all": "node ./scripts/run-local-ci.mjs --all",
+    "e2e": "playwright test --pass-with-no-tests",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lighthouse": "node ./scripts/run-lighthouse.mjs",
+    "quality:gate": "npm run format:check && npm test && npm run e2e",
     "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {

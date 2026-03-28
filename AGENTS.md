@@ -29,6 +29,8 @@
 - Prefer small, reviewable changes that preserve the template nature of the repo.
 - Document reusable conventions instead of one-off preferences.
 - Prefer the local Agent CI workflow before relying on remote CI.
+- Treat a change as ready only after the quality gate and local CI both pass.
+- Use `npm run quality:gate` for the baseline formatting and test gate, and `npm run ci:local:quiet` for the local workflow check.
 
 ## Frontend Design
 
