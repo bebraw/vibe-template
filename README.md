@@ -6,3 +6,7 @@ This is a template for my vibecoding projects and it captures what I consider my
 
 - Development setup and local CI: `docs/development.md`
 - Agent behavior and project rules: `AGENTS.md`
+
+## Runtime
+
+- Use the project Node.js version with `nvm use`.

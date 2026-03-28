@@ -15,6 +15,7 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 
 ### Prerequisites
 
+- Use the project Node.js version with `nvm use`.
 - Install dependencies with `npm install`.
 - Start a Docker runtime before running Agent CI.
 - In a normal cloned repo, keep the `origin` remote configured so Agent CI can inspect repository metadata cleanly.
