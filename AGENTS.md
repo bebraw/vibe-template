@@ -26,3 +26,8 @@
 - Prefer small, reviewable changes that preserve the template nature of the repo.
 - Document reusable conventions instead of one-off preferences.
 - Prefer the local Agent CI workflow before relying on remote CI.
+
+## Frontend Design
+
+- Use the project-local [`frontend-design`](./.codex/skills/frontend-design/SKILL.md) skill for substantial UI work such as page redesigns, component styling, app shells, and frontend experiments.
+- Treat the skill as guidance for producing distinctive frontend work without compromising the template's lightweight and reusable nature unless the user explicitly asks for a more opinionated direction.
