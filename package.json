@@ -30,7 +30,6 @@
     "format:check": "prettier --check .",
     "lighthouse": "node ./scripts/run-lighthouse.mjs",
     "quality:gate": "npm run format:check && npm run typecheck && npm run security:audit && npm run test:coverage && npm run e2e",
-    "screenshots:readme": "node ./scripts/capture-readme-screenshots.mjs",
     "security:audit": "npm audit --audit-level=high --omit=dev",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "node ./scripts/run-coverage-gate.mjs",

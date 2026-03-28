@@ -34,7 +34,7 @@ The template had accumulated real delivery tooling but still lacked a concrete a
 **Positive:**
 
 - Developers can clone the template and start a real app immediately.
-- Playwright, Vitest coverage, screenshot capture, and local CI now have a concrete surface to target.
+- Playwright, Vitest coverage, and local CI now have a concrete surface to target.
 - The repo has a simple baseline for future Cloudflare-oriented experiments.
 
 **Negative:**

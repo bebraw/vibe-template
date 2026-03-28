@@ -39,7 +39,6 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 - Run the unit coverage gate with `npm run test:coverage`.
 - Run TypeScript checks with `npm run typecheck`.
 - Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:3000 npm run lighthouse`.
-- Capture README screenshots with `npm run screenshots:readme`.
 - Format the repo with `npm run format`.
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npx agent-ci retry --name <runner-name>`.
@@ -55,8 +54,6 @@ The Vitest setup is generic as well. `vitest.config.ts` targets `tests/**/*.test
 The coverage gate is stricter than the basic test run. `npm run test:coverage` measures `src/**` with the V8 provider, writes reports to `reports/coverage/`, and enforces high thresholds once a project actually has `src/` code. If `src/` is still empty, the gate exits cleanly without forcing placeholder tests.
 
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `tests/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
-
-The screenshot utility is generic too. `SCREENSHOT_BASE_URL=http://127.0.0.1:8787 npm run screenshots:readme` captures one or more pages into `docs/screenshots/` using Playwright. Override `SCREENSHOT_OUTPUT_DIR` or `SCREENSHOT_PAGES` when a project needs different routes or filenames.
 
 ## Security Baseline
 
