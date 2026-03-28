@@ -31,6 +31,7 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 - Run all relevant workflows with `npx agent-ci run --all`.
 - Run the baseline quality gate with `npm run quality:gate`.
 - Run the shipped runtime dependency audit with `npm run security:audit`.
+- Start the local Worker with `npm run dev`.
 - Install the Playwright browser with `npx playwright install chromium`.
 - Run end-to-end tests with `npm run e2e`.
 - Run unit and integration tests with `npm test`.
@@ -42,9 +43,9 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npx agent-ci retry --name <runner-name>`.
 
-The template includes a generic `playwright.config.ts` and `tests/e2e/` directory, but it does not assume a specific local app command. Add your project's `baseURL` and `webServer` settings once the app surface exists.
+The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup.
 
-The Lighthouse setup is also generic. Point it at an existing URL through `LIGHTHOUSE_URL`, or provide `LIGHTHOUSE_SERVER_COMMAND` as well if the script should start the app before auditing. Reports are written to `reports/lighthouse/`.
+The Lighthouse setup is also generic, but the Worker stub gives it a concrete local target. Use `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`. Reports are written to `reports/lighthouse/`.
 
 The Vitest setup is generic as well. `vitest.config.ts` targets `tests/**/*.test.ts` while excluding `tests/e2e/**`. The default `npm test` command uses `--passWithNoTests` so the template remains usable before a project adds its first test file.
 
@@ -52,7 +53,7 @@ The coverage gate is stricter than the basic test run. `npm run test:coverage` m
 
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `tests/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
 
-The screenshot utility is generic too. `npm run screenshots:readme` captures one or more pages into `docs/screenshots/` using Playwright. Override `SCREENSHOT_BASE_URL`, `SCREENSHOT_OUTPUT_DIR`, or `SCREENSHOT_PAGES` when a project needs different routes or filenames.
+The screenshot utility is generic too. `SCREENSHOT_BASE_URL=http://127.0.0.1:8787 npm run screenshots:readme` captures one or more pages into `docs/screenshots/` using Playwright. Override `SCREENSHOT_OUTPUT_DIR` or `SCREENSHOT_PAGES` when a project needs different routes or filenames.
 
 ## Security Baseline
 

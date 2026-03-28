@@ -14,3 +14,9 @@ This is a template for my vibecoding projects and it captures what I consider my
 - Use the project Node.js version with `nvm use`.
 - Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
 - Use repo-pinned CLI tools through `npx`, including `npx wrangler` for Cloudflare-based experiments.
+- Start the stub Worker with `npm run dev`, then open `http://127.0.0.1:8787`.
+
+## Starter App
+
+- `GET /` serves a minimal HTML Worker stub.
+- `GET /api/health` serves a JSON health response for smoke tests and tooling.

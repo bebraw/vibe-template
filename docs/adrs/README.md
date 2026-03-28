@@ -20,6 +20,7 @@ Skip an ADR for small, reversible, or purely tactical choices.
 | [ADR-001](./ADR-001-use-architecture-decision-records.md)      | Accepted | Use ADRs to capture significant architectural decisions in this repo.                 |
 | [ADR-002](./ADR-002-make-architectural-decisions-explicit.md)  | Accepted | Require explicit ADR updates for lasting architectural decisions.                     |
 | [ADR-003](./ADR-003-require-spec-updates-and-high-coverage.md) | Accepted | Treat completed feature work as spec work and gate `src/` code on high unit coverage. |
+| [ADR-004](./ADR-004-ship-a-worker-stub.md)                     | Accepted | Ship a minimal Worker stub so the template is runnable and testable.                  |
 
 ## Creating A New ADR
 
