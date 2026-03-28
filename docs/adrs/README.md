@@ -22,6 +22,7 @@ Skip an ADR for small, reversible, or purely tactical choices.
 | [ADR-003](./ADR-003-require-spec-updates-and-high-coverage.md) | Accepted | Treat completed feature work as spec work and gate `src/` code on high unit coverage. |
 | [ADR-004](./ADR-004-ship-a-worker-stub.md)                     | Accepted | Ship a minimal Worker stub so the template is runnable and testable.                  |
 | [ADR-005](./ADR-005-separate-worker-views-and-api.md)          | Accepted | Separate the Worker starter into `src/api` and `src/views` for easier evolution.      |
+| [ADR-006](./ADR-006-adopt-tailwind-for-starter-ui.md)          | Accepted | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.      |
 
 ## Creating A New ADR
 

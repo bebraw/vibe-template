@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { createHealthResponse } from "../src/api/health";
 import { exampleRoutes } from "../src/app-routes";
 import worker, { handleRequest } from "../src/worker";
 import { renderHomePage } from "../src/views/home";
 import { renderNotFoundPage } from "../src/views/not-found";
 
+mkdirSync(".generated", { recursive: true });
+writeFileSync(join(".generated", "styles.css"), "body{color:black;}", "utf8");
+
 describe("worker", () => {
   it("renders the stub home page", async () => {
-    const response = handleRequest(new Request("http://example.com/"));
+    const response = await handleRequest(new Request("http://example.com/"));
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("text/html");
@@ -18,7 +23,7 @@ describe("worker", () => {
   });
 
   it("returns a JSON health response", async () => {
-    const response = handleRequest(new Request("http://example.com/api/health"));
+    const response = await handleRequest(new Request("http://example.com/api/health"));
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("application/json");
@@ -30,7 +35,7 @@ describe("worker", () => {
   });
 
   it("returns a not found page for unknown routes", async () => {
-    const response = handleRequest(new Request("http://example.com/missing"));
+    const response = await handleRequest(new Request("http://example.com/missing"));
 
     expect(response.status).toBe(404);
 
@@ -44,10 +49,11 @@ describe("worker", () => {
 
     expect(html).toContain("HTML stub app for developers");
     expect(html).toContain("A concrete Worker entry point");
+    expect(html).toContain('rel="stylesheet" href="/styles.css"');
   });
 
   it("exposes the same behavior through the worker fetch entrypoint", async () => {
-    const response = worker.fetch(new Request("http://example.com/api/health"));
+    const response = await worker.fetch(new Request("http://example.com/api/health"));
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ ok: true });
@@ -69,5 +75,13 @@ describe("worker", () => {
 
     expect(html).toContain("Not Found");
     expect(html).toContain("/missing");
+  });
+
+  it("serves generated styles", async () => {
+    const response = await handleRequest(new Request("http://example.com/styles.css"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/css");
+    await expect(response.text()).resolves.toContain("color:black");
   });
 });

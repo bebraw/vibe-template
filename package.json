@@ -19,6 +19,7 @@
     }
   },
   "scripts": {
+    "build:css": "mkdir -p ./.generated && tailwindcss -i ./src/tailwind-input.css -o ./.generated/styles.css --minify",
     "ci:local": "node ./scripts/run-local-ci.mjs --workflow .github/workflows/ci.yml",
     "ci:local:quiet": "node ./scripts/run-local-ci.mjs --quiet --workflow .github/workflows/ci.yml",
     "ci:local:all": "node ./scripts/run-local-ci.mjs --all",
@@ -38,10 +39,12 @@
   "devDependencies": {
     "@playwright/test": "1.58.2",
     "@redwoodjs/agent-ci": "0.6.0",
+    "@tailwindcss/cli": "4.2.2",
     "@vitest/coverage-v8": "4.1.1",
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.0.3",
     "prettier": "3.8.1",
+    "tailwindcss": "4.2.2",
     "typescript": "6.0.2",
     "vitest": "4.1.1",
     "wrangler": "4.77.0"

@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-app-canvas: #f5efe6;
+  --color-app-surface: rgb(255 251 245 / 0.92);
+  --color-app-text: #1e1a16;
+  --color-app-text-soft: #5f554b;
+  --color-app-accent: #0b6e4f;
+  --color-app-accent-strong: #084c39;
+  --color-app-line: rgb(30 26 22 / 0.12);
+
+  --shadow-panel: 0 24px 64px -42px rgb(30 26 22 / 0.34);
+}
+
+/*
+  Tailwind v4 changed the default border color to `currentcolor`.
+  Keep the starter baseline visually stable unless a project opts into
+  explicit border utilities everywhere.
+*/
+@layer base {
+  html {
+    background: var(--color-app-canvas);
+  }
+
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    text-rendering: optimizeLegibility;
+    background:
+      radial-gradient(circle at top left, rgb(11 110 79 / 0.18), transparent 35%),
+      linear-gradient(180deg, #f7f0e8 0%, var(--color-app-canvas) 100%);
+  }
+
+  ::selection {
+    background: rgb(11 110 79 / 0.18);
+  }
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}

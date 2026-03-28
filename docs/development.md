@@ -29,6 +29,7 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 
 - Run the local workflow with `npx agent-ci run --workflow .github/workflows/ci.yml`.
 - Run all relevant workflows with `npx agent-ci run --all`.
+- Rebuild the generated stylesheet manually with `npm run build:css`.
 - Run the baseline quality gate with `npm run quality:gate`.
 - Run the shipped runtime dependency audit with `npm run security:audit`.
 - Start the local Worker with `npm run dev`.
@@ -44,6 +45,8 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 - If a run pauses on failure, fix the issue and resume with `npx agent-ci retry --name <runner-name>`.
 
 The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup.
+
+The starter UI now follows the same Tailwind v4 baseline shape as `thesis-journey-tracker`: Tailwind input lives in `src/tailwind-input.css`, generated CSS is written to `.generated/styles.css`, and Wrangler runs `npm run build:css` automatically before local development.
 
 The Lighthouse setup is also generic, but the Worker stub gives it a concrete local target. Use `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`. Reports are written to `reports/lighthouse/`.
 
