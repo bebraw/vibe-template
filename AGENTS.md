@@ -44,3 +44,8 @@
 
 - Use the project-local [`brainstorming`](./.codex/skills/brainstorming/SKILL.md) skill when the user is exploring options, shaping a feature, or comparing approaches before implementation.
 - Treat the skill as guidance for producing concrete, lightweight options that can turn cleanly into specs, ADRs, or code.
+
+## Review
+
+- Use the project-local [`review`](./.codex/skills/review/SKILL.md) skill when the user asks for review, risk analysis, or a merge-readiness pass.
+- Treat the skill as guidance for prioritizing bugs, regressions, and quality-gate gaps over style commentary.
