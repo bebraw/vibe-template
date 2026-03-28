@@ -1,6 +1,6 @@
 # ADR-007: Avoid Screenshot Tooling in the Template
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-008](./ADR-008-allow-static-readme-screenshots-without-tooling.md)
 
 **Date:** 2026-03-28
 
@@ -19,7 +19,7 @@ The repo will not ship:
 - screenshot-specific npm scripts
 - screenshot capture helpers under `scripts/`
 - screenshot-sync GitHub Actions workflows
-- committed screenshot image assets in `docs/screenshots/`
+- screenshot automation or screenshot-specific helper tooling for committed assets
 
 Projects cloned from this template can still add screenshot tooling later if they have a concrete need for it, but it is not part of the starter baseline.
 

@@ -55,6 +55,8 @@ The coverage gate is stricter than the basic test run. `npm run test:coverage` m
 
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `tests/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
 
+The README includes a committed application screenshot at `docs/screenshots/home.png`. Refresh that asset manually when the starter UI changes materially, but keep screenshot tooling and screenshot automation out of the template baseline.
+
 ## Security Baseline
 
 The template keeps secret handling lightweight and explicit:

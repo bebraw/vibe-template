@@ -22,3 +22,7 @@ This is a template for my vibecoding projects and it captures what I consider my
 - `GET /` serves a minimal HTML Worker stub.
 - `GET /styles.css` serves the generated Tailwind stylesheet.
 - `GET /api/health` serves a JSON health response for smoke tests and tooling.
+
+## Application Screenshot
+
+![Starter app screenshot](docs/screenshots/home.png)
