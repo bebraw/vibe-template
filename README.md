@@ -10,3 +10,4 @@ This is a template for my vibecoding projects and it captures what I consider my
 ## Runtime
 
 - Use the project Node.js version with `nvm use`.
+- Use repo-pinned CLI tools through `npx`, including `npx wrangler` for Cloudflare-based experiments.

@@ -20,6 +20,8 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 - Start a Docker runtime before running Agent CI.
 - In a normal cloned repo, keep the `origin` remote configured so Agent CI can inspect repository metadata cleanly.
 
+The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflare-based experiments. Prefer invoking those tools through `npx` so the project version is used instead of a global install.
+
 ### Commands
 
 - Run the local workflow with `npx agent-ci run --workflow .github/workflows/ci.yml`.
