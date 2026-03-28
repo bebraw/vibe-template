@@ -40,6 +40,7 @@ if (result.error) {
 
 const combinedOutput = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
 const cleanupFailureMatch = combinedOutput.match(/EACCES: permission denied, rmdir '([^']+\/(?:\.pnpm-store|\.bun\/install\/cache))'/);
+const runnerCleanupFailureMatch = combinedOutput.match(/ENOTEMPTY, Directory not empty: ([^\n']+\/runs\/agent-ci-[^/\s]+\/runner)/);
 
 if ((result.status ?? 1) !== 0 && cleanupFailureMatch && combinedOutput.includes("[Job startup failed]")) {
   try {
@@ -49,6 +50,17 @@ if ((result.status ?? 1) !== 0 && cleanupFailureMatch && combinedOutput.includes
   }
 
   console.warn("Agent CI reported a known cache-cleanup failure after successful job steps. Treating the run as passed.");
+  process.exit(0);
+}
+
+if ((result.status ?? 1) !== 0 && runnerCleanupFailureMatch && combinedOutput.includes("✓ Complete job")) {
+  try {
+    rmSync(runnerCleanupFailureMatch[1], { recursive: true, force: true });
+  } catch {
+    // Best-effort cleanup for the Agent CI runner cleanup bug.
+  }
+
+  console.warn("Agent CI reported a known runner-cleanup failure after successful job steps. Treating the run as passed.");
   process.exit(0);
 }
 

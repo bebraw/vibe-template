@@ -27,7 +27,7 @@ The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflar
 
 If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, pull that image manually and re-run the workflow.
 
-The local wrapper also tolerates known Agent CI cache-cleanup false negatives after successful job steps, including cleanup errors on `.pnpm-store` and `.bun/install/cache`. If one of those specific cleanup errors appears at the end of an otherwise green run, the wrapper treats the workflow as passed.
+The local wrapper also tolerates known Agent CI cleanup false negatives after successful job steps, including cleanup errors on `.pnpm-store`, `.bun/install/cache`, and stale runner directories. If one of those specific cleanup errors appears at the end of an otherwise green run, the wrapper treats the workflow as passed.
 
 ### Commands
 
