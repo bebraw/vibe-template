@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import worker, { handleRequest, renderHomePage } from "../src/worker";
+import { createHealthResponse } from "../src/api/health";
+import { exampleRoutes } from "../src/app-routes";
+import worker, { handleRequest } from "../src/worker";
+import { renderHomePage } from "../src/views/home";
+import { renderNotFoundPage } from "../src/views/not-found";
 
 describe("worker", () => {
   it("renders the stub home page", async () => {
@@ -36,7 +40,7 @@ describe("worker", () => {
   });
 
   it("renders stable starter copy", () => {
-    const html = renderHomePage();
+    const html = renderHomePage(exampleRoutes);
 
     expect(html).toContain("HTML stub app for developers");
     expect(html).toContain("A concrete Worker entry point");
@@ -47,5 +51,23 @@ describe("worker", () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ ok: true });
+  });
+
+  it("builds the health response from the api module", async () => {
+    const response = createHealthResponse(exampleRoutes.map((route) => route.path));
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      name: "vibe-template-worker",
+      routes: ["/", "/api/health"],
+    });
+  });
+
+  it("renders a standalone not found view", () => {
+    const html = renderNotFoundPage("/missing");
+
+    expect(html).toContain("Not Found");
+    expect(html).toContain("/missing");
   });
 });

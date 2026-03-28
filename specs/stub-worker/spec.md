@@ -9,6 +9,7 @@ This template needs a concrete runnable starting point so developers can clone i
 ### Architecture
 
 - **Entry points:** `wrangler dev` via `src/worker.ts`
+- **Source layout:** `src/worker.ts` routes requests, `src/api/` holds API handlers, and `src/views/` holds HTML rendering modules.
 - **Data models:** None yet. The stub is stateless.
 - **Dependencies:** Wrangler provides the Worker runtime; Playwright and Vitest verify the behavior.
 
@@ -16,6 +17,7 @@ This template needs a concrete runnable starting point so developers can clone i
 
 - Do not let the template drift back into an untestable empty shell with no runnable app surface.
 - Do not add feature-specific persistence or auth behavior to the stub without updating this spec and the relevant ADRs.
+- Do not collapse API handling and rendered views back into one file as the starter evolves.
 
 ## Contract
 
@@ -35,8 +37,8 @@ This template needs a concrete runnable starting point so developers can clone i
 
 ### Verification
 
-- **Automated tests:** `tests/worker.test.ts` for request handling and `tests/e2e/app.spec.ts` for the browser-visible flow.
-- **Coverage target:** Keep the `src/worker.ts` branches, lines, functions, and statements above the repo coverage thresholds.
+- **Automated tests:** `tests/worker.test.ts` for routing and module behavior and `tests/e2e/app.spec.ts` for the browser-visible flow.
+- **Coverage target:** Keep the `src/worker.ts`, `src/api/**`, and `src/views/**` branches, lines, functions, and statements above the repo coverage thresholds.
 
 ### Scenarios
 
