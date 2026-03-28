@@ -1,0 +1,12 @@
+{
+  "name": "vibe-template",
+  "private": true,
+  "scripts": {
+    "ci:local": "agent-ci run --workflow .github/workflows/ci.yml",
+    "ci:local:quiet": "agent-ci run --quiet --workflow .github/workflows/ci.yml",
+    "ci:local:all": "agent-ci run --all"
+  },
+  "devDependencies": {
+    "@redwoodjs/agent-ci": "0.6.0"
+  }
+}

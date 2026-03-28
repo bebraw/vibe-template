@@ -17,3 +17,12 @@
 - Consult `.asdlc/SKILL.md` before giving ASDLC-specific guidance.
 - Prefer small, reviewable changes that preserve the template nature of the repo.
 - Document reusable conventions instead of one-off preferences.
+
+## agent-ci
+
+- Start a Docker runtime before invoking Agent CI locally.
+- Use `npx @redwoodjs/agent-ci run --quiet --workflow .github/workflows/ci.yml` to run CI locally.
+- When a step fails, the run pauses automatically. Use `npx @redwoodjs/agent-ci retry --name <runner>` to retry after fixing the failure.
+- Do not push to trigger remote CI when Agent CI can run it locally first.
+- CI is expected to be green before a change starts. Treat new failures as introduced by the current change until proven otherwise.
+- Use `--no-matrix` when matrix coverage is unnecessary.
