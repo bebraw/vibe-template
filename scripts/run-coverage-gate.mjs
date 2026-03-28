@@ -4,19 +4,8 @@ import { spawnSync } from "node:child_process";
 import process from "node:process";
 
 const sourceExtensions = new Set([".ts", ".tsx", ".js", ".jsx", ".mts", ".cts", ".mjs", ".cjs"]);
-const sourceFiles = collectFiles("src", (path) => sourceExtensions.has(extname(path)) && !path.endsWith(".d.ts"));
-const testFiles = collectFiles(
-  "src",
-  (path) =>
-    path.endsWith(".test.ts") ||
-    path.endsWith(".test.tsx") ||
-    path.endsWith(".test.js") ||
-    path.endsWith(".test.jsx") ||
-    path.endsWith(".test.mts") ||
-    path.endsWith(".test.cts") ||
-    path.endsWith(".test.mjs") ||
-    path.endsWith(".test.cjs"),
-);
+const sourceFiles = collectFiles("src", isRuntimeSourceFile);
+const testFiles = collectFiles("src", isUnitTestFile);
 
 if (sourceFiles.length === 0) {
   console.log("Coverage gate skipped: no source files found under src/.");
@@ -71,4 +60,26 @@ function walk(root) {
   }
 
   return files;
+}
+
+function isRuntimeSourceFile(path) {
+  return (
+    sourceExtensions.has(extname(path)) &&
+    !path.endsWith(".d.ts") &&
+    !isTestSupportFile(path) &&
+    !isUnitTestFile(path) &&
+    !isEndToEndTestFile(path)
+  );
+}
+
+function isUnitTestFile(path) {
+  return /\.(test)\.[cm]?[jt]sx?$/.test(path);
+}
+
+function isEndToEndTestFile(path) {
+  return /\.(e2e)\.[cm]?[jt]sx?$/.test(path);
+}
+
+function isTestSupportFile(path) {
+  return /(^|\/)test-support\.[cm]?[jt]sx?$/.test(path);
 }

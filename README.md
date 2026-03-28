@@ -20,6 +20,7 @@ This is a template for my vibecoding projects and it captures what I consider my
 
 ## Verification
 
+- Run the fast local gate with `npm run quality:gate:fast` during normal iteration.
 - Run the baseline repo gate with `npm run quality:gate`.
 - Run the containerized local workflow with `npm run ci:local:quiet`.
 - Run unit tests from colocated `src/**/*.test.ts` files with `npm test`.

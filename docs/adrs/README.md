@@ -15,15 +15,16 @@ Skip an ADR for small, reversible, or purely tactical choices.
 
 ## Active ADRs
 
-| ADR                                                                     | Status   | Summary                                                                                |
-| ----------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------- |
-| [ADR-001](./ADR-001-use-architecture-decision-records.md)               | Accepted | Use ADRs to capture significant architectural decisions in this repo.                  |
-| [ADR-002](./ADR-002-make-architectural-decisions-explicit.md)           | Accepted | Require explicit ADR updates for lasting architectural decisions.                      |
-| [ADR-003](./ADR-003-require-spec-updates-and-high-coverage.md)          | Accepted | Treat completed feature work as spec work and gate `src/` code on high unit coverage.  |
-| [ADR-004](./ADR-004-ship-a-worker-stub.md)                              | Accepted | Ship a minimal Worker stub so the template is runnable and testable.                   |
-| [ADR-005](./ADR-005-separate-worker-views-and-api.md)                   | Accepted | Separate the Worker starter into `src/api` and `src/views` for easier evolution.       |
-| [ADR-006](./ADR-006-adopt-tailwind-for-starter-ui.md)                   | Accepted | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.       |
-| [ADR-008](./ADR-008-allow-static-readme-screenshots-without-tooling.md) | Accepted | Allow committed README screenshots without restoring screenshot tooling or automation. |
+| ADR                                                                     | Status   | Summary                                                                                      |
+| ----------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| [ADR-001](./ADR-001-use-architecture-decision-records.md)               | Accepted | Use ADRs to capture significant architectural decisions in this repo.                        |
+| [ADR-002](./ADR-002-make-architectural-decisions-explicit.md)           | Accepted | Require explicit ADR updates for lasting architectural decisions.                            |
+| [ADR-003](./ADR-003-require-spec-updates-and-high-coverage.md)          | Accepted | Treat completed feature work as spec work and gate `src/` code on high unit coverage.        |
+| [ADR-004](./ADR-004-ship-a-worker-stub.md)                              | Accepted | Ship a minimal Worker stub so the template is runnable and testable.                         |
+| [ADR-005](./ADR-005-separate-worker-views-and-api.md)                   | Accepted | Separate the Worker starter into `src/api` and `src/views` for easier evolution.             |
+| [ADR-006](./ADR-006-adopt-tailwind-for-starter-ui.md)                   | Accepted | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.             |
+| [ADR-008](./ADR-008-allow-static-readme-screenshots-without-tooling.md) | Accepted | Allow committed README screenshots without restoring screenshot tooling or automation.       |
+| [ADR-009](./ADR-009-split-fast-and-browser-verification.md)             | Accepted | Split fast and browser verification so checks can fail earlier and CI can cancel stale runs. |
 
 ## Creating A New ADR
 
