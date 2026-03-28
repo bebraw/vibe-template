@@ -25,7 +25,8 @@
     "e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lighthouse": "node ./scripts/run-lighthouse.mjs"
+    "lighthouse": "node ./scripts/run-lighthouse.mjs",
+    "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",
@@ -33,6 +34,7 @@
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.0.3",
     "prettier": "3.8.1",
+    "vitest": "4.1.1",
     "wrangler": "4.77.0"
   }
 }
