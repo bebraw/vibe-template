@@ -1,14 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
-import { createHealthResponse } from "../src/api/health";
-import { exampleRoutes } from "../src/app-routes";
-import worker, { handleRequest } from "../src/worker";
-import { renderHomePage } from "../src/views/home";
-import { renderNotFoundPage } from "../src/views/not-found";
+import worker, { handleRequest } from "./worker";
+import { ensureGeneratedStylesheet } from "./test-support";
 
-mkdirSync(".generated", { recursive: true });
-writeFileSync(join(".generated", "styles.css"), "body{color:black;}", "utf8");
+ensureGeneratedStylesheet();
 
 describe("worker", () => {
   it("renders the stub home page", async () => {
@@ -44,37 +38,11 @@ describe("worker", () => {
     expect(body).toContain("/missing");
   });
 
-  it("renders stable starter copy", () => {
-    const html = renderHomePage(exampleRoutes);
-
-    expect(html).toContain("HTML stub app for developers");
-    expect(html).toContain("A concrete Worker entry point");
-    expect(html).toContain('rel="stylesheet" href="/styles.css"');
-  });
-
   it("exposes the same behavior through the worker fetch entrypoint", async () => {
     const response = await worker.fetch(new Request("http://example.com/api/health"));
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({ ok: true });
-  });
-
-  it("builds the health response from the api module", async () => {
-    const response = createHealthResponse(exampleRoutes.map((route) => route.path));
-
-    expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
-      ok: true,
-      name: "vibe-template-worker",
-      routes: ["/", "/api/health"],
-    });
-  });
-
-  it("renders a standalone not found view", () => {
-    const html = renderNotFoundPage("/missing");
-
-    expect(html).toContain("Not Found");
-    expect(html).toContain("/missing");
   });
 
   it("serves generated styles", async () => {

@@ -40,7 +40,7 @@ This template needs a concrete runnable starting point so developers can clone i
 
 ### Verification
 
-- **Automated tests:** `tests/worker.test.ts` for routing and module behavior and `tests/e2e/app.spec.ts` for the browser-visible flow.
+- **Automated tests:** colocated Vitest files under `src/**/*.test.ts` for module behavior and colocated Playwright files under `src/**/*.e2e.ts` for the browser-visible flow.
 - **Coverage target:** Keep the `src/worker.ts`, `src/api/**`, and `src/views/**` branches, lines, functions, and statements above the repo coverage thresholds.
 
 ### Scenarios

@@ -6,10 +6,16 @@ import process from "node:process";
 const sourceExtensions = new Set([".ts", ".tsx", ".js", ".jsx", ".mts", ".cts", ".mjs", ".cjs"]);
 const sourceFiles = collectFiles("src", (path) => sourceExtensions.has(extname(path)) && !path.endsWith(".d.ts"));
 const testFiles = collectFiles(
-  "tests",
+  "src",
   (path) =>
-    /\.(test|spec)\.[cm]?[jt]sx?$/.test(path) &&
-    !path.includes(`${process.platform === "win32" ? "\\" : "/"}e2e${process.platform === "win32" ? "\\" : "/"}`),
+    path.endsWith(".test.ts") ||
+    path.endsWith(".test.tsx") ||
+    path.endsWith(".test.js") ||
+    path.endsWith(".test.jsx") ||
+    path.endsWith(".test.mts") ||
+    path.endsWith(".test.cts") ||
+    path.endsWith(".test.mjs") ||
+    path.endsWith(".test.cjs"),
 );
 
 if (sourceFiles.length === 0) {
@@ -18,7 +24,7 @@ if (sourceFiles.length === 0) {
 }
 
 if (testFiles.length === 0) {
-  console.error("Coverage gate failed: src/ contains source files, but no unit test files were found under tests/.");
+  console.error("Coverage gate failed: src/ contains source files, but no unit test files were found under src/.");
   console.error("Add unit tests and rerun `npm run test:coverage`.");
   process.exit(1);
 }
