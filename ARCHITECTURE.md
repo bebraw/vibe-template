@@ -8,7 +8,8 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 
 - Keep the template lightweight, reusable, easy to clone, and easy to prune.
 - Treat repo documentation as living context that should evolve with the code.
-- Record significant architecture decisions in `docs/adrs/`.
+- Treat architectural decisions as explicit records, not implicit tribal knowledge.
+- Add or update an ADR in `docs/adrs/` whenever a change introduces or changes a lasting architectural constraint, selects between credible architectural alternatives, or replaces an earlier decision.
 - Keep the quality gate green before considering a change ready.
 
 ## Tooling Baseline

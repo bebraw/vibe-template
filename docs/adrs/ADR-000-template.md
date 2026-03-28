@@ -12,6 +12,10 @@
 
 {What was decided? State it clearly and unambiguously.}
 
+## Trigger
+
+{What change, proposal, or tension made this decision explicit now?}
+
 ## Consequences
 
 **Positive:**

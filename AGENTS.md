@@ -29,7 +29,8 @@
 - Consult `.asdlc/SKILL.md` before giving ASDLC-specific guidance.
 - Prefer small, reviewable changes that preserve the template nature of the repo.
 - Document reusable conventions instead of one-off preferences.
-- Record significant architectural decisions in `docs/adrs/` using the local ADR convention.
+- Treat every lasting architectural decision as explicit documentation work, not implied context.
+- Add or update an ADR in `docs/adrs/` in the same change set whenever a decision introduces or changes a lasting architectural constraint, selects between credible alternatives, or supersedes an earlier architecture decision.
 - Record global architecture rules in `ARCHITECTURE.md` and feature-level contracts in `specs/{feature-domain}/spec.md`.
 - Prefer the local Agent CI workflow before relying on remote CI.
 - Treat a change as ready only after the quality gate and local CI both pass.
