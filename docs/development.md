@@ -19,8 +19,11 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 - Install dependencies with `npm install`.
 - Copy `.dev.vars.example` to `.dev.vars` and replace placeholder values when a project needs local secrets.
 - Start a Docker runtime before running Agent CI.
+- Install the GitHub Actions runner image once with `docker pull ghcr.io/actions/actions-runner:latest`.
 
 The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflare-based experiments. Prefer invoking those tools through `npx` so the project version is used instead of a global install.
+
+If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, pull that image manually and re-run the workflow.
 
 ### Commands
 
