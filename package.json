@@ -1,20 +1,20 @@
 {
   "name": "vibe-template",
   "private": true,
-  "packageManager": "npm@10.9.2",
+  "packageManager": "npm@10.9.4",
   "engines": {
-    "node": "22.17.1",
-    "npm": "10.9.2"
+    "node": "22.22.1",
+    "npm": "10.9.4"
   },
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "22.17.1",
+      "version": "22.22.1",
       "onFail": "error"
     },
     "packageManager": {
       "name": "npm",
-      "version": "10.9.2",
+      "version": "10.9.4",
       "onFail": "error"
     }
   },
