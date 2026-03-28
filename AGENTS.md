@@ -49,3 +49,8 @@
 
 - Use the project-local [`review`](./.codex/skills/review/SKILL.md) skill when the user asks for review, risk analysis, or a merge-readiness pass.
 - Treat the skill as guidance for prioritizing bugs, regressions, and quality-gate gaps over style commentary.
+
+## Security
+
+- Use the project-local [`security`](./.codex/skills/security/SKILL.md) skill when the user is working on auth, secrets, access control, sensitive data handling, or security hardening.
+- Treat the skill as guidance for prioritizing concrete security risks and proportionate mitigations over generic checklists.
