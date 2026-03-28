@@ -21,10 +21,17 @@
 ### Definition of Done
 
 - [ ] {Observable success criterion}
+- [ ] {Spec updated in the same change set}
+- [ ] {Automated tests cover the critical behavior}
 
 ### Regression Guardrails
 
 - {Invariant that must continue to hold}
+
+### Verification
+
+- **Automated tests:** {Unit, integration, or e2e checks that prove the contract}
+- **Coverage target:** {Expected coverage or critical paths that must stay exercised}
 
 ### Scenarios
 

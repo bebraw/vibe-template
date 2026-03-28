@@ -26,15 +26,17 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lighthouse": "node ./scripts/run-lighthouse.mjs",
-    "quality:gate": "npm run format:check && npm run typecheck && npm run security:audit && npm test && npm run e2e",
+    "quality:gate": "npm run format:check && npm run typecheck && npm run security:audit && npm run test:coverage && npm run e2e",
     "screenshots:readme": "node ./scripts/capture-readme-screenshots.mjs",
     "security:audit": "npm audit --audit-level=high --omit=dev",
     "test": "vitest run --passWithNoTests",
+    "test:coverage": "node ./scripts/run-coverage-gate.mjs",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",
     "@redwoodjs/agent-ci": "0.6.0",
+    "@vitest/coverage-v8": "4.1.1",
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.0.3",
     "prettier": "3.8.1",
