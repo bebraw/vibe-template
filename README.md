@@ -5,6 +5,7 @@ This is a template for my vibecoding projects and it captures what I consider my
 ## Documentation
 
 - Development setup and local CI: `docs/development.md`
+- Architecture decisions: `docs/adrs/README.md`
 - Agent behavior and project rules: `AGENTS.md`
 
 ## Runtime

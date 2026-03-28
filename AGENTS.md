@@ -28,6 +28,7 @@
 - Consult `.asdlc/SKILL.md` before giving ASDLC-specific guidance.
 - Prefer small, reviewable changes that preserve the template nature of the repo.
 - Document reusable conventions instead of one-off preferences.
+- Record significant architectural decisions in `docs/adrs/` using the local ADR convention.
 - Prefer the local Agent CI workflow before relying on remote CI.
 - Treat a change as ready only after the quality gate and local CI both pass.
 - Use `npm run quality:gate` for the baseline formatting and test gate, and `npm run ci:local:quiet` for the local workflow check.
