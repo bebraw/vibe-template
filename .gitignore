@@ -2,4 +2,5 @@ node_modules/
 .npm/
 .wrangler/
 playwright-report/
+reports/
 test-results/

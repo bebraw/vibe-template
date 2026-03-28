@@ -24,11 +24,14 @@
     "ci:local:all": "agent-ci run --all",
     "e2e": "playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "lighthouse": "node ./scripts/run-lighthouse.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",
     "@redwoodjs/agent-ci": "0.6.0",
+    "chrome-launcher": "1.2.1",
+    "lighthouse": "13.0.3",
     "prettier": "3.8.1",
     "wrangler": "4.77.0"
   }
