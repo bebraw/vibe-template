@@ -12,4 +12,5 @@ This is a template for my vibecoding projects and it captures what I consider my
 ## Runtime
 
 - Use the project Node.js version with `nvm use`.
+- Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
 - Use repo-pinned CLI tools through `npx`, including `npx wrangler` for Cloudflare-based experiments.

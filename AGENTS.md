@@ -17,6 +17,7 @@
 - Invent tooling or project structure that is not present in the repo.
 - Replace lightweight setup with heavyweight scaffolding without discussion.
 - Delete or overwrite user-authored files without checking impact first.
+- Commit secrets, tokens, or local env files such as `.dev.vars`.
 
 **ASK**
 

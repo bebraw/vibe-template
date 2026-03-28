@@ -29,6 +29,7 @@ jobs:
           test -f AGENTS.md
           test -f .asdlc/SKILL.md
           test -f .nvmrc
+          test -f .dev.vars.example
           git diff --check
 
       - name: Run quality gate

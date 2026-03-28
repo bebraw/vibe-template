@@ -4,10 +4,10 @@ import process from "node:process";
 const args = process.argv.slice(2);
 
 if (!args.includes("--all")) {
-  ensureCommandSucceeds(
+  warnWhenCommandFails(
     "git",
     ["remote", "get-url", "origin"],
-    ["Local CI requires the `origin` remote.", "Configure the remote before running `npm run ci:local`."],
+    ["Local CI can run without the `origin` remote, but repository metadata is cleaner when it is configured."],
   );
 }
 
@@ -48,4 +48,23 @@ function ensureCommandSucceeds(command, commandArgs, guidance) {
   }
 
   process.exit(1);
+}
+
+function warnWhenCommandFails(command, commandArgs, guidance) {
+  const result = spawnSync(command, commandArgs, {
+    stdio: "ignore",
+    env: process.env,
+  });
+
+  if (!result.error && result.status === 0) {
+    return;
+  }
+
+  for (const line of guidance) {
+    console.warn(line);
+  }
+
+  if (result.error) {
+    console.warn(result.error.message);
+  }
 }
