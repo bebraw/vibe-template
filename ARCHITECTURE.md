@@ -15,7 +15,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 
 ## Tooling Baseline
 
-- Node and pnpm versions are pinned through `.nvmrc` and `package.json`.
+- Node and pnpm versions are pinned through `package.json`.
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
 - Formatting, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.

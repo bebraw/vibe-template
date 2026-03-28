@@ -13,6 +13,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Full gate:** `pnpm run quality:gate`
 - **Local workflow:** `pnpm run ci:local:quiet`
 - **Remote workflow:** `.github/workflows/ci.yml`
+- **Runtime pin source:** `package.json#engines.node`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.58.2-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 
@@ -37,6 +38,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - `pnpm run quality:gate:fast` must remain a useful faster signal than the full gate.
 - `pnpm run quality:gate` must continue to represent the full baseline verification path.
 - The CI workflow must cancel superseded runs for the same ref.
+- The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 

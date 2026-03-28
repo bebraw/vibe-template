@@ -11,8 +11,9 @@ This is a template for my vibecoding projects and it captures what I consider my
 
 ## Runtime
 
-- Use the project Node.js version with `nvm use`.
 - Enable Corepack with `corepack enable`, then install dependencies with `pnpm install`.
+- The exact project Node.js version is pinned in `package.json`, and CI reads that value directly.
+- npm now comes from that pinned Node release instead of a separate repo version file.
 - Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
 - Use repo-pinned CLI tools through `pnpm exec`, including `pnpm exec wrangler` for Cloudflare-based experiments.
 - Start the stub Worker with `pnpm run dev`, then open `http://127.0.0.1:8787`.

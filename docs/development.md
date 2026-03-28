@@ -15,9 +15,10 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 
 ### Prerequisites
 
-- Use the project Node.js version with `nvm use`.
 - Enable Corepack with `corepack enable`.
 - Install dependencies with `pnpm install`.
+- The exact Node.js version is pinned in `package.json`, and CI reads that value directly through `actions/setup-node`.
+- npm comes from that pinned Node release rather than a separate repo-level npm pin.
 - Copy `.dev.vars.example` to `.dev.vars` and replace placeholder values when a project needs local secrets.
 - Start a Docker runtime before running Agent CI.
 - Install the GitHub Actions runner image once with `docker pull ghcr.io/actions/actions-runner:latest`.
@@ -49,7 +50,7 @@ The local wrapper also tolerates known Agent CI cache-cleanup false negatives af
 
 The template now ships with a minimal Worker stub in `src/worker.ts`. `pnpm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `pnpm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
 
-The GitHub Actions CI workflow splits fast checks from browser checks into separate jobs, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.58.2-noble`, and cancels superseded runs on the same ref. That keeps the browser job from reinstalling Chromium on every run while still matching the repo's pinned Playwright version.
+The GitHub Actions CI workflow splits fast checks from browser checks into separate jobs, reads the pinned Node version from `package.json`, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.58.2-noble`, and cancels superseded runs on the same ref. That keeps the browser job from reinstalling Chromium on every run while still matching the repo's pinned Playwright version.
 
 The starter UI now follows the same Tailwind v4 baseline shape as `thesis-journey-tracker`: Tailwind input lives in `src/tailwind-input.css`, generated CSS is written to `.generated/styles.css`, and Wrangler runs `pnpm run build:css` automatically before local development.
 

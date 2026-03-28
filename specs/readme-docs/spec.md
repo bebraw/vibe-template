@@ -33,6 +33,7 @@ The template README is the first surface contributors see. It should show the cu
 
 - `README.md` must reference a committed screenshot file that exists in the repo.
 - `README.md` should continue to describe the current starter source layout and verification flow accurately.
+- `README.md` should describe the current runtime pin source accurately when the repo toolchain changes.
 - The screenshot should continue to represent the current starter app surface closely enough to be useful.
 - Screenshot support must remain manual and lightweight unless a later ADR changes that rule.
 
