@@ -38,12 +38,12 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 - Run unit and integration tests with `npm test`.
 - Run the unit coverage gate with `npm run test:coverage`.
 - Run TypeScript checks with `npm run typecheck`.
-- Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:3000 npm run lighthouse`.
+- Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`.
 - Format the repo with `npm run format`.
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npx agent-ci retry --name <runner-name>`.
 
-The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup.
+The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
 
 The GitHub Actions CI workflow caches Playwright browsers under `~/.cache/ms-playwright`, so repeated remote runs should avoid full browser downloads. Local `npm run ci:local:quiet` runs still use fresh runner containers, so they can remain slower on cold starts.
 
