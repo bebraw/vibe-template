@@ -31,6 +31,7 @@
 - Prefer the local Agent CI workflow before relying on remote CI.
 - Treat a change as ready only after the quality gate and local CI both pass.
 - Use `npm run quality:gate` for the baseline formatting and test gate, and `npm run ci:local:quiet` for the local workflow check.
+- Treat `npm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.
 
 ## Frontend Design
 

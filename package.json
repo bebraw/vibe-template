@@ -26,8 +26,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lighthouse": "node ./scripts/run-lighthouse.mjs",
-    "quality:gate": "npm run format:check && npm test && npm run e2e",
-    "test": "vitest run --passWithNoTests"
+    "quality:gate": "npm run format:check && npm run typecheck && npm test && npm run e2e",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",
@@ -35,6 +36,7 @@
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.0.3",
     "prettier": "3.8.1",
+    "typescript": "6.0.2",
     "vitest": "4.1.1",
     "wrangler": "4.77.0"
   }

@@ -30,6 +30,7 @@ The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflar
 - Install the Playwright browser with `npx playwright install chromium`.
 - Run end-to-end tests with `npm run e2e`.
 - Run unit and integration tests with `npm test`.
+- Run TypeScript checks with `npm run typecheck`.
 - Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:3000 npm run lighthouse`.
 - Format the repo with `npm run format`.
 - Check formatting with `npm run format:check`.
@@ -41,6 +42,8 @@ The Lighthouse setup is also generic. Point it at an existing URL through `LIGHT
 
 The Vitest setup is generic as well. `vitest.config.ts` targets `tests/**/*.test.ts` while excluding `tests/e2e/**`. The default `npm test` command uses `--passWithNoTests` so the template remains usable before a project adds its first test file.
 
+The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `tests/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
+
 ## Quality Gate
 
 Use this expectation for routine changes:
@@ -48,4 +51,4 @@ Use this expectation for routine changes:
 - `npm run quality:gate` must pass before a change is considered ready.
 - `npm run ci:local:quiet` should also pass before proposing or landing the change.
 
-The quality gate currently runs formatting checks, Vitest, and the Playwright baseline. The local CI workflow runs the same gate after the repository shape checks.
+The quality gate currently runs formatting checks, TypeScript checking, Vitest, and the Playwright baseline. The local CI workflow runs the same gate after the repository shape checks.
