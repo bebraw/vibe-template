@@ -15,12 +15,14 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 
 ### Prerequisites
 
+- Local development in this template targets macOS. The documented commands assume a macOS shell environment and are not maintained as a cross-platform baseline.
 - Enable Corepack with `corepack enable`.
 - Install dependencies with `pnpm install`.
+- The repo uses pnpm's hoisted node linker so local Agent CI can execute against its warmed dependency mount reliably.
 - The exact Node.js version is pinned in `package.json`, and CI reads that value directly through `actions/setup-node`.
 - npm comes from that pinned Node release rather than a separate repo-level npm pin.
 - Copy `.dev.vars.example` to `.dev.vars` and replace placeholder values when a project needs local secrets.
-- Put machine-local Agent CI overrides in `.env.agent-ci` when needed. Agent CI loads that file automatically.
+- Copy `.env.agent-ci.example` to `.env.agent-ci` when you need machine-local Agent CI overrides. Agent CI loads that file automatically.
 - Start a Docker runtime before running Agent CI.
 - Install the GitHub Actions runner image once with `docker pull ghcr.io/actions/actions-runner:latest`.
 
@@ -30,9 +32,9 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 
 ### Commands
 
-- Run the local workflow with `pnpm run ci:local` or `npx agent-ci run --workflow .github/workflows/ci.yml`.
-- Run the quiet local workflow with `pnpm run ci:local:quiet` or `npx agent-ci run --quiet --workflow .github/workflows/ci.yml`.
-- Run all relevant workflows with `pnpm run ci:local:all` or `npx agent-ci run --all`.
+- Run the local workflow with `pnpm run ci:local`.
+- Run the quiet local workflow with `pnpm run ci:local:quiet`.
+- Run all relevant workflows with `pnpm run ci:local:all`.
 - Rebuild the generated stylesheet manually with `pnpm run build:css`.
 - Run the fast local gate with `pnpm run quality:gate:fast`.
 - Run the baseline quality gate with `pnpm run quality:gate`.
@@ -46,7 +48,7 @@ If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, p
 - Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="pnpm run dev" pnpm run lighthouse`.
 - Format the repo with `pnpm run format`.
 - Check formatting with `pnpm run format:check`.
-- If a run pauses on failure, fix the issue and resume with `pnpm exec agent-ci retry --name <runner-name>` or `npx agent-ci retry --name <runner-name>`.
+- If a run pauses on failure, fix the issue and resume with `pnpm run ci:local:retry -- --name <runner-name>`.
 
 The template now ships with a minimal Worker stub in `src/worker.ts`. `pnpm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `pnpm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
 
@@ -80,4 +82,4 @@ Use this expectation for routine changes:
 - Use `pnpm run quality:gate:fast` for quicker local iteration when browser coverage is not the immediate focus.
 - `pnpm run ci:local:quiet` should also pass before proposing or landing the change.
 
-The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. The repo's local CI scripts now call `agent-ci` directly instead of going through a custom wrapper.
+The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. The repo's local CI scripts now call the pinned `agent-ci` binary directly instead of going through a custom wrapper or ad hoc `npx` usage.

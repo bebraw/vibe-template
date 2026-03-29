@@ -18,12 +18,14 @@ if (testFiles.length === 0) {
   process.exit(1);
 }
 
-const pnpmCommand = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
-
-const result = spawnSync(pnpmCommand, ["exec", "vitest", "run", "--coverage", "--passWithNoTests"], {
-  stdio: "inherit",
-  env: process.env,
-});
+const result = spawnSync(
+  process.execPath,
+  ["--preserve-symlinks", "--preserve-symlinks-main", "./node_modules/vitest/vitest.mjs", "run", "--coverage", "--passWithNoTests"],
+  {
+    stdio: "inherit",
+    env: process.env,
+  },
+);
 
 if (result.error) {
   console.error(result.error.message);

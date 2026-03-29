@@ -12,6 +12,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Browser gate:** `pnpm run quality:gate:browser`
 - **Full gate:** `pnpm run quality:gate`
 - **Local workflow:** `pnpm run ci:local:quiet`
+- **Retry command:** `pnpm run ci:local:retry -- --name <runner-name>`
 - **Remote workflow:** `.github/workflows/ci.yml`
 - **Runtime pin source:** `package.json#engines.node`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.58.2-noble`
@@ -41,7 +42,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
+- The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.
 - The repo's local CI scripts should call `agent-ci` directly unless an upstream limitation requires extra wrapping.
+- The local verification workflow should document macOS as the supported host baseline instead of implying cross-platform support.
 
 ### Verification
 

@@ -18,8 +18,9 @@
     "ci:local": "agent-ci run --workflow .github/workflows/ci.yml",
     "ci:local:quiet": "agent-ci run --quiet --workflow .github/workflows/ci.yml",
     "ci:local:all": "agent-ci run --all",
+    "ci:local:retry": "agent-ci retry",
     "dev": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8787 --inspector-ip 127.0.0.1 --inspector-port 9229 --log-level error --show-interactive-dev-session=false",
-    "e2e": "playwright test --pass-with-no-tests",
+    "e2e": "node --preserve-symlinks --preserve-symlinks-main ./node_modules/@playwright/test/cli.js test --pass-with-no-tests",
     "e2e:server": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8788 --inspector-ip 127.0.0.1 --inspector-port 9230 --log-level error --show-interactive-dev-session=false",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -30,7 +31,7 @@
     "security:audit": "pnpm audit --prod --audit-level high",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "node ./scripts/run-coverage-gate.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc -p tsconfig.typecheck.json"
   },
   "devDependencies": {
     "@playwright/test": "1.58.2",

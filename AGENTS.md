@@ -1,15 +1,17 @@
 > **Project:** `vibe-template` is a lightweight starter for AI-assisted experiments and small software projects. Keep setup reusable, easy to clone, and easy to prune.
 >
+> **Platform Baseline:** Local development and local CI in this repo target macOS. Treat other platforms as out of scope unless the user explicitly asks to broaden support.
+>
 > **Context Anchor:** ASDLC reference material is vendored in `.asdlc/SKILL.md`. Use it as the entry point for architecture, process, and methodology guidance.
 
 ## Toolchain Registry
 
-| Intent         | Command                                         | Notes                                            |
-| -------------- | ----------------------------------------------- | ------------------------------------------------ |
-| Local CI       | `pnpm run ci:local`                             | Runs `.github/workflows/ci.yml` through Agent CI |
-| Quiet local CI | `pnpm run ci:local:quiet`                       | Preferred agent-facing local CI command          |
-| Retry CI       | `pnpm exec agent-ci retry --name <runner-name>` | Retries a paused local Agent CI runner           |
-| Workflow notes | `docs/development.md`                           | Setup details and prerequisites                  |
+| Intent         | Command                                           | Notes                                            |
+| -------------- | ------------------------------------------------- | ------------------------------------------------ |
+| Local CI       | `pnpm run ci:local`                               | Runs `.github/workflows/ci.yml` through Agent CI |
+| Quiet local CI | `pnpm run ci:local:quiet`                         | Preferred agent-facing local CI command          |
+| Retry CI       | `pnpm run ci:local:retry -- --name <runner-name>` | Retries a paused local Agent CI runner           |
+| Workflow notes | `docs/development.md`                             | Setup details and prerequisites                  |
 
 ## Judgment Boundaries
 

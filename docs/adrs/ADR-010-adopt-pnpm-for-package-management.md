@@ -23,6 +23,7 @@ The template now uses:
 - exact Node pinning through `package.json#engines.node`
 - a committed `pnpm-lock.yaml` instead of `package-lock.json`
 - no `.nvmrc`; `package.json` is the single source of truth for the runtime pin
+- a checked-in `.npmrc` with `node-linker=hoisted` for predictable local Agent CI dependency resolution
 - Corepack-enabled CI jobs that read the Node version from `package.json` and run `pnpm install --frozen-lockfile`
 - pnpm-based repo scripts and documentation for routine development and verification
 
@@ -40,12 +41,14 @@ After the verification workflow was split and optimized, dependency installation
 - The repo now carries a single explicit package-manager contract instead of depending on whichever global tool happens to be installed.
 - The runtime pin now lives in one repo file instead of being duplicated between `.nvmrc` and `package.json`.
 - CI can use pnpm's lockfile and cache integration directly.
+- Local Agent CI no longer depends on pnpm's isolated symlink layout behaving correctly inside warmed Docker mounts.
 
 **Negative:**
 
 - Contributors need Corepack enabled, or a matching pnpm installation, before repo commands work.
 - Some command examples and helper scripts need to use `pnpm` or `pnpm exec` instead of npm-oriented defaults.
 - npm is no longer an independently pinned repo tool; its version comes from the chosen Node release.
+- The repo gives up pnpm's default isolated node_modules layout in favor of the hoisted linker.
 
 **Neutral:**
 

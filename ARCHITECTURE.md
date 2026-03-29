@@ -15,6 +15,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 
 ## Tooling Baseline
 
+- Local development and local CI target macOS as the supported host platform baseline.
 - Node and pnpm versions are pinned through `package.json`.
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
 - Formatting, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.

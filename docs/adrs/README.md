@@ -27,6 +27,7 @@ Skip an ADR for small, reversible, or purely tactical choices.
 | [ADR-009](./ADR-009-split-fast-and-browser-verification.md)             | Accepted | Split fast and browser verification so checks can fail earlier and CI can cancel stale runs. |
 | [ADR-010](./ADR-010-adopt-pnpm-for-package-management.md)               | Accepted | Use pnpm with a committed lockfile and Corepack-backed CI/local workflows instead of npm.    |
 | [ADR-011](./ADR-011-upgrade-runtime-baseline-to-node-24.md)             | Accepted | Move the template runtime baseline from Node 22 to Node 24 LTS.                              |
+| [ADR-012](./ADR-012-constrain-local-tooling-to-macos.md)                | Accepted | Treat macOS as the local tooling baseline and use direct pinned Agent CI scripts.            |
 
 ## Creating A New ADR
 
