@@ -41,6 +41,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
+- The repo's local CI scripts should call `agent-ci` directly unless an upstream limitation requires extra wrapping.
 
 ### Verification
 

@@ -15,9 +15,9 @@
   },
   "scripts": {
     "build:css": "mkdir -p ./.generated && tailwindcss -i ./src/tailwind-input.css -o ./.generated/styles.css --minify",
-    "ci:local": "node ./scripts/run-local-ci.mjs --workflow .github/workflows/ci.yml",
-    "ci:local:quiet": "node ./scripts/run-local-ci.mjs --quiet --workflow .github/workflows/ci.yml",
-    "ci:local:all": "node ./scripts/run-local-ci.mjs --all",
+    "ci:local": "agent-ci run --workflow .github/workflows/ci.yml",
+    "ci:local:quiet": "agent-ci run --quiet --workflow .github/workflows/ci.yml",
+    "ci:local:all": "agent-ci run --all",
     "dev": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8787 --inspector-ip 127.0.0.1 --inspector-port 9229 --log-level error --show-interactive-dev-session=false",
     "e2e": "playwright test --pass-with-no-tests",
     "e2e:server": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8788 --inspector-ip 127.0.0.1 --inspector-port 9230 --log-level error --show-interactive-dev-session=false",

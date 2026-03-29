@@ -4,11 +4,12 @@
 
 ## Toolchain Registry
 
-| Intent         | Command                   | Notes                                            |
-| -------------- | ------------------------- | ------------------------------------------------ |
-| Local CI       | `pnpm run ci:local`       | Runs `.github/workflows/ci.yml` through Agent CI |
-| Quiet local CI | `pnpm run ci:local:quiet` | Preferred agent-facing local CI command          |
-| Workflow notes | `docs/development.md`     | Setup details and prerequisites                  |
+| Intent         | Command                                         | Notes                                            |
+| -------------- | ----------------------------------------------- | ------------------------------------------------ |
+| Local CI       | `pnpm run ci:local`                             | Runs `.github/workflows/ci.yml` through Agent CI |
+| Quiet local CI | `pnpm run ci:local:quiet`                       | Preferred agent-facing local CI command          |
+| Retry CI       | `pnpm exec agent-ci retry --name <runner-name>` | Retries a paused local Agent CI runner           |
+| Workflow notes | `docs/development.md`                           | Setup details and prerequisites                  |
 
 ## Judgment Boundaries
 

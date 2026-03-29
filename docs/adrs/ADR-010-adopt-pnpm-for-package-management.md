@@ -8,7 +8,7 @@
 
 The template already pins its JavaScript toolchain tightly so local development, CI, and cloned projects share the same baseline. That approach worked with npm, but package installation remained one of the slower recurring steps in both local iteration and CI.
 
-The repo now has a broader verification baseline, a split CI workflow, and a local Agent CI wrapper that already knows about pnpm store cleanup edge cases. At that point, keeping npm as the package manager no longer has a strong advantage over a package manager with a shared content-addressable store and better cache behavior.
+The repo now has a broader verification baseline and a split CI workflow. At that point, keeping npm as the package manager no longer has a strong advantage over a package manager with a shared content-addressable store and better cache behavior.
 
 The repo should still stay lightweight. The chosen package manager needs to work cleanly with pinned versions, lockfile-based installs, `actions/setup-node`, Corepack, and local contributors without requiring a separate runtime version file.
 

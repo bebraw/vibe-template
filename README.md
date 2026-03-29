@@ -24,6 +24,7 @@ This is a template for my vibecoding projects and it captures what I consider my
 - Run the fast local gate with `pnpm run quality:gate:fast` during normal iteration.
 - Run the baseline repo gate with `pnpm run quality:gate`.
 - Run the containerized local workflow with `pnpm run ci:local:quiet`.
+- Retry a paused local CI run with `pnpm exec agent-ci retry --name <runner-name>`.
 - Run unit tests from colocated `src/**/*.test.ts` files with `pnpm test`.
 - Run browser tests from colocated `src/**/*.e2e.ts` files with `pnpm run e2e`.
 
