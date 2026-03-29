@@ -36,6 +36,7 @@
 - Prefer the local Agent CI workflow before relying on remote CI.
 - Treat a change as ready only after the quality gate and local CI both pass.
 - Treat `package.json` as the source of truth for pinned Node and pnpm versions.
+- Read the relevant library or tool documentation carefully before applying, upgrading, or reconfiguring it in the project, especially when behavior is version-sensitive.
 - Use `pnpm run quality:gate:fast` for quick local iteration, `pnpm run quality:gate` for the full baseline gate, and `pnpm run ci:local:quiet` for the local workflow check.
 - Treat `pnpm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.
 - Treat high automated test coverage as part of done work for `src/` code. The baseline gate should fail when `src/` code exists without matching unit coverage.
