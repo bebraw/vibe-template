@@ -45,6 +45,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.
 - The repo's local CI scripts should call `agent-ci` directly unless an upstream limitation requires extra wrapping.
 - The local verification workflow should document macOS as the supported host baseline instead of implying cross-platform support.
+- The Playwright server path must avoid macOS file-watcher exhaustion in local runs without changing the normal `npm run dev` workflow.
 
 ### Verification
 

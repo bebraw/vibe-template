@@ -21,7 +21,7 @@
     "ci:local:retry": "agent-ci retry",
     "dev": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8787 --inspector-ip 127.0.0.1 --inspector-port 9229 --log-level error --show-interactive-dev-session=false",
     "e2e": "playwright test --pass-with-no-tests",
-    "e2e:server": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8788 --inspector-ip 127.0.0.1 --inspector-port 9230 --log-level error --show-interactive-dev-session=false",
+    "e2e:server": "CHOKIDAR_USEPOLLING=1 CHOKIDAR_INTERVAL=200 HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8788 --inspector-ip 127.0.0.1 --inspector-port 9230 --log-level error --show-interactive-dev-session=false",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lighthouse": "node ./scripts/run-lighthouse.mjs",
