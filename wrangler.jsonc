@@ -4,7 +4,7 @@
   "main": "src/worker.ts",
   "compatibility_date": "2026-03-28",
   "build": {
-    "command": "pnpm run build:css",
+    "command": "npm run build:css",
     "watch_dir": "src",
   },
   "rules": [

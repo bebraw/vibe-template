@@ -19,15 +19,15 @@ We will treat macOS as the supported local-development and local-CI host baselin
 
 We will also standardize local Agent CI usage around the repo-pinned binary:
 
-- `pnpm run ci:local`
-- `pnpm run ci:local:quiet`
-- `pnpm run ci:local:all`
-- `pnpm run ci:local:retry -- --name <runner-name>`
+- `npm run ci:local`
+- `npm run ci:local:quiet`
+- `npm run ci:local:all`
+- `npm run ci:local:retry -- --name <runner-name>`
 
 The repo will ship:
 
 - a checked-in `.env.agent-ci.example` for machine-local overrides
-- a small shared shell helper for the repeated Corepack/pnpm CI environment setup
+- direct npm-based CI and local workflow setup without extra package-manager wrappers
 - docs that avoid recommending `npx` for normal Agent CI usage
 
 ## Trigger

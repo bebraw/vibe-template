@@ -42,7 +42,7 @@ The template README is the first surface contributors see. It should show the cu
 
 - **Manual check:** verify the README image renders from `docs/screenshots/home.png`
 - **Repo check:** `git diff --check`
-- **Baseline gate:** `pnpm run quality:gate` and `pnpm run ci:local:quiet`
+- **Baseline gate:** `npm run quality:gate` and `npm run ci:local:quiet`
 
 ### Scenarios
 

@@ -27,7 +27,7 @@ jobs:
           test -f AGENTS.md
           test -f .asdlc/SKILL.md
           test -f package.json
-          test -f pnpm-lock.yaml
+          test -f package-lock.json
           test -f .dev.vars.example
           git diff --check
 
@@ -35,30 +35,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-
-      - name: Enable Corepack
-        shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh corepack enable
-
-      - name: Configure pnpm store
-        shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh pnpm config set store-dir .pnpm-store
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: .pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+          cache: npm
 
       - name: Install dependencies
         shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run fast quality gate
         shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh pnpm run quality:gate:fast
+        run: npm run quality:gate:fast
 
   quality-browser:
     runs-on: ubuntu-latest
@@ -72,27 +57,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-
-      - name: Enable Corepack
-        shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh corepack enable
-
-      - name: Configure pnpm store
-        shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh pnpm config set store-dir .pnpm-store
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: .pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+          cache: npm
 
       - name: Install dependencies
         shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run browser quality gate
         shell: bash
-        run: bash ./scripts/with-local-pnpm-env.sh pnpm run quality:gate:browser
+        run: npm run quality:gate:browser

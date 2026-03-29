@@ -1,6 +1,6 @@
 # ADR-010: Adopt pnpm for Package Management
 
-**Status:** Accepted
+**Status:** Superseded by ADR-013
 
 **Date:** 2026-03-28
 

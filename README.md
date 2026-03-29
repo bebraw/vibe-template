@@ -13,22 +13,22 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 ## Runtime
 
-- Enable Corepack with `corepack enable`, then install dependencies with `pnpm install`.
+- Install dependencies with `npm install`.
 - The exact project Node.js version is pinned in `package.json`, and CI reads that value directly.
 - npm now comes from that pinned Node release instead of a separate repo version file.
 - Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
-- Use repo-pinned CLI tools through `pnpm exec`, including `pnpm exec wrangler` for Cloudflare-based experiments.
-- Start the stub Worker with `pnpm run dev`, then open `http://127.0.0.1:8787`.
-- Rebuild the generated Tailwind stylesheet manually with `pnpm run build:css` when needed.
+- Use repo-pinned CLI tools through `npx`, including `npx wrangler` for Cloudflare-based experiments.
+- Start the stub Worker with `npm run dev`, then open `http://127.0.0.1:8787`.
+- Rebuild the generated Tailwind stylesheet manually with `npm run build:css` when needed.
 
 ## Verification
 
-- Run the fast local gate with `pnpm run quality:gate:fast` during normal iteration.
-- Run the baseline repo gate with `pnpm run quality:gate`.
-- Run the containerized local workflow with `pnpm run ci:local:quiet`.
-- Retry a paused local CI run with `pnpm run ci:local:retry -- --name <runner-name>`.
-- Run unit tests from colocated `src/**/*.test.ts` files with `pnpm test`.
-- Run browser tests from colocated `src/**/*.e2e.ts` files with `pnpm run e2e`.
+- Run the fast local gate with `npm run quality:gate:fast` during normal iteration.
+- Run the baseline repo gate with `npm run quality:gate`.
+- Run the containerized local workflow with `npm run ci:local:quiet`.
+- Retry a paused local CI run with `npm run ci:local:retry -- --name <runner-name>`.
+- Run unit tests from colocated `src/**/*.test.ts` files with `npm test`.
+- Run browser tests from colocated `src/**/*.e2e.ts` files with `npm run e2e`.
 
 ## Starter App
 

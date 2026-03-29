@@ -31,8 +31,8 @@ Environment variables:
   LIGHTHOUSE_REPORT_DIR           Optional. Output directory. Defaults to reports/lighthouse.
 
 Examples:
-  LIGHTHOUSE_URL=http://127.0.0.1:3000 pnpm run lighthouse
-  LIGHTHOUSE_URL=http://127.0.0.1:3000 LIGHTHOUSE_SERVER_COMMAND="pnpm run dev" pnpm run lighthouse
+  LIGHTHOUSE_URL=http://127.0.0.1:3000 npm run lighthouse
+  LIGHTHOUSE_URL=http://127.0.0.1:3000 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse
 `.trim();
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
