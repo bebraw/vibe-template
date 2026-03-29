@@ -50,6 +50,6 @@ describe("worker", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("text/css");
-    await expect(response.text()).resolves.toContain("color:black");
+    await expect(response.text()).resolves.toContain("--color-app-canvas:#f5efe6");
   });
 });

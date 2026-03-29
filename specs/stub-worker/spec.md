@@ -61,7 +61,7 @@ This template needs a concrete runnable starting point so developers can clone i
 
 - Given: the Worker is running locally
 - When: the browser requests `/styles.css`
-- Then: it receives the generated Tailwind stylesheet
+- Then: it receives the generated Tailwind stylesheet through the same local runtime path used by the browser tests
 
 **Scenario: Unknown route**
 

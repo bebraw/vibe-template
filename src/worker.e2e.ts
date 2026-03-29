@@ -18,3 +18,11 @@ test("serves the health endpoint", async ({ request }) => {
     routes: ["/", "/api/health"],
   });
 });
+
+test("serves the generated stylesheet", async ({ request }) => {
+  const response = await request.get("/styles.css");
+
+  expect(response.ok()).toBe(true);
+  expect(response.headers()["content-type"]).toContain("text/css");
+  await expect(response.text()).resolves.toContain("--color-app-canvas:#f5efe6");
+});
