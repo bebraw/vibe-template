@@ -35,6 +35,7 @@ The template README is the first surface contributors see. It should show the cu
 - `README.md` should continue to describe the current starter source layout and verification flow accurately.
 - `README.md` should describe the current runtime pin source accurately when the repo toolchain changes.
 - `README.md` should describe the supported host platform baseline accurately when local development constraints change.
+- `README.md` should point browser setup at the current pinned Playwright install script instead of an ad hoc command.
 - The screenshot should continue to represent the current starter app surface closely enough to be useful.
 - Screenshot support must remain manual and lightweight unless a later ADR changes that rule.
 

@@ -25,6 +25,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lighthouse": "node ./scripts/run-lighthouse.mjs",
+    "playwright:install": "playwright install chromium",
     "quality:gate": "npm run quality:gate:fast && npm run quality:gate:browser",
     "quality:gate:browser": "npm run e2e",
     "quality:gate:fast": "npm run format:check && npm run typecheck && npm run security:audit && npm run test:coverage",

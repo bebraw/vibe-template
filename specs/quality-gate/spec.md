@@ -47,6 +47,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The local verification workflow should document macOS as the supported host baseline instead of implying cross-platform support.
 - The Playwright server path must avoid macOS file-watcher exhaustion in local runs without changing the normal `npm run dev` workflow.
 - The local CI documentation must cover the no-`origin` case through `.env.agent-ci` and `GITHUB_REPO` instead of treating that warning as normal noise.
+- Local Playwright browser installation should go through a pinned repo script instead of ad hoc `npx playwright install ...` usage.
 
 ### Verification
 

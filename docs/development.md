@@ -41,7 +41,7 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 - Run the baseline quality gate with `npm run quality:gate`.
 - Run the shipped runtime dependency audit with `npm run security:audit`.
 - Start the local Worker with `npm run dev`.
-- Install the Playwright browser with `npx playwright install chromium`.
+- Install the Playwright browser with `npm run playwright:install`.
 - Run end-to-end tests with `npm run e2e`.
 - Run unit and integration tests with `npm test`.
 - Run the unit coverage gate with `npm run test:coverage`.
@@ -83,4 +83,4 @@ Use this expectation for routine changes:
 - Use `npm run quality:gate:fast` for quicker local iteration when browser coverage is not the immediate focus.
 - `npm run ci:local:quiet` should also pass before proposing or landing the change.
 
-The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. The repo's local CI scripts now call the pinned `agent-ci` binary directly instead of going through a custom wrapper or ad hoc `npx` usage.
+The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. The repo's local CI scripts now call the pinned `agent-ci` binary directly instead of going through a custom wrapper or ad hoc `npx` usage, and local browser installation should also go through the pinned `npm run playwright:install` script.
