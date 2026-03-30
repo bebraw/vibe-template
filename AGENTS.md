@@ -63,3 +63,8 @@
 
 - Use the project-local [`security`](./.codex/skills/security/SKILL.md) skill when the user is working on auth, secrets, access control, sensitive data handling, or security hardening.
 - Treat the skill as guidance for prioritizing concrete security risks and proportionate mitigations over generic checklists.
+
+## Simplify
+
+- Use the project-local [`simplify`](./.codex/skills/simplify/SKILL.md) skill after implementation when the user wants code simplified without changing behavior.
+- Treat the skill as guidance for reducing naming, state, and conceptual overhead inside the requested scope.
