@@ -13,6 +13,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 ## Runtime
 
+- Run `nvm use` before `npm install` or any other development command so your shell picks up the repo-pinned Node.js and npm versions.
 - Install dependencies with `npm install`.
 - The exact project Node.js version is pinned in `package.json`, and CI reads that value directly.
 - npm now comes from that pinned Node release instead of a separate repo version file.

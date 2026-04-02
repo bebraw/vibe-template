@@ -16,6 +16,7 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 ### Prerequisites
 
 - Local development in this template targets macOS. The documented commands assume a macOS shell environment and are not maintained as a cross-platform baseline.
+- Run `nvm use` before `npm install` or any other development command so your shell uses the Node.js and npm versions pinned in `package.json`.
 - Install dependencies with `npm install`.
 - The exact Node.js version is pinned in `package.json`, and CI reads that value directly through `actions/setup-node`.
 - npm comes from that pinned Node release rather than a separate repo-level npm pin.
