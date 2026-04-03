@@ -14,11 +14,12 @@
     }
   },
   "scripts": {
+    "agent-ci:patch": "node ./scripts/patch-agent-ci.mjs",
     "build:css": "mkdir -p ./.generated && tailwindcss -i ./src/tailwind-input.css -o ./.generated/styles.css --minify",
-    "ci:local": "agent-ci run --workflow .github/workflows/ci.yml",
-    "ci:local:quiet": "agent-ci run --quiet --workflow .github/workflows/ci.yml",
-    "ci:local:all": "agent-ci run --all",
-    "ci:local:retry": "agent-ci retry",
+    "ci:local": "npm run agent-ci:patch && agent-ci run --workflow .github/workflows/ci.yml",
+    "ci:local:quiet": "npm run agent-ci:patch && agent-ci run --quiet --workflow .github/workflows/ci.yml",
+    "ci:local:all": "npm run agent-ci:patch && agent-ci run --all",
+    "ci:local:retry": "npm run agent-ci:patch && agent-ci retry",
     "deploy": "wrangler deploy",
     "dev": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8787 --inspector-ip 127.0.0.1 --inspector-port 9229 --log-level error --show-interactive-dev-session=false",
     "e2e": "playwright test --pass-with-no-tests",
@@ -36,17 +37,17 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.59.1",
     "@redwoodjs/agent-ci": "0.6.0",
     "@tailwindcss/cli": "4.2.2",
     "@types/node": "24.3.1",
-    "@vitest/coverage-v8": "4.1.1",
+    "@vitest/coverage-v8": "4.1.2",
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.0.3",
     "prettier": "3.8.1",
     "tailwindcss": "4.2.2",
     "typescript": "6.0.2",
-    "vitest": "4.1.1",
-    "wrangler": "4.77.0"
+    "vitest": "4.1.2",
+    "wrangler": "4.80.0"
   }
 }
