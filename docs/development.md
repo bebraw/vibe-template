@@ -85,4 +85,4 @@ Use this expectation for routine changes:
 - Use `npm run quality:gate:fast` for quicker local iteration when browser coverage is not the immediate focus.
 - `npm run ci:local:quiet` should also pass before proposing or landing the change.
 
-The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. The repo's local CI scripts patch the pinned `agent-ci` install before execution to disable an upstream pnpm cache mount that breaks npm-based cleanup in local runs, and local browser installation should also go through the pinned `npm run playwright:install` script.
+The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through the repo-pinned `agent-ci` binary directly, and local browser installation should also go through the pinned `npm run playwright:install` script.
