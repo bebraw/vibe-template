@@ -4,6 +4,8 @@ This directory stores living feature specs using the ASDLC spec pattern.
 
 Specs are the durable source of truth for how a feature works and how we verify it. Keep them close to the code and update them when behavior changes.
 
+Passing CI is necessary but not sufficient. Hand-written and AI-generated code are both valid implementation inputs, but they still need to implement the committed spec and any relevant ADRs instead of silently redefining them.
+
 Completed feature work should not leave its contracts implicit. If a change introduces or changes feature behavior, workflows, quality targets, or regression guardrails, create a new spec or update the existing one in the same change set.
 
 Use a spec when work introduces:
