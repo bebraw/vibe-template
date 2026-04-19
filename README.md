@@ -41,7 +41,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 ## Starter App
 
-- `GET /` serves a minimal HTML Worker stub.
+- `GET /` serves a minimal editorial Worker stub with a route index and a primary health-probe link.
 - `GET /styles.css` serves the generated Tailwind stylesheet.
 - `GET /api/health` serves a JSON health response for smoke tests and tooling.
 
