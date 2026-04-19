@@ -19,6 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Restore npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
       - name: Validate repository shape
         shell: bash
         run: |
@@ -35,7 +43,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          cache: npm
+
+      - name: Align npm to repo pin
+        shell: bash
+        run: npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
 
       - name: Install dependencies
         shell: bash
@@ -53,11 +64,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Restore npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          cache: npm
+
+      - name: Align npm to repo pin
+        shell: bash
+        run: npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
 
       - name: Install dependencies
         shell: bash

@@ -40,6 +40,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - `npm run quality:gate` must continue to represent the full baseline verification path.
 - The CI workflow must cancel superseded runs for the same ref.
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
+- The CI workflow must align npm to the version pinned in `package.json` instead of assuming the npm release bundled with the cached Node runtime is sufficient.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.

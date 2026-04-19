@@ -20,11 +20,12 @@ We will return to npm as the repo's pinned package manager.
 
 The template now uses:
 
-- `npm@11.11.0` in `package.json#packageManager`
+- `npm@11.12.1` in `package.json#packageManager`
 - exact `node` and `npm` version enforcement through `engines` and `devEngines`
+- CI alignment that upgrades npm to the repo pin after `actions/setup-node`
 - a committed `package-lock.json`
 - npm-based repo scripts and documentation for routine development and verification
-- `actions/setup-node` with npm cache support in CI
+- CI-side npm cache restoration that does not depend on the Node-bundled npm version
 
 ## Trigger
 
