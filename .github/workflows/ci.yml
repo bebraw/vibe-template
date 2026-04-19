@@ -46,15 +46,17 @@ jobs:
 
       - name: Align npm to repo pin
         shell: bash
-        run: npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
+        run: |
+          npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
+          echo "PINNED_NPM_CLI=$(npm root -g)/npm/bin/npm-cli.js" >> "$GITHUB_ENV"
 
       - name: Install dependencies
         shell: bash
-        run: npm ci
+        run: node "$PINNED_NPM_CLI" ci
 
       - name: Run fast quality gate
         shell: bash
-        run: npm run quality:gate:fast
+        run: node "$PINNED_NPM_CLI" run quality:gate:fast
 
   quality-browser:
     runs-on: ubuntu-latest
@@ -79,12 +81,14 @@ jobs:
 
       - name: Align npm to repo pin
         shell: bash
-        run: npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
+        run: |
+          npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
+          echo "PINNED_NPM_CLI=$(npm root -g)/npm/bin/npm-cli.js" >> "$GITHUB_ENV"
 
       - name: Install dependencies
         shell: bash
-        run: npm ci
+        run: node "$PINNED_NPM_CLI" ci
 
       - name: Run browser quality gate
         shell: bash
-        run: npm run quality:gate:browser
+        run: node "$PINNED_NPM_CLI" run quality:gate:browser

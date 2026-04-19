@@ -17,10 +17,10 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 ## Runtime
 
-- Run `nvm use` before `npm install` or any other development command so your shell picks up the repo-pinned Node.js and npm versions.
+- Run `nvm use` before `npm install` or any other development command so your shell picks up the repo-pinned Node.js version from `.nvmrc` and stays close to the expected npm baseline.
 - Install dependencies with `npm install`.
-- The exact project Node.js version is pinned in `package.json`, and CI reads that value directly.
-- npm now comes from that pinned Node release instead of a separate repo version file.
+- The exact project Node.js version is pinned in `package.json` and mirrored in `.nvmrc` for `nvm` users, and CI reads the `package.json` value directly.
+- npm is also pinned exactly in `package.json`; local development is expected to use `nvm use`, and CI upgrades npm to the exact repo pin when the bundled npm version differs.
 - Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
 - Use repo-pinned CLI tools through `npx`, including `npx wrangler` for Cloudflare-based experiments.
 - Start the stub Worker with `npm run dev`, then open `http://127.0.0.1:8787`.

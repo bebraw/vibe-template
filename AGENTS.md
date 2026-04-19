@@ -38,7 +38,7 @@
 - Treat completed feature work as spec work: create a new `specs/{feature-domain}/spec.md` or update the relevant existing spec in the same change set whenever feature behavior, contracts, workflows, or quality guardrails change.
 - Prefer the local Agent CI workflow before relying on remote CI.
 - Treat a change as ready only after the quality gate and local CI both pass.
-- Treat `package.json` as the source of truth for pinned Node and npm versions.
+- Treat `package.json` as the source of truth for pinned Node and npm versions, with `.nvmrc` kept in sync as a convenience mirror for `nvm use`.
 - Read the relevant library or tool documentation carefully before applying, upgrading, or reconfiguring it in the project, especially when behavior is version-sensitive.
 - Use `npm run quality:gate:fast` for quick local iteration, `npm run quality:gate` for the full baseline gate, and `npm run ci:local:quiet` for the local workflow check.
 - Treat `npm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.

@@ -17,12 +17,13 @@ We will move the repo runtime baseline from Node 22 to Node 24 LTS.
 The template now uses:
 
 - `24.14.1` in `package.json#engines.node`
+- `.nvmrc` as a convenience mirror for contributors who use `nvm`
 - the existing pnpm-based workflow and lockfile model
 - the same CI behavior, with `actions/setup-node` continuing to read the version from `package.json`
 
 ## Trigger
 
-The project already removed `.nvmrc` and made `package.json` the single source of truth for the runtime pin. After that consolidation, upgrading the Node baseline became a single explicit repo change instead of a coordinated multi-file runtime migration.
+The project treats `package.json` as the runtime source of truth and keeps `.nvmrc` aligned as a contributor convenience. That keeps the Node baseline explicit while still letting `nvm use` pick up the same pinned runtime locally.
 
 ## Consequences
 
@@ -30,7 +31,7 @@ The project already removed `.nvmrc` and made `package.json` the single source o
 
 - New template clones start from the current Node LTS line instead of the previous one.
 - Local development and CI stay aligned through the same pinned runtime source.
-- The repo remains explicit about its toolchain contract without restoring separate runtime version files.
+- The repo remains explicit about its toolchain contract while still supporting `nvm use` as the expected local setup path.
 
 **Negative:**
 
