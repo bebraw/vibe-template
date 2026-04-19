@@ -43,6 +43,7 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 - Run the fast local gate with `npm run quality:gate:fast`.
 - Run the baseline quality gate with `npm run quality:gate`.
 - Run the shipped runtime dependency audit with `npm run security:audit`.
+- Refresh the README screenshot with `npm run screenshot:home`.
 - Start the local Worker with `npm run dev`.
 - Install the Playwright browser with `npm run playwright:install`.
 - Run end-to-end tests with `npm run e2e`.
@@ -68,7 +69,7 @@ The coverage gate is stricter than the basic test run. `npm run test:coverage` m
 
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `src/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
 
-The README includes a committed application screenshot at `docs/screenshots/home.png`. Refresh that asset manually when the starter UI changes materially, but keep screenshot tooling and screenshot automation out of the template baseline.
+The README includes a committed application screenshot at `docs/screenshots/home.png`. Refresh that asset locally with `npm run screenshot:home` when the starter UI changes materially, but keep screenshot automation out of CI and out of remote workflows.
 
 ## Security Baseline
 

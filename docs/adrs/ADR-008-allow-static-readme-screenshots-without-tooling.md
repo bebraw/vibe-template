@@ -1,6 +1,6 @@
 # ADR-008: Allow Static README Screenshots Without Tooling
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-016](./ADR-016-allow-lightweight-local-readme-screenshot-tooling.md)
 
 **Date:** 2026-03-28
 

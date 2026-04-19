@@ -15,22 +15,23 @@ Skip an ADR for small, reversible, or purely tactical choices.
 
 ## Active ADRs
 
-| ADR                                                                     | Status     | Summary                                                                                      |
-| ----------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------- |
-| [ADR-001](./ADR-001-use-architecture-decision-records.md)               | Accepted   | Use ADRs to capture significant architectural decisions in this repo.                        |
-| [ADR-002](./ADR-002-make-architectural-decisions-explicit.md)           | Accepted   | Require explicit ADR updates for lasting architectural decisions.                            |
-| [ADR-003](./ADR-003-require-spec-updates-and-high-coverage.md)          | Accepted   | Treat completed feature work as spec work and gate `src/` code on high unit coverage.        |
-| [ADR-004](./ADR-004-ship-a-worker-stub.md)                              | Accepted   | Ship a minimal Worker stub so the template is runnable and testable.                         |
-| [ADR-005](./ADR-005-separate-worker-views-and-api.md)                   | Accepted   | Separate the Worker starter into `src/api` and `src/views` for easier evolution.             |
-| [ADR-006](./ADR-006-adopt-tailwind-for-starter-ui.md)                   | Accepted   | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.             |
-| [ADR-008](./ADR-008-allow-static-readme-screenshots-without-tooling.md) | Accepted   | Allow committed README screenshots without restoring screenshot tooling or automation.       |
-| [ADR-009](./ADR-009-split-fast-and-browser-verification.md)             | Accepted   | Split fast and browser verification so checks can fail earlier and CI can cancel stale runs. |
-| [ADR-010](./ADR-010-adopt-pnpm-for-package-management.md)               | Superseded | Use pnpm with a committed lockfile and Corepack-backed CI/local workflows instead of npm.    |
-| [ADR-011](./ADR-011-upgrade-runtime-baseline-to-node-24.md)             | Accepted   | Move the template runtime baseline from Node 22 to Node 24 LTS.                              |
-| [ADR-012](./ADR-012-constrain-local-tooling-to-macos.md)                | Accepted   | Treat macOS as the local tooling baseline and use direct pinned Agent CI scripts.            |
-| [ADR-013](./ADR-013-return-to-npm-for-agent-ci-compatibility.md)        | Accepted   | Return to npm because local Agent CI remains unreliable with pnpm warmed dependency mounts.  |
-| [ADR-014](./ADR-014-run-the-fast-gate-on-pre-push.md)                   | Accepted   | Run the fast quality gate automatically before pushes to catch cheap failures locally.       |
-| [ADR-015](./ADR-015-relax-npm-version-enforcement.md)                   | Accepted   | Keep npm as the required package manager while relaxing exact npm patch enforcement.         |
+| ADR                                                                       | Status     | Summary                                                                                      |
+| ------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------- |
+| [ADR-001](./ADR-001-use-architecture-decision-records.md)                 | Accepted   | Use ADRs to capture significant architectural decisions in this repo.                        |
+| [ADR-002](./ADR-002-make-architectural-decisions-explicit.md)             | Accepted   | Require explicit ADR updates for lasting architectural decisions.                            |
+| [ADR-003](./ADR-003-require-spec-updates-and-high-coverage.md)            | Accepted   | Treat completed feature work as spec work and gate `src/` code on high unit coverage.        |
+| [ADR-004](./ADR-004-ship-a-worker-stub.md)                                | Accepted   | Ship a minimal Worker stub so the template is runnable and testable.                         |
+| [ADR-005](./ADR-005-separate-worker-views-and-api.md)                     | Accepted   | Separate the Worker starter into `src/api` and `src/views` for easier evolution.             |
+| [ADR-006](./ADR-006-adopt-tailwind-for-starter-ui.md)                     | Accepted   | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.             |
+| [ADR-008](./ADR-008-allow-static-readme-screenshots-without-tooling.md)   | Superseded | Allowed committed README screenshots without restoring screenshot tooling or automation.     |
+| [ADR-009](./ADR-009-split-fast-and-browser-verification.md)               | Accepted   | Split fast and browser verification so checks can fail earlier and CI can cancel stale runs. |
+| [ADR-010](./ADR-010-adopt-pnpm-for-package-management.md)                 | Superseded | Use pnpm with a committed lockfile and Corepack-backed CI/local workflows instead of npm.    |
+| [ADR-011](./ADR-011-upgrade-runtime-baseline-to-node-24.md)               | Accepted   | Move the template runtime baseline from Node 22 to Node 24 LTS.                              |
+| [ADR-012](./ADR-012-constrain-local-tooling-to-macos.md)                  | Accepted   | Treat macOS as the local tooling baseline and use direct pinned Agent CI scripts.            |
+| [ADR-013](./ADR-013-return-to-npm-for-agent-ci-compatibility.md)          | Accepted   | Return to npm because local Agent CI remains unreliable with pnpm warmed dependency mounts.  |
+| [ADR-014](./ADR-014-run-the-fast-gate-on-pre-push.md)                     | Accepted   | Run the fast quality gate automatically before pushes to catch cheap failures locally.       |
+| [ADR-015](./ADR-015-relax-npm-version-enforcement.md)                     | Accepted   | Keep npm as the required package manager while relaxing exact npm patch enforcement.         |
+| [ADR-016](./ADR-016-allow-lightweight-local-readme-screenshot-tooling.md) | Accepted   | Allow a lightweight local script for refreshing the committed README screenshot.             |
 
 ## Creating A New ADR
 
