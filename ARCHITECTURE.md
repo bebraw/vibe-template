@@ -17,7 +17,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 ## Tooling Baseline
 
 - Local development and local CI target macOS as the supported host platform baseline.
-- Node and npm versions are pinned through `package.json`.
+- Node is pinned exactly through `package.json`, and npm is constrained to a compatible major there instead of an exact patch pin.
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
 - The repo-managed `pre-push` Git hook should run the fast gate before code is pushed.
 - Formatting, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.

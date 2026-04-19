@@ -17,6 +17,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Git hook path:** `.githooks/`
 - **Hook setup script:** `scripts/setup-git-hooks.mjs`
 - **Runtime pin source:** `package.json#engines.node`
+- **Package manager hint source:** `package.json#packageManager`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.59.1-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 
@@ -44,8 +45,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - `npm install` must keep the repo-managed `pre-push` hook configured without requiring extra setup steps.
 - The CI workflow must cancel superseded runs for the same ref.
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
-- The CI workflow must align npm to the version pinned in `package.json` instead of assuming the npm release bundled with the cached Node runtime is sufficient.
-- The pinned npm CLI path used by CI must resolve correctly in both GitHub Actions runners and local Agent CI containers.
+- The CI workflow must keep using npm for install and verification steps without depending on one exact npm patch release.
+- The npm release used by CI must stay inside the supported npm range declared in `package.json`.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.

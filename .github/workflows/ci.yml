@@ -44,11 +44,6 @@ jobs:
         with:
           node-version-file: package.json
 
-      - name: Align npm to repo pin
-        shell: bash
-        run: |
-          npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
-
       - name: Install dependencies
         shell: bash
         run: npm ci
@@ -77,11 +72,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-
-      - name: Align npm to repo pin
-        shell: bash
-        run: |
-          npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
 
       - name: Install dependencies
         shell: bash
