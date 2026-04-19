@@ -18,6 +18,7 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 - Local development in this template targets macOS. The documented commands assume a macOS shell environment and are not maintained as a cross-platform baseline.
 - Run `nvm use` before `npm install` or any other development command so your shell uses the Node.js version mirrored in `.nvmrc`, which keeps the bundled npm version close to the repo pin as well.
 - Install dependencies with `npm install`.
+- `npm install` also configures the repo-managed Git hook path and enables the `pre-push` hook that runs `npm run quality:gate:fast`.
 - The exact Node.js version is pinned in `package.json`, mirrored in `.nvmrc` for `nvm` users, and read directly by CI through `actions/setup-node`.
 - The repo also pins npm exactly in `package.json`. Using `nvm use` is the expected local path for staying close to that npm baseline, and CI upgrades npm to the exact pinned version after `actions/setup-node` and invokes that pinned CLI directly for install and verification steps.
 - Copy `.dev.vars.example` to `.dev.vars` and replace placeholder values when a project needs local secrets.
@@ -84,5 +85,6 @@ Use this expectation for routine changes:
 - `npm run quality:gate` must pass before a change is considered ready.
 - Use `npm run quality:gate:fast` for quicker local iteration when browser coverage is not the immediate focus.
 - `npm run ci:local:quiet` should also pass before proposing or landing the change.
+- The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`, so pushes stop locally when the fast gate is already red.
 
 The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through the repo-pinned `agent-ci` binary directly, and local browser installation should also go through the pinned `npm run playwright:install` script.

@@ -48,7 +48,7 @@ jobs:
         shell: bash
         run: |
           npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
-          echo "PINNED_NPM_CLI=$(npm root -g)/npm/bin/npm-cli.js" >> "$GITHUB_ENV"
+          echo "PINNED_NPM_CLI=$(npm prefix -g)/lib/node_modules/npm/bin/npm-cli.js" >> "$GITHUB_ENV"
 
       - name: Install dependencies
         shell: bash
@@ -83,7 +83,7 @@ jobs:
         shell: bash
         run: |
           npm install -g npm@"$(node -p "require('./package.json').engines.npm")"
-          echo "PINNED_NPM_CLI=$(npm root -g)/npm/bin/npm-cli.js" >> "$GITHUB_ENV"
+          echo "PINNED_NPM_CLI=$(npm prefix -g)/lib/node_modules/npm/bin/npm-cli.js" >> "$GITHUB_ENV"
 
       - name: Install dependencies
         shell: bash

@@ -19,6 +19,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 - Run `nvm use` before `npm install` or any other development command so your shell picks up the repo-pinned Node.js version from `.nvmrc` and stays close to the expected npm baseline.
 - Install dependencies with `npm install`.
+- `npm install` also configures the repo-managed `pre-push` hook so `git push` runs `npm run quality:gate:fast` before code leaves your machine.
 - The exact project Node.js version is pinned in `package.json` and mirrored in `.nvmrc` for `nvm` users, and CI reads the `package.json` value directly.
 - npm is also pinned exactly in `package.json`; local development is expected to use `nvm use`, and CI upgrades npm to the exact repo pin when the bundled npm version differs.
 - Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
@@ -31,6 +32,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 - Run the fast local gate with `npm run quality:gate:fast` during normal iteration.
 - Run the baseline repo gate with `npm run quality:gate`.
 - Run the containerized local workflow with `npm run ci:local:quiet`.
+- The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`.
 - If local Agent CI warns about `No such remote 'origin'`, set `GITHUB_REPO=owner/repo` in `.env.agent-ci`.
 - Retry a paused local CI run with `npm run ci:local:retry -- --name <runner-name>`.
 - Install the pinned Playwright browser with `npm run playwright:install`.

@@ -14,6 +14,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Local workflow:** `npm run ci:local:quiet`
 - **Retry command:** `npm run ci:local:retry -- --name <runner-name>`
 - **Remote workflow:** `.github/workflows/ci.yml`
+- **Git hook path:** `.githooks/`
+- **Hook setup script:** `scripts/setup-git-hooks.mjs`
 - **Runtime pin source:** `package.json#engines.node`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.59.1-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
@@ -31,6 +33,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - [ ] The fast gate covers formatting, type checking, runtime audit, and unit coverage.
 - [ ] The browser gate covers the Playwright baseline.
 - [ ] The full gate runs both in order.
+- [ ] The repo-managed `pre-push` hook runs the fast gate before a push leaves the machine.
 - [ ] Local and remote CI use the same split verification model.
 - [ ] The spec is updated in the same change set.
 
@@ -38,9 +41,11 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
 - `npm run quality:gate` must continue to represent the full baseline verification path.
+- `npm install` must keep the repo-managed `pre-push` hook configured without requiring extra setup steps.
 - The CI workflow must cancel superseded runs for the same ref.
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
 - The CI workflow must align npm to the version pinned in `package.json` instead of assuming the npm release bundled with the cached Node runtime is sufficient.
+- The pinned npm CLI path used by CI must resolve correctly in both GitHub Actions runners and local Agent CI containers.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.
@@ -53,6 +58,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Verification
 
 - **Automated checks:** `npm run quality:gate` and `npm run ci:local:quiet`
+- **Local setup check:** `git config --get core.hooksPath` should resolve to `.githooks`
 - **Workflow shape:** `.github/workflows/ci.yml` should show separate fast and browser jobs, with repository-shape validation in the fast job
 
 ### Scenarios
@@ -68,6 +74,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: a change is ready for review or merge
 - When: the contributor runs `npm run quality:gate` and `npm run ci:local:quiet`
 - Then: both the fast and browser verification paths pass
+
+**Scenario: Contributor pushes with a broken fast gate**
+
+- Given: the repo was bootstrapped with `npm install`
+- When: the contributor runs `git push` while the fast gate is red
+- Then: the `pre-push` hook runs `npm run quality:gate:fast` and the push is blocked before remote CI starts
 
 **Scenario: New push supersedes an old CI run**
 
