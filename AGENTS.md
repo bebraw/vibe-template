@@ -44,6 +44,11 @@
 - Treat `npm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.
 - Treat high automated test coverage as part of done work for `src/` code. The baseline gate should fail when `src/` code exists without matching unit coverage.
 
+## Agent CI
+
+- Use the project-local [`agent-ci`](./.codex/skills/agent-ci/SKILL.md) skill when testing, running checks, or validating code changes before pushing.
+- Treat the skill as the default local CI loop for this repo before relying on remote GitHub Actions.
+
 ## Frontend Design
 
 - Use the project-local [`frontend-design`](./.codex/skills/frontend-design/SKILL.md) skill for substantial UI work such as page redesigns, component styling, app shells, and frontend experiments.
