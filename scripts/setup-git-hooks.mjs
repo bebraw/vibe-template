@@ -3,10 +3,18 @@ import { chmodSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import process from "node:process";
 
-const gitPath = join(process.cwd(), ".git");
+function isGitWorktree() {
+  const result = spawnSync("git", ["rev-parse", "--is-inside-work-tree"], {
+    stdio: ["ignore", "pipe", "pipe"],
+    env: process.env,
+    encoding: "utf8",
+  });
 
-if (!existsSync(gitPath)) {
-  console.log("Git hook setup skipped: no .git directory found.");
+  return !result.error && result.status === 0 && result.stdout.trim() === "true";
+}
+
+if (!isGitWorktree()) {
+  console.log("Git hook setup skipped: no usable Git worktree found.");
   process.exit(0);
 }
 

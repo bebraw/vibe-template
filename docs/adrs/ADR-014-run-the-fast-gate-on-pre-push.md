@@ -22,7 +22,7 @@ The repo-managed `pre-push` hook will run:
 
 This keeps the push-time check aligned with the repo's existing fast gate contract while leaving the full gate and local Agent CI workflow as the definition of done for ready changes.
 
-The CI workflow will also resolve the pinned npm CLI path from `npm prefix -g` instead of `npm root -g` so the same pinned npm invocation works reliably in both hosted runners and local Agent CI containers.
+The CI workflow will upgrade npm to the repo pin after `actions/setup-node` and then invoke `npm` directly in later steps so the pinned npm behavior stays aligned across hosted runners and local Agent CI containers without depending on environment-specific executable paths.
 
 ## Consequences
 
