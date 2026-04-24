@@ -14,6 +14,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 - Architecture decisions: `docs/adrs/README.md`
 - Feature and architecture specs: `specs/README.md`
 - Agent behavior and project rules: `AGENTS.md`
+- Partial-upgrade capability kits: `.capabilities/`
 
 ## Runtime
 

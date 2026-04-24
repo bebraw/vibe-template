@@ -24,6 +24,13 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.
 - Local CI should validate the same baseline checks before changes are proposed or merged.
 
+## Capability Kits
+
+- Put reusable partial-upgrade kits under `.capabilities/{capability-name}/`.
+- Keep capability kits instructional and reviewable rather than fully automated by default.
+- Each capability kit should include a README, a machine-readable manifest, any copyable files, package-manager recipes, and validation notes.
+- Capability kits should preserve target-project conventions unless the kit explicitly documents a required constraint.
+
 ## Spec Conventions
 
 - Put feature-level specs under `specs/{feature-domain}/spec.md`.

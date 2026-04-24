@@ -1,0 +1,89 @@
+# Feature: Capability Kits
+
+## Blueprint
+
+### Context
+
+The template is useful both as a starter repo and as a source of specific practices that can be applied to existing projects. Contributors and agents need a lightweight way to transfer one capability, such as Agent CI, without copying unrelated template structure.
+
+### Architecture
+
+- **Kit root:** `.capabilities/`
+- **Kit layout:** `.capabilities/{capability-name}/`
+- **Required overview:** `README.md`
+- **Required manifest:** `manifest.json`
+- **Copyable files:** `files/`
+- **Package-manager recipes:** `recipes/`
+- **Validation notes:** `checks.md`
+- **Available kits:** `agent-ci`, `quality-gate`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`
+- **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
+
+### Anti-Patterns
+
+- Do not make capability kits hidden automation that rewrites target repos without review.
+- Do not add adjacent capabilities such as GitHub Actions workflows without asking the user first.
+- Do not assume the target repo has the same package manager, docs structure, workflow names, or architecture rules as this template.
+- Do not include secrets or machine-local values in copyable files.
+- Do not let kit instructions drift from the template's own current implementation.
+
+## Contract
+
+### Definition of Done
+
+- [ ] Each capability kit has a README explaining purpose, fit, poor fit, and apply steps.
+- [ ] Each capability kit has a manifest with dependencies, scripts, files, docs, and verification commands.
+- [ ] Copyable files live under `files/` using their target relative paths.
+- [ ] Package-manager-specific steps live under `recipes/`.
+- [ ] Optional adjacent setup steps include an explicit prompt before changing the target repo.
+- [ ] Validation steps live in `checks.md`.
+- [ ] Durable docs mention capability kits as a supported partial-upgrade path.
+
+### Regression Guardrails
+
+- Capability kits must remain lightweight and reviewable.
+- Capability kits must preserve target-project conventions by default.
+- Capability kit files must not contain secrets or local machine values.
+- Optional adjacent setup must be opt-in when it adds a new target-project capability.
+- The Agent CI kit must keep its dependency and command guidance aligned with this repo's `package.json` and `.codex/skills/agent-ci/SKILL.md`.
+- The Agent CI kit must keep `--jobs 1` in the canonical local npm script unless a later decision changes the macOS-hosted Docker local CI constraint.
+- The quality-gate kit must keep the coverage gate script aligned with `scripts/run-coverage-gate.mjs`.
+- The pre-push quality-gate kit must keep the hook setup aligned with `.githooks/pre-push` and `scripts/setup-git-hooks.mjs`.
+- The screenshot and Lighthouse kits must keep their scripts aligned with `scripts/run-home-screenshot.mjs` and `scripts/run-lighthouse.mjs`.
+
+### Verification
+
+- **Repo checks:** `npm run quality:gate` and `npm run ci:local`
+- **Manifest parse:** `node -e "JSON.parse(require('node:fs').readFileSync('.capabilities/agent-ci/manifest.json', 'utf8'))"`
+- **Docs check:** `rg "capability kits|\\.capabilities|Agent CI Capability Kit"`
+
+### Scenarios
+
+**Scenario: Agent applies Agent CI to another npm repo**
+
+- Given: an npm repo with a GitHub Actions workflow
+- When: the agent follows `.capabilities/agent-ci/recipes/npm.md`
+- Then: the target repo gains the pinned Agent CI dependency, local CI scripts, local env example, Codex skill, and validation path
+
+**Scenario: Target repo has no GitHub Actions workflow**
+
+- Given: a target repo has no `.github/workflows/*.yml` or `.github/workflows/*.yaml` files
+- When: the agent applies the Agent CI capability kit
+- Then: the agent asks whether to add a minimal GitHub Actions workflow before creating one
+
+**Scenario: Target repo differs from this template**
+
+- Given: the target repo has different docs or workflow names
+- When: the agent applies a capability kit
+- Then: the agent merges the kit into the existing conventions instead of overwriting unrelated structure
+
+**Scenario: Kit drift is introduced**
+
+- Given: this repo changes its Agent CI setup
+- When: the Agent CI kit still documents the old command or dependency
+- Then: the quality review treats the kit as stale and updates it in the same change set
+
+**Scenario: Contributor chooses a narrow upgrade**
+
+- Given: another repo only needs local README screenshot refresh
+- When: the agent applies `.capabilities/readme-screenshot/`
+- Then: the target repo receives screenshot tooling without inheriting Agent CI, hooks, Lighthouse, or the Worker starter
