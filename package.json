@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "npm@11",
   "engines": {
-    "node": "24.14.1",
+    "node": "24.15.0",
     "npm": ">=11 <12"
   },
   "devEngines": {

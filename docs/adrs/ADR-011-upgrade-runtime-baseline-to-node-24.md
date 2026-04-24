@@ -16,9 +16,9 @@ We will move the repo runtime baseline from Node 22 to Node 24 LTS.
 
 The template now uses:
 
-- `24.14.1` in `package.json#engines.node`
+- `24.15.0` in `package.json#engines.node`
 - `.nvmrc` as a convenience mirror for contributors who use `nvm`
-- the existing pnpm-based workflow and lockfile model
+- the existing npm-based workflow and lockfile model
 - the same CI behavior, with `actions/setup-node` continuing to read the version from `package.json`
 
 ## Trigger
@@ -40,7 +40,7 @@ The project treats `package.json` as the runtime source of truth and keeps `.nvm
 
 **Neutral:**
 
-- pnpm remains the package manager contract.
+- npm remains the package manager contract.
 - CI still reads the runtime version from `package.json`; only the pinned value changes.
 
 ## Alternatives Considered
