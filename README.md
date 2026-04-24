@@ -41,6 +41,19 @@ Local development in this repo targets macOS. Other platforms may need script an
 - Run unit tests from colocated `src/**/*.test.ts` files with `npm test`.
 - Run browser tests from colocated `src/**/*.e2e.ts` files with `npm run e2e`.
 
+## Capability Kits
+
+Use `.capabilities/` when another project needs one template practice without adopting the whole starter. Each kit is a reviewable partial-upgrade guide with a README, manifest, package-manager recipe, copyable files, and validation checks.
+
+To apply a kit to another repo:
+
+1. Pick the smallest matching kit from `.capabilities/README.md`.
+2. Read the kit README and `manifest.json`.
+3. Follow the target package-manager recipe under `recipes/`.
+4. Copy or merge files from `files/` without overwriting target-project conventions.
+5. Ask before applying optional adjacent setup such as creating a GitHub Actions workflow.
+6. Run the kit checks and the target repo's normal quality gate.
+
 ## Starter App
 
 - `GET /` serves a minimal editorial Worker stub with a route index and a primary health-probe link.
