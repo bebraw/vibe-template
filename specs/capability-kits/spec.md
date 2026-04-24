@@ -17,11 +17,13 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Validation notes:** `checks.md`
 - **Available kits:** `agent-ci`, `quality-gate`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
+- **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 
 ### Anti-Patterns
 
 - Do not make capability kits hidden automation that rewrites target repos without review.
 - Do not add adjacent capabilities such as GitHub Actions workflows without asking the user first.
+- Do not apply a capability bundle to a target repo before the user approves the selected capabilities.
 - Do not assume the target repo has the same package manager, docs structure, workflow names, or architecture rules as this template.
 - Do not include secrets or machine-local values in copyable files.
 - Do not let kit instructions drift from the template's own current implementation.
@@ -35,6 +37,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - [ ] Copyable files live under `files/` using their target relative paths.
 - [ ] Package-manager-specific steps live under `recipes/`.
 - [ ] Optional adjacent setup steps include an explicit prompt before changing the target repo.
+- [ ] The capability index includes a prompt-style selection UI for negotiating which kits to pull into another project.
 - [ ] Validation steps live in `checks.md`.
 - [ ] Durable docs mention capability kits as a supported partial-upgrade path.
 
@@ -44,6 +47,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - Capability kits must preserve target-project conventions by default.
 - Capability kit files must not contain secrets or local machine values.
 - Optional adjacent setup must be opt-in when it adds a new target-project capability.
+- The negotiation prompt must instruct agents to inspect the target repo, present recommended capabilities with trade-offs, and wait for approval before editing files.
 - The Agent CI kit must keep its dependency and command guidance aligned with this repo's `package.json` and `.codex/skills/agent-ci/SKILL.md`.
 - The Agent CI kit must keep `--jobs 1` in the canonical local npm script unless a later decision changes the macOS-hosted Docker local CI constraint.
 - The quality-gate kit must keep the coverage gate script aligned with `scripts/run-coverage-gate.mjs`.
@@ -87,3 +91,9 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: another repo only needs local README screenshot refresh
 - When: the agent applies `.capabilities/readme-screenshot/`
 - Then: the target repo receives screenshot tooling without inheriting Agent CI, hooks, Lighthouse, or the Worker starter
+
+**Scenario: Contributor is unsure which kits to apply**
+
+- Given: another repo may benefit from multiple capabilities
+- When: the agent uses the negotiation prompt from `.capabilities/README.md`
+- Then: the agent inspects the target repo, presents a checkbox-style capability pull plan, and waits for approval before editing files

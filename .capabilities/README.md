@@ -25,3 +25,55 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 4. Copy files from `files/` only after checking for existing target-project conventions.
 5. Ask before applying any optional adjacent setup.
 6. Run the kit checks and the target repo's normal quality gate.
+
+## Negotiation Prompt
+
+Use this prompt in a target repo when you want an agent to inspect the repo and negotiate which kits to pull before making changes:
+
+```text
+Review this repo and the capability kits from vibe-template.
+
+Do not edit files yet.
+
+First, inspect the target repo for:
+- package manager and lockfile
+- existing GitHub Actions workflows
+- existing local quality/test scripts
+- existing Git hooks or hook managers
+- app/runtime surface that might need browser, screenshot, or Lighthouse checks
+- durable docs where new workflow contracts should be recorded
+
+Then present a capability selection UI:
+
+Capability Pull Plan
+
+[ ] agent-ci
+    Adds local GitHub Actions execution through Agent CI.
+    Include if the repo has or wants GitHub Actions and Docker-backed local CI.
+
+[ ] quality-gate
+    Adds formatting, type checking, audit, unit tests, and coverage checks.
+    Include if the repo lacks a clear fast local verification baseline.
+
+[ ] pre-push-quality-gate
+    Adds a repo-managed pre-push hook for the fast gate.
+    Include only if the repo has a fast gate and no conflicting hook manager, or after asking how to integrate.
+
+[ ] readme-screenshot
+    Adds local-only README screenshot capture through Playwright.
+    Include if the repo has a stable local UI worth showing in docs.
+
+[ ] lighthouse-performance
+    Adds local Lighthouse reports and a performance budget.
+    Include if the repo has a browser-visible surface and wants local performance checks.
+
+For each recommended capability, explain:
+- why it fits this repo
+- files/scripts/dependencies it would add or change
+- optional adjacent setup that needs approval
+- checks you would run
+
+Ask me to approve the final capability list before editing files.
+```
+
+After approval, apply only the selected kits. If a selected kit discovers optional adjacent setup, such as creating a GitHub Actions workflow for Agent CI, ask again before adding that adjacent capability.

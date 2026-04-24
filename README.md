@@ -54,6 +54,8 @@ To apply a kit to another repo:
 5. Ask before applying optional adjacent setup such as creating a GitHub Actions workflow.
 6. Run the kit checks and the target repo's normal quality gate.
 
+For existing projects where the right kit set is unclear, start with the negotiation prompt in `.capabilities/README.md`. It asks an agent to inspect the target repo, present a checkbox-style capability pull plan, and wait for approval before editing files.
+
 ## Starter App
 
 - `GET /` serves a minimal editorial Worker stub with a route index and a primary health-probe link.
