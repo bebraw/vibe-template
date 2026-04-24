@@ -15,7 +15,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Copyable files:** `files/`
 - **Package-manager recipes:** `recipes/`
 - **Validation notes:** `checks.md`
-- **Available kits:** `agent-ci`, `quality-gate`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`
+- **Available kits:** `typescript-setup`, `agent-ci`, `quality-gate`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 
@@ -48,6 +48,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - Capability kit files must not contain secrets or local machine values.
 - Optional adjacent setup must be opt-in when it adds a new target-project capability.
 - The negotiation prompt must instruct agents to inspect the target repo, present recommended capabilities with trade-offs, and wait for approval before editing files.
+- The TypeScript setup kit must keep its dependency, `typecheck` script, `tsconfig.json`, and optional CSS declaration guidance aligned with this repo's current TypeScript setup.
 - The Agent CI kit must keep its dependency and command guidance aligned with this repo's `package.json` and `.codex/skills/agent-ci/SKILL.md`.
 - The Agent CI kit must keep `--jobs 1` in the canonical local npm script unless a later decision changes the macOS-hosted Docker local CI constraint.
 - The quality-gate kit must keep the coverage gate script aligned with `scripts/run-coverage-gate.mjs`.
@@ -91,6 +92,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: another repo only needs local README screenshot refresh
 - When: the agent applies `.capabilities/readme-screenshot/`
 - Then: the target repo receives screenshot tooling without inheriting Agent CI, hooks, Lighthouse, or the Worker starter
+
+**Scenario: Contributor only needs TypeScript checking**
+
+- Given: another npm repo wants strict TypeScript checking but not the full quality gate
+- When: the agent applies `.capabilities/typescript-setup/`
+- Then: the target repo receives TypeScript dependencies, a `typecheck` script, a mergeable `tsconfig.json`, and optional CSS import declaration guidance
 
 **Scenario: Contributor is unsure which kits to apply**
 

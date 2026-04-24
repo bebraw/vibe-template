@@ -6,6 +6,7 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 
 | Kit                                                            | Purpose                                                            |
 | -------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [`typescript-setup`](./typescript-setup/README.md)             | Add strict no-emit TypeScript checking for npm projects.           |
 | [`agent-ci`](./agent-ci/README.md)                             | Add local GitHub Actions execution through Agent CI.               |
 | [`quality-gate`](./quality-gate/README.md)                     | Add the fast verification baseline and optional browser gate.      |
 | [`pre-push-quality-gate`](./pre-push-quality-gate/README.md)   | Add a repo-managed pre-push hook that runs the fast quality gate.  |
@@ -37,6 +38,7 @@ Do not edit files yet.
 
 First, inspect the target repo for:
 - package manager and lockfile
+- existing TypeScript config and typecheck scripts
 - existing GitHub Actions workflows
 - existing local quality/test scripts
 - existing Git hooks or hook managers
@@ -47,13 +49,17 @@ Then present a capability selection UI:
 
 Capability Pull Plan
 
+[ ] typescript-setup
+    Adds strict no-emit TypeScript checking for npm projects.
+    Include if the repo uses TypeScript, wants TypeScript, or needs a reusable typecheck script and tsconfig baseline.
+
 [ ] agent-ci
     Adds local GitHub Actions execution through Agent CI.
     Include if the repo has or wants GitHub Actions and Docker-backed local CI.
 
 [ ] quality-gate
     Adds formatting, type checking, audit, unit tests, and coverage checks.
-    Include if the repo lacks a clear fast local verification baseline.
+    Include if the repo lacks a clear fast local verification baseline. Apply typescript-setup first unless the repo already has an equivalent typecheck contract.
 
 [ ] pre-push-quality-gate
     Adds a repo-managed pre-push hook for the fast gate.

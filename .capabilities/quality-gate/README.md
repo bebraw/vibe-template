@@ -4,14 +4,15 @@ Use this kit to add the template's fast verification baseline to another npm pro
 
 ## Adds
 
-- Formatting, type checking, runtime audit, test, and coverage scripts.
+- Formatting, runtime audit, test, and coverage scripts.
+- A fast gate that calls the TypeScript setup kit's `typecheck` script.
 - A coverage gate that fails when `src/` runtime code exists without unit tests.
 - Vitest configuration for colocated `src/**/*.test.ts` files.
 - Optional Playwright browser-gate guidance when the target repo has browser tests.
 
 ## Good Fit
 
-- The target repo uses npm and TypeScript or JavaScript.
+- The target repo uses npm and has an existing `typecheck` script, or will apply `typescript-setup` first.
 - Runtime code lives under `src/` or can be adapted to that convention.
 - The repo wants a fast local signal before broader CI.
 
@@ -24,9 +25,10 @@ Use this kit to add the template's fast verification baseline to another npm pro
 ## Apply
 
 1. Read `manifest.json`.
-2. Follow `recipes/npm.md`.
-3. Copy `files/scripts/run-coverage-gate.mjs` into `scripts/run-coverage-gate.mjs`.
-4. Copy or merge `files/vitest.config.ts` into `vitest.config.ts`.
-5. If the target repo needs browser coverage, ask before adding Playwright config:
+2. Apply `.capabilities/typescript-setup/` first unless the target repo already has an equivalent `typecheck` contract.
+3. Follow `recipes/npm.md`.
+4. Copy `files/scripts/run-coverage-gate.mjs` into `scripts/run-coverage-gate.mjs`.
+5. Copy or merge `files/vitest.config.ts` into `vitest.config.ts`.
+6. If the target repo needs browser coverage, ask before adding Playwright config:
    `Do you want this quality-gate upgrade to add a Playwright browser gate as well?`
-6. Run the checks in `checks.md`.
+7. Run the checks in `checks.md`.

@@ -2,12 +2,14 @@
 
 Apply this recipe when the target repo uses npm.
 
+Apply `.capabilities/typescript-setup/` first unless the target repo already has an equivalent `typecheck` script and TypeScript configuration.
+
 ## Package Changes
 
 Add the fast-gate dependencies:
 
 ```bash
-npm install --save-dev prettier@3.8.3 typescript@6.0.3 vitest@4.1.5 @vitest/coverage-v8@4.1.5
+npm install --save-dev prettier@3.8.3 vitest@4.1.5 @vitest/coverage-v8@4.1.5
 ```
 
 Add or merge these scripts:
@@ -21,8 +23,7 @@ Add or merge these scripts:
     "quality:gate:fast": "npm run format:check && npm run typecheck && npm run security:audit && npm run test:coverage",
     "security:audit": "npm audit --omit=dev --audit-level high",
     "test": "vitest run --passWithNoTests",
-    "test:coverage": "node ./scripts/run-coverage-gate.mjs",
-    "typecheck": "tsc --noEmit"
+    "test:coverage": "node ./scripts/run-coverage-gate.mjs"
   }
 }
 ```
