@@ -24,7 +24,7 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 - Copy `.dev.vars.example` to `.dev.vars` and replace placeholder values when a project needs local secrets.
 - Copy `.env.agent-ci.example` to `.env.agent-ci` when you need machine-local Agent CI overrides. Agent CI loads that file automatically.
 - If your clone has no `origin` remote, set `GITHUB_REPO=owner/repo` in `.env.agent-ci` to stop Agent CI from warning while inferring the repository name.
-- If your Docker CLI uses a non-default socket or context, set `DOCKER_HOST=...` in `.env.agent-ci` so Agent CI reaches the same engine as `docker info`.
+- If Agent CI needs a non-default Docker socket or daemon, set `AGENT_CI_DOCKER_HOST=...` in `.env.agent-ci`.
 - Start a Docker runtime before running Agent CI.
 - Install the GitHub Actions runner image once with `docker pull ghcr.io/actions/actions-runner:latest`.
 
