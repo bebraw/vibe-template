@@ -1,35 +1,41 @@
 ---
 name: agent-ci
-description: Run GitHub Actions CI locally with Agent CI to validate changes before pushing. Use when testing, running checks, or validating code changes.
-license: MIT
-compatibility: Requires Node.js 18+ and Docker
-metadata:
-  author: redwoodjs
-  version: "1.0.0"
+description: Run GitHub Actions workflows locally with pause-on-failure for AI-agent-driven CI iteration.
+keywords: [github-actions, local-ci, pause-on-failure, ai-agent, runner]
 ---
 
 # Agent CI
 
-Run the full CI pipeline locally before pushing. CI was green before you started — any failure is caused by your changes.
+## What agent-ci does
 
-## Run
+Runs the official GitHub Actions runner binary locally in Docker, emulating GitHub's cloud API.
+Cache is bind-mounted. When a step fails, the container can pause so you can fix and retry the failed step without restarting the workflow.
 
-```bash
-npx @redwoodjs/agent-ci run --quiet --all --pause-on-failure
-```
+## When to use agent-ci
 
-## Retry
+- You want compatibility with remote GitHub Actions before pushing.
+- You need pause-on-failure for an agent debugging loop.
+- Cache round-trip speed matters.
 
-When a step fails, the run pauses automatically. Fix the issue, then retry:
+## Project commands
 
-```bash
-npx @redwoodjs/agent-ci retry --name <runner-name>
-```
+Use this repo's pinned `agent-ci` dependency through package scripts.
 
-To re-run from an earlier step:
+- Run the local workflow quietly: `npm run ci:local:quiet`
+- Run the local workflow with normal output: `npm run ci:local`
+- Run all relevant workflows: `npm run ci:local:all`
+- Run all workflows with pause-on-failure: `npm run ci:local:all -- --pause-on-failure`
+- Collapse matrix jobs for a smaller local run: `npm run ci:local:all -- --no-matrix`
+- Retry after a fix: `npm run ci:local:retry -- --name <runner>`
+- Retry from a specific step: `npm run ci:local:retry -- --name <runner> --from-step <N>`
+- Retry from the start: `npm run ci:local:retry -- --name <runner> --from-start`
+- Abort a paused runner: `./node_modules/.bin/agent-ci abort --name <runner>`
 
-```bash
-npx @redwoodjs/agent-ci retry --name <runner-name> --from-step <N>
-```
+## Common mistakes
 
-Repeat until all jobs pass. Do not push to trigger remote CI when agent-ci can run it locally.
+- Do not push to remote CI to test changes when local Agent CI can run the workflow.
+- Do not use `--from-start` when only the last step failed; use retry with no extra flags to re-run only the failed step.
+- Use `AI_AGENT=1` or `--quiet` for cleaner agent logs.
+- Prefer `--no-matrix` when matrix combinations are not the thing being tested.
+
+Repeat the local run or retry loop until all jobs pass.
