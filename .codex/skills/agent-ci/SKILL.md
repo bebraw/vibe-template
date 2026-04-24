@@ -21,11 +21,10 @@ Cache is bind-mounted. When a step fails, the container can pause so you can fix
 
 Use this repo's pinned `agent-ci` dependency through package scripts.
 
-- Run the local workflow quietly: `npm run ci:local:quiet`
-- Run the local workflow with normal output: `npm run ci:local`
-- Run all relevant workflows: `npm run ci:local:all`
-- Run all workflows with pause-on-failure: `npm run ci:local:all -- --pause-on-failure`
-- Collapse matrix jobs for a smaller local run: `npm run ci:local:all -- --no-matrix`
+- Run the local workflow quietly: `npm run ci:local`
+- Run all relevant workflows when needed: `./node_modules/.bin/agent-ci run --all`
+- Run all workflows with pause-on-failure: `./node_modules/.bin/agent-ci run --all --pause-on-failure`
+- Collapse matrix jobs for a smaller local run: `./node_modules/.bin/agent-ci run --all --no-matrix`
 - Retry after a fix: `npm run ci:local:retry -- --name <runner>`
 - Retry from a specific step: `npm run ci:local:retry -- --name <runner> --from-step <N>`
 - Retry from the start: `npm run ci:local:retry -- --name <runner> --from-start`

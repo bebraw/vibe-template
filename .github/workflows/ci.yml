@@ -79,4 +79,4 @@ jobs:
 
       - name: Run browser quality gate
         shell: bash
-        run: npm run quality:gate:browser
+        run: npm run e2e

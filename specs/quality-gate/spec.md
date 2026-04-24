@@ -9,9 +9,10 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Architecture
 
 - **Fast gate:** `npm run quality:gate:fast`
-- **Browser gate:** `npm run quality:gate:browser`
+- **Browser gate:** `npm run e2e`
 - **Full gate:** `npm run quality:gate`
-- **Local workflow:** `npm run ci:local:quiet`
+- **Local workflow:** `npm run ci:local`
+- **Local workflow concurrency:** one Agent CI job slot
 - **Retry command:** `npm run ci:local:retry -- --name <runner-name>`
 - **Remote workflow:** `.github/workflows/ci.yml`
 - **Git hook path:** `.githooks/`
@@ -51,6 +52,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.
 - The repo's local CI scripts should use the repo-pinned `agent-ci` binary directly instead of carrying repo-specific runtime patching.
+- The canonical local CI script should run with one Agent CI job slot to avoid warmed dependency races on macOS-hosted Docker.
 - The local verification workflow should document macOS as the supported host baseline instead of implying cross-platform support.
 - The Playwright server path must avoid macOS file-watcher exhaustion in local runs without changing the normal `npm run dev` workflow.
 - The local CI documentation must cover the no-`origin` case through `.env.agent-ci` and `GITHUB_REPO` instead of treating that warning as normal noise.
@@ -59,7 +61,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 ### Verification
 
-- **Automated checks:** `npm run quality:gate` and `npm run ci:local:quiet`
+- **Automated checks:** `npm run quality:gate` and `npm run ci:local`
 - **Local setup check:** `git config --get core.hooksPath` should resolve to `.githooks`
 - **Workflow shape:** `.github/workflows/ci.yml` should show separate fast and browser jobs, with repository-shape validation in the fast job
 
@@ -74,7 +76,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 **Scenario: Full verification before landing**
 
 - Given: a change is ready for review or merge
-- When: the contributor runs `npm run quality:gate` and `npm run ci:local:quiet`
+- When: the contributor runs `npm run quality:gate` and `npm run ci:local`
 - Then: both the fast and browser verification paths pass
 
 **Scenario: Contributor pushes with a broken fast gate**

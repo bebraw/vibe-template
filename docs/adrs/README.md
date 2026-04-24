@@ -32,6 +32,7 @@ Skip an ADR for small, reversible, or purely tactical choices.
 | [ADR-014](./ADR-014-run-the-fast-gate-on-pre-push.md)                     | Accepted   | Run the fast quality gate automatically before pushes to catch cheap failures locally.       |
 | [ADR-015](./ADR-015-relax-npm-version-enforcement.md)                     | Accepted   | Keep npm as the required package manager while relaxing exact npm patch enforcement.         |
 | [ADR-016](./ADR-016-allow-lightweight-local-readme-screenshot-tooling.md) | Accepted   | Allow a lightweight local script for refreshing the committed README screenshot.             |
+| [ADR-017](./ADR-017-prune-redundant-package-scripts.md)                   | Accepted   | Keep one canonical package script per normal workflow and remove redundant aliases.          |
 
 ## Creating A New ADR
 

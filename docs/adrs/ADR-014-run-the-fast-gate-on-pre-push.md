@@ -6,7 +6,7 @@
 
 ## Context
 
-The repo already documents `npm run quality:gate` and `npm run ci:local:quiet` as part of done work, but that expectation still relies on contributors remembering to run them manually.
+The repo already documents `npm run quality:gate` and `npm run ci:local` as part of done work, but that expectation still relies on contributors remembering to run them manually.
 
 That gap is large enough to let obvious regressions escape the local machine. Cheap deterministic failures should stop before a push starts remote CI.
 

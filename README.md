@@ -31,7 +31,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 - Run the fast local gate with `npm run quality:gate:fast` during normal iteration.
 - Run the baseline repo gate with `npm run quality:gate`.
-- Run the containerized local workflow with `npm run ci:local:quiet`.
+- Run the containerized local workflow with `npm run ci:local`.
 - Refresh the committed README screenshot with `npm run screenshot:home` when the starter UI changes materially.
 - The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`.
 - If local Agent CI warns about `No such remote 'origin'`, set `GITHUB_REPO=owner/repo` in `.env.agent-ci`.

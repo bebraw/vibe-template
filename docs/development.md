@@ -36,9 +36,7 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 
 ### Commands
 
-- Run the local workflow with `npm run ci:local`.
-- Run the quiet local workflow with `npm run ci:local:quiet`.
-- Run all relevant workflows with `npm run ci:local:all`.
+- Run the quiet local workflow with one local Agent CI job slot using `npm run ci:local`.
 - Rebuild the generated stylesheet manually with `npm run build:css`.
 - Run the fast local gate with `npm run quality:gate:fast`.
 - Run the baseline quality gate with `npm run quality:gate`.
@@ -85,7 +83,7 @@ Use this expectation for routine changes:
 
 - `npm run quality:gate` must pass before a change is considered ready.
 - Use `npm run quality:gate:fast` for quicker local iteration when browser coverage is not the immediate focus.
-- `npm run ci:local:quiet` should also pass before proposing or landing the change.
+- `npm run ci:local` should also pass before proposing or landing the change.
 - The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`, so pushes stop locally when the fast gate is already red.
 
-The quality gate currently runs the fast gate first, then the Playwright browser gate. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through the repo-pinned `agent-ci` binary directly, and local browser installation should also go through the pinned `npm run playwright:install` script.
+The quality gate currently runs the fast gate first, then the Playwright browser tests. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which uses one local job slot to avoid warmed dependency races on macOS-hosted Docker. Local browser installation should also go through the pinned `npm run playwright:install` script.

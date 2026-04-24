@@ -51,7 +51,7 @@ The template README is the first surface contributors see. It should identify th
 - **Screenshot refresh:** `npm run screenshot:home`
 - **Manual check:** verify the README image renders from `docs/screenshots/home.png`
 - **Repo check:** `git diff --check`
-- **Baseline gate:** `npm run quality:gate` and `npm run ci:local:quiet`
+- **Baseline gate:** `npm run quality:gate` and `npm run ci:local`
 
 ### Scenarios
 

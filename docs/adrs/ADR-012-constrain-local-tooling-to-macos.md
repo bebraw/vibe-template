@@ -20,9 +20,9 @@ We will treat macOS as the supported local-development and local-CI host baselin
 We will also standardize local Agent CI usage around the repo-pinned binary:
 
 - `npm run ci:local`
-- `npm run ci:local:quiet`
-- `npm run ci:local:all`
 - `npm run ci:local:retry -- --name <runner-name>`
+
+ADR-017 later narrows this script surface further by making `ci:local` the quiet local workflow command and removing redundant aliases.
 
 The repo will ship:
 
