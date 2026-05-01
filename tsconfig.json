@@ -8,6 +8,9 @@
     "skipLibCheck": true,
     "noEmit": true,
     "noUnusedLocals": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
     "types": ["node"]
   },
   "include": ["*.ts", "src/**/*.ts"]
