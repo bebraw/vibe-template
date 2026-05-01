@@ -43,6 +43,13 @@
 - Treat `npm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.
 - Treat high automated test coverage as part of done work for `src/` code. The baseline gate should fail when `src/` code exists without matching unit coverage.
 
+## TypeScript
+
+- Use TypeScript strict mode.
+- Do not introduce `any` unless justified with a comment.
+- Prefer explicit domain types over inferred object blobs.
+- Do not silence errors with `as unknown as`, `@ts-ignore`, or broad casts.
+
 ## Agent CI
 
 - Use the project-local [`agent-ci`](./.codex/skills/agent-ci/SKILL.md) skill when testing, running checks, or validating code changes before pushing.
