@@ -34,6 +34,7 @@ Skip an ADR for small, reversible, or purely tactical choices.
 | [ADR-016](./ADR-016-allow-lightweight-local-readme-screenshot-tooling.md) | Accepted   | Allow a lightweight local script for refreshing the committed README screenshot.             |
 | [ADR-017](./ADR-017-prune-redundant-package-scripts.md)                   | Accepted   | Keep one canonical package script per normal workflow and remove redundant aliases.          |
 | [ADR-018](./ADR-018-add-capability-kits.md)                               | Accepted   | Add lightweight capability kits for applying specific template practices to existing repos.  |
+| [ADR-019](./ADR-019-tighten-agent-workflow-guardrails.md)                 | Accepted   | Tighten TypeScript, write-target, and readiness-validation guardrails for agent work.        |
 
 ## Creating A New ADR
 

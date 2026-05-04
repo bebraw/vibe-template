@@ -13,6 +13,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Add or update an ADR in `docs/adrs/` whenever a change introduces or changes a lasting architectural constraint, selects between credible architectural alternatives, or replaces an earlier decision.
 - Create or update the relevant feature spec in `specs/` in the same change set whenever feature behavior, contracts, workflows, or regression guardrails change.
 - Keep the quality gate green before considering a change ready.
+- Keep workflow writes explicit. New generated output, local state, cache, archive, or tool-artifact paths should be documented in the same change that introduces them.
 
 ## Tooling Baseline
 
@@ -23,6 +24,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Formatting, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.
 - Local CI should validate the same baseline checks before changes are proposed or merged.
+- Targeted commands are useful while iterating, but `npm run quality:gate` and `npm run ci:local` remain the readiness baseline before proposing or landing changes.
 
 ## Capability Kits
 

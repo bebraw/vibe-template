@@ -53,6 +53,14 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npm run ci:local:retry -- --name <runner-name>`.
 
+Use targeted checks while iterating, then run the full readiness path before proposing or landing a change:
+
+- Docs-only changes: `npm run format:check`
+- TypeScript or typed tooling changes: `npm run typecheck`
+- Runtime `src/` changes: `npm run typecheck` and `npm run test:coverage`
+- Browser behavior or UI changes: `npm run quality:gate`
+- Baseline readiness: `npm run quality:gate` and `npm run ci:local`
+
 The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. The e2e server forces Chokidar polling mode to avoid file-watcher exhaustion in macOS-hosted local runs while preserving the normal `npm run dev` developer loop. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
 
 The GitHub Actions CI workflow splits fast checks from browser checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.59.1-noble`, and cancels superseded runs on the same ref. That keeps the browser job from reinstalling Chromium on every run while avoiding unnecessary npm self-upgrades in CI.
@@ -68,6 +76,12 @@ The coverage gate is stricter than the basic test run. `npm run test:coverage` m
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `src/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
 
 The README includes a committed application screenshot at `docs/screenshots/home.png`. Refresh that asset locally with `npm run screenshot:home` when the starter UI changes materially, but keep screenshot automation out of CI and out of remote workflows.
+
+## Write Boundaries
+
+Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
+
+When adding a new tool or workflow that writes files, document the target path in the same change and prefer ignored local output unless the artifact is intentionally reviewed.
 
 ## Security Baseline
 

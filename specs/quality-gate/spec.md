@@ -21,12 +21,15 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Package manager hint source:** `package.json#packageManager`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.59.1-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
+- **Readiness baseline:** `npm run quality:gate` and `npm run ci:local`
 
 ### Anti-Patterns
 
 - Do not collapse fast and browser verification back into one opaque step without a concrete reason.
 - Do not treat colocated tests or test-support files as runtime source code when deciding whether unit coverage is missing.
 - Do not weaken the full gate just to make iteration faster.
+- Do not treat targeted iteration checks as a replacement for the readiness baseline.
+- Do not add undocumented workflow write targets for generated output, local state, caches, archives, or tool artifacts.
 
 ## Contract
 
@@ -58,6 +61,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The local CI documentation must cover the no-`origin` case through `.env.agent-ci` and `GITHUB_REPO` instead of treating that warning as normal noise.
 - The local CI Docker daemon override must use Agent CI's `AGENT_CI_DOCKER_HOST` variable instead of the general Docker CLI `DOCKER_HOST` variable.
 - Local Playwright browser installation should go through a pinned repo script instead of ad hoc `npx playwright install ...` usage.
+- Targeted checks may be documented for iteration, but `npm run quality:gate` and `npm run ci:local` remain the readiness baseline.
+- New workflow write targets must be documented when they are introduced.
 
 ### Verification
 

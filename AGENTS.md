@@ -25,6 +25,7 @@
 
 - Before adding dependencies, CI, or generated boilerplate.
 - Before making irreversible structural changes.
+- Before adding new lasting write targets such as generated output directories, local state files, caches, archives, or persisted tool artifacts.
 
 **ALWAYS**
 
@@ -42,13 +43,15 @@
 - Use `npm run quality:gate:fast` for quick local iteration, `npm run quality:gate` for the full baseline gate, and `npm run ci:local` for the local workflow check.
 - Treat `npm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.
 - Treat high automated test coverage as part of done work for `src/` code. The baseline gate should fail when `src/` code exists without matching unit coverage.
+- Keep new workflow write targets explicit and documented instead of adding ad hoc file writes.
+- Use targeted checks while iterating, then run `npm run quality:gate` and `npm run ci:local` before treating a change as ready.
 
 ## TypeScript
 
 - Use TypeScript strict mode.
 - Do not introduce `any` unless justified with a comment.
-- Prefer explicit domain types over inferred object blobs.
-- Do not silence errors with `as unknown as`, `@ts-ignore`, or broad casts.
+- Prefer explicit domain types over inferred object blobs, especially at module, API, fixture, and workflow boundaries.
+- Do not silence errors with `as unknown as`, `@ts-ignore`, or broad casts. Use local guards, narrower interfaces, or small helper types instead.
 
 ## Agent CI
 
