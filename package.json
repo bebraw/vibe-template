@@ -35,16 +35,16 @@
   },
   "devDependencies": {
     "@playwright/test": "1.59.1",
-    "@redwoodjs/agent-ci": "0.13.0",
+    "@redwoodjs/agent-ci": "0.15.0",
     "@tailwindcss/cli": "4.2.4",
     "@types/node": "24.12.2",
     "@vitest/coverage-v8": "4.1.5",
     "chrome-launcher": "1.2.1",
-    "lighthouse": "13.1.0",
+    "lighthouse": "13.2.0",
     "prettier": "3.8.3",
     "tailwindcss": "4.2.4",
     "typescript": "6.0.3",
     "vitest": "4.1.5",
-    "wrangler": "4.84.1"
+    "wrangler": "4.87.0"
   }
 }
