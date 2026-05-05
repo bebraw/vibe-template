@@ -8,7 +8,7 @@
 
 `vibe-template` is meant to be cloned and adapted for many small projects. That makes architectural choices easy to lose: one project may add a deployment model, persistence layer, auth system, or testing strategy that later contributors need to understand.
 
-The repo already vendors ASDLC guidance, including [ADR authoring](../../.asdlc/practices/adr-authoring.md), but it did not yet provide a local place to record project-specific architectural decisions. Without a lightweight ADR baseline, important trade-offs would end up scattered across commits, pull requests, or ad hoc notes.
+The repo already vendors ASDLC guidance, including [ADR authoring](../../../.asdlc/practices/adr-authoring.md), but it did not yet provide a local place to record project-specific architectural decisions. Without a lightweight ADR baseline, important trade-offs would end up scattered across commits, pull requests, or ad hoc notes.
 
 ## Decision
 
@@ -17,7 +17,9 @@ We will keep Architecture Decision Records in `docs/adrs/` for significant archi
 The ADR baseline consists of:
 
 - a directory-local index in `docs/adrs/README.md`
-- a starter template in `docs/adrs/ADR-000-template.md`
+- a starter template in `docs/adrs/proposed/ADR-000-template.md`
+- proposed ADRs under `docs/adrs/proposed/`
+- accepted ADRs under `docs/adrs/accepted/`
 - sequentially numbered ADR files using the format `ADR-NNN-short-title.md`
 
 ## Consequences
@@ -36,6 +38,7 @@ The ADR baseline consists of:
 **Neutral:**
 
 - The repo gains a small amount of permanent documentation structure under `docs/adrs/`.
+- Superseded ADRs remain in `accepted/` because they are historical accepted decisions, not draft proposals.
 
 ## Alternatives Considered
 

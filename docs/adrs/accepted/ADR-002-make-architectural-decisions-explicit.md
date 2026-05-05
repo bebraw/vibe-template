@@ -18,6 +18,8 @@ We will treat architectural decisions as explicit documentation work.
 
 Whenever a change introduces or changes a lasting architectural constraint, selects between credible architectural alternatives, or supersedes an earlier architectural decision, that change must add or update an ADR in `docs/adrs/`.
 
+Draft ADRs belong in `docs/adrs/proposed/`. Accepted ADRs belong in `docs/adrs/accepted/`, including accepted decisions that are later superseded.
+
 Small, reversible, or purely tactical choices do not require an ADR.
 
 ## Trigger
