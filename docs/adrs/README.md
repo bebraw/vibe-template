@@ -43,10 +43,11 @@ ADRs are grouped by lifecycle status:
 | [ADR-013](./accepted/ADR-013-return-to-npm-for-agent-ci-compatibility.md)          | Accepted   | Return to npm because local Agent CI remains unreliable with pnpm warmed dependency mounts.  |
 | [ADR-014](./accepted/ADR-014-run-the-fast-gate-on-pre-push.md)                     | Accepted   | Run the fast quality gate automatically before pushes to catch cheap failures locally.       |
 | [ADR-015](./accepted/ADR-015-relax-npm-version-enforcement.md)                     | Accepted   | Keep npm as the required package manager while relaxing exact npm patch enforcement.         |
-| [ADR-016](./accepted/ADR-016-allow-lightweight-local-readme-screenshot-tooling.md) | Accepted   | Allow a lightweight local script for refreshing the committed README screenshot.             |
+| [ADR-016](./accepted/ADR-016-allow-lightweight-local-readme-screenshot-tooling.md) | Superseded | Allowed a lightweight local script for refreshing the committed README screenshot.           |
 | [ADR-017](./accepted/ADR-017-prune-redundant-package-scripts.md)                   | Accepted   | Keep one canonical package script per normal workflow and remove redundant aliases.          |
 | [ADR-018](./accepted/ADR-018-add-capability-kits.md)                               | Accepted   | Add lightweight capability kits for applying specific template practices to existing repos.  |
 | [ADR-019](./accepted/ADR-019-tighten-agent-workflow-guardrails.md)                 | Accepted   | Tighten TypeScript, write-target, and readiness-validation guardrails for agent work.        |
+| [ADR-020](./accepted/ADR-020-keep-readme-screenshot-refresh-manual.md)             | Accepted   | Keep README screenshot refresh manual and outside the automated development loop.            |
 
 ## Creating A New ADR
 

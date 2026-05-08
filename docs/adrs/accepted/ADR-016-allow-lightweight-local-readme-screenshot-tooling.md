@@ -1,6 +1,6 @@
 # ADR-016: Allow Lightweight Local README Screenshot Tooling
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-020](./ADR-020-keep-readme-screenshot-refresh-manual.md)
 
 **Date:** 2026-04-19
 

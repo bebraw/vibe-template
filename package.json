@@ -27,7 +27,6 @@
     "prepare": "node ./scripts/setup-git-hooks.mjs",
     "quality:gate": "npm run quality:gate:fast && npm run e2e",
     "quality:gate:fast": "npm run format:check && npm run typecheck && npm run security:audit && npm run test:coverage",
-    "screenshot:home": "node ./scripts/run-home-screenshot.mjs",
     "security:audit": "npm audit --omit=dev --audit-level high",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "node ./scripts/run-coverage-gate.mjs",

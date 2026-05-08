@@ -53,7 +53,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Agent CI kit must keep `--jobs 1` in the canonical local npm script unless a later decision changes the macOS-hosted Docker local CI constraint.
 - The quality-gate kit must keep the coverage gate script aligned with `scripts/run-coverage-gate.mjs`.
 - The pre-push quality-gate kit must keep the hook setup aligned with `.githooks/pre-push` and `scripts/setup-git-hooks.mjs`.
-- The screenshot and Lighthouse kits must keep their scripts aligned with `scripts/run-home-screenshot.mjs` and `scripts/run-lighthouse.mjs`.
+- The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs`.
 
 ### Verification
 

@@ -4,20 +4,21 @@
 
 ### Context
 
-The template README is the first surface contributors see. It should identify the current starter app clearly near the top, explain how vendored ASDLC references relate to repo-specific docs, point contributors at the current runtime and verification commands, and keep screenshot refresh lightweight and local-only.
+The template README is the first surface contributors see. It should identify the current starter app clearly near the top, explain how vendored ASDLC references relate to repo-specific docs, point contributors at the current runtime and verification commands, and keep screenshot refresh manual.
 
 ### Architecture
 
 - **Primary document:** `README.md`
 - **Committed screenshot asset:** `docs/screenshots/home.png`
 - **Current workflow summary:** runtime, verification, source layout, and documentation contract notes in `README.md`
-- **Screenshot refresh path:** `npm run screenshot:home`
-- **Update model:** local scripted refresh when the starter UI changes materially
-- **Non-goal:** no screenshot-sync workflows or CI screenshot automation
+- **Screenshot refresh path:** manual developer update
+- **Update model:** manual refresh when the starter UI changes materially
+- **Non-goal:** no screenshot capture in the automated development loop, CI, or remote workflows
 
 ### Anti-Patterns
 
 - Do not reintroduce remote screenshot automation just to keep the README image current.
+- Do not reintroduce local screenshot scripts as part of the routine development loop.
 - Do not point the README at a missing or stale placeholder screenshot path.
 - Do not let the committed screenshot drift far from the current starter UI.
 - Do not make readers infer the app shape from source files alone before they understand the runtime baseline.
@@ -44,11 +45,11 @@ The template README is the first surface contributors see. It should identify th
 - `README.md` should describe the supported host platform baseline accurately when local development constraints change.
 - `README.md` should point browser setup at the current pinned Playwright install script instead of an ad hoc command.
 - The screenshot should continue to represent the current starter app surface closely enough to be useful.
-- Screenshot support must remain local-only and lightweight unless a later ADR changes that rule.
+- Screenshot support must remain manual unless a later ADR changes that rule.
 
 ### Verification
 
-- **Screenshot refresh:** `npm run screenshot:home`
+- **Screenshot refresh:** manual developer update when the starter UI changes materially
 - **Manual check:** verify the README image renders from `docs/screenshots/home.png`
 - **Repo check:** `git diff --check`
 - **Baseline gate:** `npm run quality:gate` and `npm run ci:local`
@@ -77,4 +78,4 @@ The template README is the first surface contributors see. It should identify th
 
 - Given: the rendered application changes enough that the current screenshot is misleading
 - When: the change is completed
-- Then: the committed README screenshot is refreshed through the local screenshot script in the same change set
+- Then: the developer refreshes the committed README screenshot manually
