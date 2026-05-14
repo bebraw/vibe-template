@@ -19,7 +19,7 @@ The ADR baseline consists of:
 - a directory-local index in `docs/adrs/README.md`
 - a starter template in `docs/adrs/proposed/ADR-000-template.md`
 - proposed ADRs under `docs/adrs/proposed/`
-- accepted ADRs under `docs/adrs/accepted/`
+- implemented ADRs under `docs/adrs/implemented/`
 - sequentially numbered ADR files using the format `ADR-NNN-short-title.md`
 
 ## Consequences
@@ -38,7 +38,7 @@ The ADR baseline consists of:
 **Neutral:**
 
 - The repo gains a small amount of permanent documentation structure under `docs/adrs/`.
-- Superseded ADRs remain in `accepted/` because they are historical accepted decisions, not draft proposals.
+- Superseded ADRs remain in `implemented/` because they are historical implemented decisions, not draft proposals.
 
 ## Alternatives Considered
 

@@ -33,7 +33,7 @@
 - Prefer small, reviewable changes that preserve the template nature of the repo.
 - Document reusable conventions instead of one-off preferences.
 - Treat every lasting architectural decision as explicit documentation work, not implied context.
-- Add or update an ADR in `docs/adrs/` in the same change set whenever a decision introduces or changes a lasting architectural constraint, selects between credible alternatives, or supersedes an earlier architecture decision. Keep drafts in `docs/adrs/proposed/` and accepted decisions in `docs/adrs/accepted/`.
+- Add or update an ADR in `docs/adrs/` in the same change set whenever a decision introduces or changes a lasting architectural constraint, selects between credible alternatives, or supersedes an earlier architecture decision. Keep drafts in `docs/adrs/proposed/` and implemented decisions in `docs/adrs/implemented/`.
 - Record global architecture rules in `ARCHITECTURE.md` and feature-level contracts in `specs/{feature-domain}/spec.md`.
 - Treat completed feature work as spec work: create a new `specs/{feature-domain}/spec.md` or update the relevant existing spec in the same change set whenever feature behavior, contracts, workflows, or quality guardrails change.
 - Prefer the local Agent CI workflow before relying on remote CI.
