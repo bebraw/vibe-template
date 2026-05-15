@@ -2,6 +2,8 @@
 
 **Status:** Accepted
 
+**Amended by:** [ADR-021](./ADR-021-add-accepted-adr-state.md)
+
 **Date:** 2026-03-28
 
 ## Context
