@@ -15,7 +15,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Copyable files:** `files/`
 - **Package-manager recipes:** `recipes/`
 - **Validation notes:** `checks.md`
-- **Available kits:** `typescript-setup`, `agent-ci`, `quality-gate`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`
+- **Available kits:** `typescript-setup`, `agent-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 
@@ -52,6 +52,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Agent CI kit must keep its dependency and command guidance aligned with this repo's `package.json` and `.codex/skills/agent-ci/SKILL.md`.
 - The Agent CI kit must keep `--jobs 1` in the canonical local npm script unless a later decision changes the macOS-hosted Docker local CI constraint.
 - The quality-gate kit must keep the coverage gate script aligned with `scripts/run-coverage-gate.mjs`.
+- The mutation-testing kit must keep its Stryker config aligned with `stryker.config.mjs`.
 - The pre-push quality-gate kit must keep the hook setup aligned with `.githooks/pre-push` and `scripts/setup-git-hooks.mjs`.
 - The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs`.
 
@@ -98,6 +99,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: another npm repo wants strict TypeScript checking but not the full quality gate
 - When: the agent applies `.capabilities/typescript-setup/`
 - Then: the target repo receives TypeScript dependencies, a `typecheck` script, a mergeable `tsconfig.json`, and optional CSS import declaration guidance
+
+**Scenario: Contributor adds assertion-strength checks**
+
+- Given: another npm TypeScript repo uses Vitest and has meaningful unit tests
+- When: the agent applies `.capabilities/mutation-testing/`
+- Then: the target repo receives Stryker dependencies, a mutation script, mergeable Stryker config, report output guidance, and validation steps
 
 **Scenario: Contributor is unsure which kits to apply**
 

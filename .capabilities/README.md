@@ -9,6 +9,7 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 | [`typescript-setup`](./typescript-setup/README.md)             | Add strict no-emit TypeScript checking for npm projects.           |
 | [`agent-ci`](./agent-ci/README.md)                             | Add local GitHub Actions execution through Agent CI.               |
 | [`quality-gate`](./quality-gate/README.md)                     | Add the fast verification baseline and optional browser gate.      |
+| [`mutation-testing`](./mutation-testing/README.md)             | Add Stryker mutation testing for TypeScript projects using Vitest. |
 | [`pre-push-quality-gate`](./pre-push-quality-gate/README.md)   | Add a repo-managed pre-push hook that runs the fast quality gate.  |
 | [`readme-screenshot`](./readme-screenshot/README.md)           | Add local-only README screenshot capture through Playwright.       |
 | [`lighthouse-performance`](./lighthouse-performance/README.md) | Add local Lighthouse performance reports and a performance budget. |
@@ -41,6 +42,7 @@ First, inspect the target repo for:
 - existing TypeScript config and typecheck scripts
 - existing GitHub Actions workflows
 - existing local quality/test scripts
+- existing mutation testing setup or assertion-strength checks
 - existing Git hooks or hook managers
 - app/runtime surface that might need browser, screenshot, or Lighthouse checks
 - durable docs where new workflow contracts should be recorded
@@ -60,6 +62,10 @@ Capability Pull Plan
 [ ] quality-gate
     Adds formatting, type checking, audit, unit tests, and coverage checks.
     Include if the repo lacks a clear fast local verification baseline. Apply typescript-setup first unless the repo already has an equivalent typecheck contract.
+
+[ ] mutation-testing
+    Adds Stryker mutation testing for TypeScript projects using Vitest.
+    Include if the repo already has meaningful unit tests and wants assertion-strength checks in the full readiness gate. Keep out of fast pre-push hooks unless explicitly approved.
 
 [ ] pre-push-quality-gate
     Adds a repo-managed pre-push hook for the fast gate.
