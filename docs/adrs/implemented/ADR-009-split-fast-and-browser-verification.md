@@ -4,6 +4,8 @@
 
 **Amended by:** [ADR-022](./ADR-022-add-mutation-testing-gate.md)
 
+**Amended by:** [ADR-023](./ADR-023-pin-github-actions-to-commit-shas.md)
+
 **Date:** 2026-03-28
 
 ## Context

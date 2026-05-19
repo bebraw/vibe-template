@@ -16,11 +16,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Local workflow concurrency:** one Agent CI job slot
 - **Retry command:** `npm run ci:local:retry -- --name <runner-name>`
 - **Remote workflow:** `.github/workflows/ci.yml`
+- **Action pinning:** every GitHub Actions `uses:` reference must use a full commit SHA
 - **Git hook path:** `.githooks/`
 - **Hook setup script:** `scripts/setup-git-hooks.mjs`
 - **Runtime pin source:** `package.json#engines.node`
 - **Package manager hint source:** `package.json#packageManager`
-- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.59.1-noble`
+- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.60.0-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 - **Mutation config:** `stryker.config.mjs`
 - **Readiness baseline:** `npm run quality:gate` and `npm run ci:local`
@@ -55,6 +56,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
 - The CI workflow must keep using npm for install and verification steps without depending on one exact npm patch release.
 - The npm release used by CI must stay inside the supported npm range declared in `package.json`.
+- The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.
@@ -107,3 +109,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: a newer push exists on the same ref
 - When: GitHub Actions schedules the new workflow run
 - Then: the older in-progress run is canceled instead of continuing to consume time
+
+**Scenario: Contributor audits remote action references**
+
+- Given: the remote CI workflow uses reusable GitHub Actions
+- When: the contributor reviews `.github/workflows/ci.yml`
+- Then: every `uses:` action reference points at a full commit SHA instead of a mutable tag

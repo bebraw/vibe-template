@@ -55,6 +55,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-020](./implemented/ADR-020-keep-readme-screenshot-refresh-manual.md)             | Accepted   | Keep README screenshot refresh manual and outside the automated development loop.              |
 | [ADR-021](./implemented/ADR-021-add-accepted-adr-state.md)                            | Accepted   | Add an accepted ADR state so implemented means the decision is actually reflected in the repo. |
 | [ADR-022](./implemented/ADR-022-add-mutation-testing-gate.md)                         | Accepted   | Add Stryker mutation testing to the full quality gate and CI workflow.                         |
+| [ADR-023](./implemented/ADR-023-pin-github-actions-to-commit-shas.md)                 | Accepted   | Pin GitHub Actions workflow action references to immutable commit SHAs.                        |
 
 ## Creating A New ADR
 
