@@ -10,6 +10,7 @@ describe("worker", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("text/html");
+    expect(response.headers.get("cache-control")).toBe("no-store");
 
     const body = await response.text();
     expect(body).toContain("vibe-template Worker");
@@ -32,6 +33,7 @@ describe("worker", () => {
     const response = await handleRequest(new Request("http://example.com/missing"));
 
     expect(response.status).toBe(404);
+    expect(response.headers.get("cache-control")).toBe("no-store");
 
     const body = await response.text();
     expect(body).toContain("Not Found");
@@ -50,6 +52,7 @@ describe("worker", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("text/css");
+    expect(response.headers.get("cache-control")).toBe("no-store");
     await expect(response.text()).resolves.toContain("--color-app-canvas:#f3eee6");
   });
 });

@@ -46,6 +46,7 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 - Run end-to-end tests with `npm run e2e`.
 - Run unit and integration tests with `npm test`.
 - Run the unit coverage gate with `npm run test:coverage`.
+- Run mutation tests with `npm run mutation`.
 - Run TypeScript checks with `npm run typecheck`.
 - Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`.
 - Format the repo with `npm run format`.
@@ -62,7 +63,7 @@ Use targeted checks while iterating, then run the full readiness path before pro
 
 The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. The e2e server forces Chokidar polling mode to avoid file-watcher exhaustion in macOS-hosted local runs while preserving the normal `npm run dev` developer loop. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
 
-The GitHub Actions CI workflow splits fast checks from browser checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.59.1-noble`, and cancels superseded runs on the same ref. That keeps the browser job from reinstalling Chromium on every run while avoiding unnecessary npm self-upgrades in CI.
+The GitHub Actions CI workflow splits fast checks, browser checks, and mutation checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.59.1-noble`, and cancels superseded runs on the same ref. That keeps the browser job from reinstalling Chromium on every run while avoiding unnecessary npm self-upgrades in CI.
 
 The starter UI now follows the same Tailwind v4 baseline shape as `thesis-journey-tracker`: Tailwind input lives in `src/tailwind-input.css`, generated CSS is written to `.generated/styles.css`, and Wrangler runs `npm run build:css` automatically before local development.
 
@@ -72,13 +73,15 @@ The Vitest setup is generic as well. `vitest.config.ts` targets colocated `src/*
 
 The coverage gate is stricter than the basic test run. `npm run test:coverage` measures runtime `src/**` code with the V8 provider, writes reports to `reports/coverage/`, and enforces high thresholds once a project actually has `src/` code. Colocated unit tests, end-to-end tests, and test-support files do not count as source files for the gate's skip-or-fail logic.
 
+Mutation testing uses Stryker with Vitest and the TypeScript checker. `npm run mutation` mutates runtime `src/**/*.ts` files while excluding declarations, unit tests, end-to-end tests, and `src/test-support.ts`. It writes mutation reports under `reports/mutation/` and uses Stryker's temporary `.stryker-tmp/` sandbox, which must stay untracked.
+
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `src/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
 
 The README includes a committed application screenshot at `docs/screenshots/home.png`. Refresh that asset manually when the starter UI changes materially, but keep screenshot capture out of the automated development loop, CI, and remote workflows.
 
 ## Write Boundaries
 
-Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
+Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
 
 When adding a new tool or workflow that writes files, document the target path in the same change and prefer ignored local output unless the artifact is intentionally reviewed.
 
@@ -99,4 +102,4 @@ Use this expectation for routine changes:
 - `npm run ci:local` should also pass before proposing or landing the change.
 - The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`, so pushes stop locally when the fast gate is already red.
 
-The quality gate currently runs the fast gate first, then the Playwright browser tests. The local and remote CI workflow runs separate fast and browser jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which uses one local job slot to avoid warmed dependency races on macOS-hosted Docker. Local browser installation should also go through the pinned `npm run playwright:install` script.
+The quality gate currently runs the fast gate first, then the Playwright browser tests, then mutation tests. The local and remote CI workflow runs separate fast, browser, and mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which uses one local job slot to avoid warmed dependency races on macOS-hosted Docker. Local browser installation should also go through the pinned `npm run playwright:install` script.

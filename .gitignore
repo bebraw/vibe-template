@@ -3,6 +3,7 @@ node_modules/
 .generated/
 .npm/
 .pnpm-store/
+.stryker-tmp/
 .wrangler/
 .dev.vars
 .env.agent-ci

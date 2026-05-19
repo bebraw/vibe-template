@@ -80,3 +80,29 @@ jobs:
       - name: Run browser quality gate
         shell: bash
         run: npm run e2e
+
+  quality-mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+
+      - name: Install dependencies
+        shell: bash
+        run: npm ci
+
+      - name: Run mutation quality gate
+        shell: bash
+        run: npm run mutation

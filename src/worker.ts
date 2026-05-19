@@ -29,6 +29,7 @@ export async function handleRequest(request: Request): Promise<Response> {
 }
 
 async function loadStylesheet(): Promise<string> {
+  // Stryker disable next-line ConditionalExpression,OptionalChaining: Environment probe selects Node fs in tests and bundled CSS in Workers.
   if (typeof process !== "undefined" && process.release?.name === "node") {
     const { readFile } = await import("node:fs/promises");
     return await readFile(new URL("../.generated/styles.css", import.meta.url), "utf8");

@@ -10,6 +10,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - **Fast gate:** `npm run quality:gate:fast`
 - **Browser gate:** `npm run e2e`
+- **Mutation gate:** `npm run mutation`
 - **Full gate:** `npm run quality:gate`
 - **Local workflow:** `npm run ci:local`
 - **Local workflow concurrency:** one Agent CI job slot
@@ -21,6 +22,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Package manager hint source:** `package.json#packageManager`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.59.1-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
+- **Mutation config:** `stryker.config.mjs`
 - **Readiness baseline:** `npm run quality:gate` and `npm run ci:local`
 
 ### Anti-Patterns
@@ -37,7 +39,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - [ ] The fast gate covers formatting, type checking, runtime audit, and unit coverage.
 - [ ] The browser gate covers the Playwright baseline.
-- [ ] The full gate runs both in order.
+- [ ] The mutation gate covers runtime `src/**/*.ts` files with Stryker, Vitest, and TypeScript checking.
+- [ ] The full gate runs the fast, browser, and mutation gates in order.
 - [ ] The repo-managed `pre-push` hook runs the fast gate before a push leaves the machine.
 - [ ] Local and remote CI use the same split verification model.
 - [ ] The spec is updated in the same change set.
@@ -46,6 +49,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
 - `npm run quality:gate` must continue to represent the full baseline verification path.
+- `npm run mutation` must fail when the mutation score is below the configured break threshold.
 - `npm install` must keep the repo-managed `pre-push` hook configured without requiring extra setup steps.
 - The CI workflow must cancel superseded runs for the same ref.
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
@@ -62,6 +66,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The local CI Docker daemon override must use Agent CI's `AGENT_CI_DOCKER_HOST` variable instead of the general Docker CLI `DOCKER_HOST` variable.
 - Local Playwright browser installation should go through a pinned repo script instead of ad hoc `npx playwright install ...` usage.
 - Targeted checks may be documented for iteration, but `npm run quality:gate` and `npm run ci:local` remain the readiness baseline.
+- Mutation testing must exclude colocated tests, end-to-end tests, declarations, and `src/test-support.ts` from mutation.
+- Mutation reports must be written under `reports/mutation/`, and Stryker's temporary sandbox must stay under ignored `.stryker-tmp/`.
 - New workflow write targets must be documented when they are introduced.
 
 ### Verification
@@ -82,7 +88,13 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - Given: a change is ready for review or merge
 - When: the contributor runs `npm run quality:gate` and `npm run ci:local`
-- Then: both the fast and browser verification paths pass
+- Then: the fast, browser, and mutation verification paths pass
+
+**Scenario: Contributor checks test assertion strength**
+
+- Given: runtime `src/**/*.ts` code has colocated unit tests
+- When: the contributor runs `npm run mutation`
+- Then: Stryker mutates runtime source only and fails if the mutation score is below the configured break threshold
 
 **Scenario: Contributor pushes with a broken fast gate**
 

@@ -2,6 +2,8 @@
 
 **Status:** Accepted
 
+**Amended by:** [ADR-022](./ADR-022-add-mutation-testing-gate.md)
+
 **Date:** 2026-03-28
 
 ## Context

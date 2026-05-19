@@ -39,6 +39,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 - Install the pinned Playwright browser with `npm run playwright:install`.
 - Run unit tests from colocated `src/**/*.test.ts` files with `npm test`.
 - Run browser tests from colocated `src/**/*.e2e.ts` files with `npm run e2e`.
+- Run mutation tests against runtime `src/**/*.ts` files with `npm run mutation`.
 
 ## Capability Kits
 
