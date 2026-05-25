@@ -4,5 +4,5 @@ set -eu
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
-echo "Running fast quality gate before push..."
-npm run quality:gate:fast
+echo "Running affected guardrails before push..."
+node ./scripts/run-affected-guardrails.mjs --pre-push

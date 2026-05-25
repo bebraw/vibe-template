@@ -14,17 +14,21 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Create or update the relevant feature spec in `specs/` in the same change set whenever feature behavior, contracts, workflows, or regression guardrails change.
 - Keep the quality gate green before considering a change ready.
 - Keep workflow writes explicit. New generated output, local state, cache, archive, or tool-artifact paths should be documented in the same change that introduces them.
+- Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules before it is served to browsers.
 
 ## Tooling Baseline
 
 - Local development and local CI target macOS as the supported host platform baseline.
 - Node is pinned exactly through `package.json`, and npm is constrained to a compatible major there instead of an exact patch pin.
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
-- The repo-managed `pre-push` Git hook should run the fast gate before code is pushed.
+- The repo-managed `pre-push` Git hook should run affected-file guardrails before code is pushed.
 - Formatting, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
+- Affected-file guardrails should scope checks to changed files when the underlying tool supports it and fall back to project-level checks only when needed.
+- The fast quality gate should fail when Worker/view runtime files contain inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs.
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.
-- Local CI should validate the same baseline checks before changes are proposed or merged.
-- Targeted commands are useful while iterating, but `npm run quality:gate` and `npm run ci:local` remain the readiness baseline before proposing or landing changes.
+- Local CI should validate the same baseline checks before non-documentation changes are proposed or merged.
+- Targeted commands are useful while iterating, but `npm run quality:gate` and `npm run ci:local` remain the readiness baseline before proposing or landing non-documentation changes.
+- Documentation-only changes may skip `npm run ci:local` when they do not alter executable config, generated artifacts, package metadata, source code, or tests.
 
 ## Capability Kits
 

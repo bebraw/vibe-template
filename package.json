@@ -26,12 +26,14 @@
     "mutation": "stryker run",
     "playwright:install": "playwright install chromium",
     "prepare": "node ./scripts/setup-git-hooks.mjs",
+    "quality:affected": "node ./scripts/run-affected-guardrails.mjs",
     "quality:gate": "npm run quality:gate:fast && npm run e2e && npm run mutation",
-    "quality:gate:fast": "npm run format:check && npm run typecheck && npm run security:audit && npm run test:coverage",
+    "quality:gate:fast": "npm run format:check && npm run typecheck && npm run worker:client-guard && npm run security:audit && npm run test:coverage",
     "security:audit": "npm audit --omit=dev --audit-level high",
     "test": "vitest run --passWithNoTests",
     "test:coverage": "node ./scripts/run-coverage-gate.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "worker:client-guard": "node ./scripts/assert-no-worker-client-scripts.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.60.0",

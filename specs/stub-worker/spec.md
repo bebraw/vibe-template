@@ -12,6 +12,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - **Source layout:** `src/worker.ts` routes requests, `src/api/` holds API handlers, and `src/views/` holds HTML rendering modules.
 - **Styling pipeline:** `src/tailwind-input.css` compiles to `.generated/styles.css`, which the Worker serves at `/styles.css`.
 - **Starter UI contract:** `src/views/home.ts` renders a narrow editorial page with a route index and a prominent health-probe entry point.
+- **Client code boundary:** Worker-rendered HTML must not embed executable browser code inline. Browser behavior belongs in typed TypeScript modules before being served to clients.
 - **Data models:** None yet. The stub is stateless.
 - **Dependencies:** Wrangler provides the Worker runtime; Playwright and Vitest verify the behavior.
 
@@ -22,6 +23,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - Do not add feature-specific persistence or auth behavior to the stub without updating this spec and the relevant ADRs.
 - Do not collapse API handling and rendered views back into one file as the starter evolves.
 - Do not move starter styles back into large inline `<style>` blocks.
+- Do not add inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs to Worker-rendered HTML.
 
 ## Contract
 
@@ -39,6 +41,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - `GET /` must keep returning HTML with a recognizable starter heading.
 - `GET /` must keep rendering the route index and a visible `/api/health` entry point.
 - `GET /styles.css` must keep returning the generated stylesheet.
+- Worker/view runtime files must remain free of inline executable browser code.
 - `GET /api/health` must keep returning HTTP 200 JSON with `ok: true`.
 - Unknown routes must return HTTP 404.
 

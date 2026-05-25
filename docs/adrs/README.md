@@ -31,31 +31,34 @@ No accepted-only ADRs are currently pending implementation.
 
 ## Implemented ADRs
 
-| ADR                                                                                   | Status     | Summary                                                                                        |
-| ------------------------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| [ADR-001](./implemented/ADR-001-use-architecture-decision-records.md)                 | Accepted   | Use ADRs to capture significant architectural decisions in this repo.                          |
-| [ADR-002](./implemented/ADR-002-make-architectural-decisions-explicit.md)             | Accepted   | Require explicit ADR updates for lasting architectural decisions.                              |
-| [ADR-003](./implemented/ADR-003-require-spec-updates-and-high-coverage.md)            | Accepted   | Treat completed feature work as spec work and gate `src/` code on high unit coverage.          |
-| [ADR-004](./implemented/ADR-004-ship-a-worker-stub.md)                                | Accepted   | Ship a minimal Worker stub so the template is runnable and testable.                           |
-| [ADR-005](./implemented/ADR-005-separate-worker-views-and-api.md)                     | Accepted   | Separate the Worker starter into `src/api` and `src/views` for easier evolution.               |
-| [ADR-006](./implemented/ADR-006-adopt-tailwind-for-starter-ui.md)                     | Accepted   | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.               |
-| [ADR-007](./implemented/ADR-007-avoid-screenshot-tooling-in-the-template.md)          | Superseded | Avoid screenshot capture and screenshot automation in the template baseline.                   |
-| [ADR-008](./implemented/ADR-008-allow-static-readme-screenshots-without-tooling.md)   | Superseded | Allowed committed README screenshots without restoring screenshot tooling or automation.       |
-| [ADR-009](./implemented/ADR-009-split-fast-and-browser-verification.md)               | Accepted   | Split fast and browser verification so checks can fail earlier and CI can cancel stale runs.   |
-| [ADR-010](./implemented/ADR-010-adopt-pnpm-for-package-management.md)                 | Superseded | Use pnpm with a committed lockfile and Corepack-backed CI/local workflows instead of npm.      |
-| [ADR-011](./implemented/ADR-011-upgrade-runtime-baseline-to-node-24.md)               | Accepted   | Move the template runtime baseline from Node 22 to Node 24 LTS.                                |
-| [ADR-012](./implemented/ADR-012-constrain-local-tooling-to-macos.md)                  | Accepted   | Treat macOS as the local tooling baseline and use direct pinned Agent CI scripts.              |
-| [ADR-013](./implemented/ADR-013-return-to-npm-for-agent-ci-compatibility.md)          | Accepted   | Return to npm because local Agent CI remains unreliable with pnpm warmed dependency mounts.    |
-| [ADR-014](./implemented/ADR-014-run-the-fast-gate-on-pre-push.md)                     | Accepted   | Run the fast quality gate automatically before pushes to catch cheap failures locally.         |
-| [ADR-015](./implemented/ADR-015-relax-npm-version-enforcement.md)                     | Accepted   | Keep npm as the required package manager while relaxing exact npm patch enforcement.           |
-| [ADR-016](./implemented/ADR-016-allow-lightweight-local-readme-screenshot-tooling.md) | Superseded | Allowed a lightweight local script for refreshing the committed README screenshot.             |
-| [ADR-017](./implemented/ADR-017-prune-redundant-package-scripts.md)                   | Accepted   | Keep one canonical package script per normal workflow and remove redundant aliases.            |
-| [ADR-018](./implemented/ADR-018-add-capability-kits.md)                               | Accepted   | Add lightweight capability kits for applying specific template practices to existing repos.    |
-| [ADR-019](./implemented/ADR-019-tighten-agent-workflow-guardrails.md)                 | Accepted   | Tighten TypeScript, write-target, and readiness-validation guardrails for agent work.          |
-| [ADR-020](./implemented/ADR-020-keep-readme-screenshot-refresh-manual.md)             | Accepted   | Keep README screenshot refresh manual and outside the automated development loop.              |
-| [ADR-021](./implemented/ADR-021-add-accepted-adr-state.md)                            | Accepted   | Add an accepted ADR state so implemented means the decision is actually reflected in the repo. |
-| [ADR-022](./implemented/ADR-022-add-mutation-testing-gate.md)                         | Accepted   | Add Stryker mutation testing to the full quality gate and CI workflow.                         |
-| [ADR-023](./implemented/ADR-023-pin-github-actions-to-commit-shas.md)                 | Accepted   | Pin GitHub Actions workflow action references to immutable commit SHAs.                        |
+| ADR                                                                                   | Status      | Summary                                                                                        |
+| ------------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------- |
+| [ADR-001](./implemented/ADR-001-use-architecture-decision-records.md)                 | Accepted    | Use ADRs to capture significant architectural decisions in this repo.                          |
+| [ADR-002](./implemented/ADR-002-make-architectural-decisions-explicit.md)             | Accepted    | Require explicit ADR updates for lasting architectural decisions.                              |
+| [ADR-003](./implemented/ADR-003-require-spec-updates-and-high-coverage.md)            | Accepted    | Treat completed feature work as spec work and gate `src/` code on high unit coverage.          |
+| [ADR-004](./implemented/ADR-004-ship-a-worker-stub.md)                                | Accepted    | Ship a minimal Worker stub so the template is runnable and testable.                           |
+| [ADR-005](./implemented/ADR-005-separate-worker-views-and-api.md)                     | Accepted    | Separate the Worker starter into `src/api` and `src/views` for easier evolution.               |
+| [ADR-006](./implemented/ADR-006-adopt-tailwind-for-starter-ui.md)                     | Accepted    | Adopt the thesis-journey-tracker Tailwind v4 pipeline for the starter Worker UI.               |
+| [ADR-007](./implemented/ADR-007-avoid-screenshot-tooling-in-the-template.md)          | Superseded  | Avoid screenshot capture and screenshot automation in the template baseline.                   |
+| [ADR-008](./implemented/ADR-008-allow-static-readme-screenshots-without-tooling.md)   | Superseded  | Allowed committed README screenshots without restoring screenshot tooling or automation.       |
+| [ADR-009](./implemented/ADR-009-split-fast-and-browser-verification.md)               | Accepted    | Split fast and browser verification so checks can fail earlier and CI can cancel stale runs.   |
+| [ADR-010](./implemented/ADR-010-adopt-pnpm-for-package-management.md)                 | Superseded  | Use pnpm with a committed lockfile and Corepack-backed CI/local workflows instead of npm.      |
+| [ADR-011](./implemented/ADR-011-upgrade-runtime-baseline-to-node-24.md)               | Accepted    | Move the template runtime baseline from Node 22 to Node 24 LTS.                                |
+| [ADR-012](./implemented/ADR-012-constrain-local-tooling-to-macos.md)                  | Accepted    | Treat macOS as the local tooling baseline and use direct pinned Agent CI scripts.              |
+| [ADR-013](./implemented/ADR-013-return-to-npm-for-agent-ci-compatibility.md)          | Accepted    | Return to npm because local Agent CI remains unreliable with pnpm warmed dependency mounts.    |
+| [ADR-014](./implemented/ADR-014-run-the-fast-gate-on-pre-push.md)                     | Accepted    | Run the fast quality gate automatically before pushes to catch cheap failures locally.         |
+| [ADR-015](./implemented/ADR-015-relax-npm-version-enforcement.md)                     | Accepted    | Keep npm as the required package manager while relaxing exact npm patch enforcement.           |
+| [ADR-016](./implemented/ADR-016-allow-lightweight-local-readme-screenshot-tooling.md) | Superseded  | Allowed a lightweight local script for refreshing the committed README screenshot.             |
+| [ADR-017](./implemented/ADR-017-prune-redundant-package-scripts.md)                   | Accepted    | Keep one canonical package script per normal workflow and remove redundant aliases.            |
+| [ADR-018](./implemented/ADR-018-add-capability-kits.md)                               | Accepted    | Add lightweight capability kits for applying specific template practices to existing repos.    |
+| [ADR-019](./implemented/ADR-019-tighten-agent-workflow-guardrails.md)                 | Accepted    | Tighten TypeScript, write-target, and readiness-validation guardrails for agent work.          |
+| [ADR-020](./implemented/ADR-020-keep-readme-screenshot-refresh-manual.md)             | Accepted    | Keep README screenshot refresh manual and outside the automated development loop.              |
+| [ADR-021](./implemented/ADR-021-add-accepted-adr-state.md)                            | Accepted    | Add an accepted ADR state so implemented means the decision is actually reflected in the repo. |
+| [ADR-022](./implemented/ADR-022-add-mutation-testing-gate.md)                         | Accepted    | Add Stryker mutation testing to the full quality gate and CI workflow.                         |
+| [ADR-023](./implemented/ADR-023-pin-github-actions-to-commit-shas.md)                 | Accepted    | Pin GitHub Actions workflow action references to immutable commit SHAs.                        |
+| [ADR-024](./implemented/ADR-024-disallow-inline-client-code-in-worker-views.md)       | Implemented | Reject untyped inline browser code in Worker-rendered HTML through the fast quality gate.      |
+| [ADR-025](./implemented/ADR-025-skip-agent-ci-for-docs-only-changes.md)               | Implemented | Allow documentation-only changes to skip local Agent CI when executable behavior is unchanged. |
+| [ADR-026](./implemented/ADR-026-run-affected-guardrails-when-possible.md)             | Implemented | Run affected-file guardrails during iteration and pre-push when checks can be scoped safely.   |
 
 ## Creating A New ADR
 
