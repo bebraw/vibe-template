@@ -46,7 +46,8 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 - Run end-to-end tests with `npm run e2e`.
 - Run unit and integration tests with `npm test`.
 - Run the unit coverage gate with `npm run test:coverage`.
-- Run mutation tests with `npm run mutation`.
+- Run full mutation tests with `npm run mutation`.
+- Run incremental mutation tests with `npm run mutation:incremental`.
 - Run TypeScript checks with `npm run typecheck`.
 - Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`.
 - Format the repo with `npm run format`.
@@ -73,7 +74,7 @@ The Vitest setup is generic as well. `vitest.config.ts` targets colocated `src/*
 
 The coverage gate is stricter than the basic test run. `npm run test:coverage` measures runtime `src/**` code with the V8 provider, writes reports to `reports/coverage/`, and enforces high thresholds once a project actually has `src/` code. Colocated unit tests, end-to-end tests, and test-support files do not count as source files for the gate's skip-or-fail logic.
 
-Mutation testing uses Stryker with Vitest and the TypeScript checker. `npm run mutation` mutates runtime `src/**/*.ts` files while excluding declarations, unit tests, end-to-end tests, and `src/test-support.ts`. It writes mutation reports under `reports/mutation/` and uses Stryker's temporary `.stryker-tmp/` sandbox, which must stay untracked.
+Mutation testing uses Stryker with Vitest and the TypeScript checker. `npm run mutation` performs a full mutation run against runtime `src/**/*.ts` files while excluding declarations, unit tests, end-to-end tests, and `src/test-support.ts`. `npm run mutation:incremental` enables Stryker incremental mode so repeated local quality-gate runs can reuse previous mutant results while still producing a complete mutation report. Mutation reports and Stryker incremental data are written under `reports/`, and Stryker's temporary `.stryker-tmp/` sandbox must stay untracked.
 
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `src/**/*.ts`, and `npm run typecheck` runs `tsc --noEmit`.
 
@@ -102,4 +103,4 @@ Use this expectation for routine changes:
 - `npm run ci:local` should also pass before proposing or landing the change.
 - The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`, so pushes stop locally when the fast gate is already red.
 
-The quality gate currently runs the fast gate first, then the Playwright browser tests, then mutation tests. The local and remote CI workflow runs separate fast, browser, and mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which lets Agent CI run independent jobs concurrently while `scripts/ci-install-dependencies.sh` serializes the shared warm `node_modules` install and lets later jobs reuse it. The command also pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.
+The quality gate currently runs the fast gate first, then the Playwright browser tests, then incremental mutation tests for faster repeated local runs. GitHub Actions runs separate fast, browser, and full mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which lets Agent CI run independent jobs concurrently while `scripts/ci-install-dependencies.sh` serializes the shared warm `node_modules` install and lets later jobs reuse it. The command also pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.

@@ -6,6 +6,8 @@
 
 **Amends:** [ADR-009](./ADR-009-split-fast-and-browser-verification.md), [ADR-017](./ADR-017-prune-redundant-package-scripts.md)
 
+**Amended by:** [ADR-028](./ADR-028-use-incremental-local-mutation-gate.md)
+
 ## Context
 
 The repo already requires high unit coverage for runtime `src/` code, but coverage only proves that tests execute code. It does not prove that the tests contain assertions strong enough to detect meaningful behavior changes.
