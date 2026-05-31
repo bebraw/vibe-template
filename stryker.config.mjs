@@ -5,7 +5,7 @@ const config = {
   $schema: "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   checkers: ["typescript"],
   cleanTempDir: "always",
-  concurrency: 2,
+  concurrency: "50%",
   htmlReporter: {
     fileName: "reports/mutation/index.html",
   },

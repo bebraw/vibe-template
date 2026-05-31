@@ -61,6 +61,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-026](./implemented/ADR-026-run-affected-guardrails-when-possible.md)             | Implemented | Run affected-file guardrails during iteration and pre-push when checks can be scoped safely.   |
 | [ADR-027](./implemented/ADR-027-lock-local-agent-ci-installs.md)                      | Implemented | Allow parallel local Agent CI jobs with a locked warm dependency install.                      |
 | [ADR-028](./implemented/ADR-028-use-incremental-local-mutation-gate.md)               | Implemented | Use incremental Stryker runs in the local quality gate while GitHub CI runs full mutation.     |
+| [ADR-029](./implemented/ADR-029-use-relative-stryker-concurrency.md)                  | Implemented | Use percentage-based Stryker worker concurrency instead of a fixed worker count.               |
 
 ## Creating A New ADR
 
