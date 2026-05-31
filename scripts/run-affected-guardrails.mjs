@@ -166,12 +166,12 @@ function runAuditWhenNeeded(files) {
 
 function runTestsWhenNeeded(files) {
   if (!files.some(affectsUnitCoverage)) {
-    console.log("Unit coverage skipped: no affected runtime or unit test files.");
+    console.log("Affected tests skipped: no affected runtime, unit test, or test environment files.");
     return;
   }
 
-  console.log("Running unit coverage because affected files include runtime or unit test code...");
-  run("npm", ["run", "test:coverage"]);
+  console.log("Running affected tests because affected files include runtime, unit test, or test environment code...");
+  run("npm", ["run", "test:affected", "--", ...files]);
 }
 
 function affectsTypecheck(file) {
@@ -196,11 +196,23 @@ function isWorkerClientGuardFile(file) {
 
 function affectsUnitCoverage(file) {
   return (
-    file.startsWith("src/") &&
-    /\.(?:test\.)?(?:ts|tsx|mts|cts|js|jsx|mjs|cjs)$/.test(file) &&
-    !file.endsWith(".d.ts") &&
-    !file.endsWith(".e2e.ts")
+    affectsTestEnvironment(file) ||
+    (file.startsWith("src/") &&
+      /\.(?:test\.)?(?:ts|tsx|mts|cts|js|jsx|mjs|cjs)$/.test(file) &&
+      !file.endsWith(".d.ts") &&
+      !file.endsWith(".e2e.ts"))
   );
+}
+
+function affectsTestEnvironment(file) {
+  return [
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "scripts/run-coverage-gate.mjs",
+    "scripts/run-affected-tests.mjs",
+  ].includes(file);
 }
 
 function readStdin() {

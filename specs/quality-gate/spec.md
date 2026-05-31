@@ -11,6 +11,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Fast gate:** `npm run quality:gate:fast`
 - **Affected guardrails:** `npm run quality:affected`
 - **Browser gate:** `npm run e2e`
+- **Affected test gate:** `npm run test:affected`
 - **Full mutation gate:** `npm run mutation`
 - **Incremental mutation gate:** `npm run mutation:incremental`
 - **Full gate:** `npm run quality:gate`
@@ -24,6 +25,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Git hook path:** `.githooks/`
 - **Hook setup script:** `scripts/setup-git-hooks.mjs`
 - **Affected guardrail logic:** `scripts/run-affected-guardrails.mjs`
+- **Affected test logic:** `scripts/run-affected-tests.mjs`
 - **Runtime pin source:** `package.json#engines.node`
 - **Package manager hint source:** `package.json#packageManager`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.60.0-noble`
@@ -46,7 +48,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Definition of Done
 
 - [ ] The fast gate covers formatting, type checking, Worker client-code guardrails, runtime audit, and unit coverage.
-- [ ] The affected guardrail path scopes formatting, JavaScript syntax checks, Worker client-code checks, package audit, and unit coverage to affected files when possible.
+- [ ] The affected guardrail path scopes formatting, JavaScript syntax checks, Worker client-code checks, package audit, and unit tests to affected files when possible.
+- [ ] The affected test gate runs tests related to affected runtime files, runs affected unit test files directly, and falls back to full coverage for broad test environment changes or affected runtime files with no related tests.
 - [ ] The browser gate covers the Playwright baseline.
 - [ ] The full mutation gate covers runtime `src/**/*.ts` files with Stryker, Vitest, and TypeScript checking.
 - [ ] The incremental mutation gate reuses prior Stryker results for repeated local quality-gate runs while preserving a complete mutation report.
@@ -60,6 +63,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
 - `npm run quality:affected` must avoid full-repo work when affected files make a narrower check sufficient.
+- `npm run test:affected` must avoid full coverage work when affected runtime or unit test files can be checked through related or direct Vitest runs.
 - `npm run quality:gate` must continue to represent the local baseline verification path.
 - `npm run mutation` must fail when the mutation score is below the configured break threshold.
 - `npm run mutation:incremental` must fail when the resulting mutation score is below the configured break threshold.
@@ -78,7 +82,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The affected guardrail path must pass only affected Worker/view runtime files to the Worker client-code guard.
 - The affected guardrail path must run JavaScript syntax checks only for affected JavaScript files.
 - The affected guardrail path must run package audit only when package metadata or lockfiles change.
-- The affected guardrail path must skip unit coverage when no runtime or unit test files are affected.
+- The affected guardrail path must skip unit tests when no runtime or unit test files are affected.
+- The affected test path must run full unit coverage when package metadata, TypeScript config, Vitest config, coverage-gate logic, or affected-test logic changes.
+- The affected test path must run full unit coverage when affected runtime files have no related tests and no affected unit test files were supplied.
 - The affected guardrail path may fall back to project-level type checking or coverage when a safe per-file check is not available.
 - The repo's local CI scripts should use the repo-pinned `agent-ci` binary directly instead of carrying repo-specific runtime patching.
 - The canonical local CI script should rely on the CI install wrapper instead of forcing `--jobs 1` to avoid warmed dependency races on macOS-hosted Docker.
@@ -108,6 +114,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: a change is still being iterated locally
 - When: the contributor runs `npm run quality:affected`
 - Then: guardrails run against affected files where possible and skip unrelated work
+
+**Scenario: Contributor wants an affected unit test signal**
+
+- Given: runtime or unit test files are affected
+- When: the contributor runs `npm run test:affected`
+- Then: Vitest checks related runtime tests or affected unit test files without running unrelated unit tests when that is safe
 
 **Scenario: Contributor wants a fast baseline signal**
 
