@@ -36,7 +36,7 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 
 ### Commands
 
-- Run the quiet local workflow with one local Agent CI job slot using `npm run ci:local`.
+- Run the quiet local workflow with Agent CI parallelism, a local install lock, and pause-on-failure using `npm run ci:local`.
 - Rebuild the generated stylesheet manually with `npm run build:css`.
 - Run the fast local gate with `npm run quality:gate:fast`.
 - Run the baseline quality gate with `npm run quality:gate`.
@@ -63,7 +63,7 @@ Use targeted checks while iterating, then run the full readiness path before pro
 
 The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. The e2e server forces Chokidar polling mode to avoid file-watcher exhaustion in macOS-hosted local runs while preserving the normal `npm run dev` developer loop. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
 
-The GitHub Actions CI workflow splits fast checks, browser checks, and mutation checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.60.0-noble`, pins every `uses:` action reference to a full commit SHA, and cancels superseded runs on the same ref. That keeps the browser job from reinstalling Chromium on every run while avoiding unnecessary npm self-upgrades in CI and mutable action tags.
+The GitHub Actions CI workflow splits fast checks, browser checks, and mutation checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.60.0-noble`, pins every `uses:` action reference to a full commit SHA, and cancels superseded runs on the same ref. Dependency installation goes through `scripts/ci-install-dependencies.sh`, which runs plain `npm ci` on GitHub and uses a lockfile-hash marker under Agent CI's mounted tool cache so parallel local jobs do not run concurrent installs against the same warm `node_modules` mount. That keeps the browser job from reinstalling Chromium on every run while avoiding unnecessary npm self-upgrades in CI, mutable action tags, and local install races.
 
 The starter UI now follows the same Tailwind v4 baseline shape as `thesis-journey-tracker`: Tailwind input lives in `src/tailwind-input.css`, generated CSS is written to `.generated/styles.css`, and Wrangler runs `npm run build:css` automatically before local development.
 
@@ -81,7 +81,7 @@ The README includes a committed application screenshot at `docs/screenshots/home
 
 ## Write Boundaries
 
-Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
+Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, Agent CI install lock and readiness markers belong in the mounted tool cache under `$RUNNER_TOOL_CACHE/agent-ci-npm/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
 
 When adding a new tool or workflow that writes files, document the target path in the same change and prefer ignored local output unless the artifact is intentionally reviewed.
 
@@ -102,4 +102,4 @@ Use this expectation for routine changes:
 - `npm run ci:local` should also pass before proposing or landing the change.
 - The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`, so pushes stop locally when the fast gate is already red.
 
-The quality gate currently runs the fast gate first, then the Playwright browser tests, then mutation tests. The local and remote CI workflow runs separate fast, browser, and mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which uses one local job slot to avoid warmed dependency races on macOS-hosted Docker. Local browser installation should also go through the pinned `npm run playwright:install` script.
+The quality gate currently runs the fast gate first, then the Playwright browser tests, then mutation tests. The local and remote CI workflow runs separate fast, browser, and mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which lets Agent CI run independent jobs concurrently while `scripts/ci-install-dependencies.sh` serializes the shared warm `node_modules` install and lets later jobs reuse it. The command also pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.

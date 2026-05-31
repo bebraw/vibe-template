@@ -50,7 +50,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The negotiation prompt must instruct agents to inspect the target repo, present recommended capabilities with trade-offs, and wait for approval before editing files.
 - The TypeScript setup kit must keep its dependency, `typecheck` script, `tsconfig.json`, and optional CSS declaration guidance aligned with this repo's current TypeScript setup.
 - The Agent CI kit must keep its dependency and command guidance aligned with this repo's `package.json` and `.codex/skills/agent-ci/SKILL.md`.
-- The Agent CI kit must keep `--jobs 1` in the canonical local npm script unless a later decision changes the macOS-hosted Docker local CI constraint.
+- The Agent CI kit must include the local install-lock pattern when it enables Agent CI job concurrency for npm workflows.
 - The quality-gate kit must keep the coverage gate script aligned with `scripts/run-coverage-gate.mjs`.
 - The mutation-testing kit must keep its Stryker config aligned with `stryker.config.mjs`.
 - The pre-push quality-gate kit must keep the hook setup aligned with `.githooks/pre-push` and `scripts/setup-git-hooks.mjs`.
