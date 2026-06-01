@@ -62,6 +62,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-027](./implemented/ADR-027-lock-local-agent-ci-installs.md)                      | Implemented | Allow parallel local Agent CI jobs with a locked warm dependency install.                      |
 | [ADR-028](./implemented/ADR-028-use-incremental-local-mutation-gate.md)               | Implemented | Use incremental Stryker runs in the local quality gate while GitHub CI runs full mutation.     |
 | [ADR-029](./implemented/ADR-029-use-relative-stryker-concurrency.md)                  | Implemented | Use percentage-based Stryker worker concurrency instead of a fixed worker count.               |
+| [ADR-030](./implemented/ADR-030-reserve-full-mutation-ci-for-github.md)               | Implemented | Reserve the full mutation workflow job for GitHub and skip it in local Agent CI.               |
 
 ## Creating A New ADR
 

@@ -6,6 +6,8 @@
 
 **Amends:** [ADR-022](./ADR-022-add-mutation-testing-gate.md)
 
+**Amended by:** [ADR-030](./ADR-030-reserve-full-mutation-ci-for-github.md)
+
 ## Context
 
 ADR-022 added Stryker mutation testing to the full quality gate and CI workflow. That improved assertion-strength checks, but full local mutation runs slow down regular development once the source and test surface grows.
