@@ -12,6 +12,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Treat specs and ADRs as the durable source of truth for expected behavior and architectural intent. Code, including AI-generated code, is only acceptable when it matches those documents or updates them intentionally in the same change set.
 - Add or update an ADR in `docs/adrs/` whenever a change introduces or changes a lasting architectural constraint, selects between credible architectural alternatives, or replaces an earlier decision. Keep drafts in `docs/adrs/proposed/`, approved-but-not-yet-implemented decisions in `docs/adrs/accepted/`, and implemented decisions in `docs/adrs/implemented/`.
 - Create or update the relevant feature spec in `specs/` in the same change set whenever feature behavior, contracts, workflows, or regression guardrails change.
+- Add or update a template update pack in `.template/updates/` in the same change set whenever a reusable template maintenance change should be portable to downstream projects.
 - Keep the quality gate green before considering a change ready.
 - Keep workflow writes explicit. New generated output, local state, cache, archive, or tool-artifact paths should be documented in the same change that introduces them.
 - Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules before it is served to browsers.
@@ -36,6 +37,13 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Keep capability kits instructional and reviewable rather than fully automated by default.
 - Each capability kit should include a README, a machine-readable manifest, any copyable files, package-manager recipes, and validation notes.
 - Capability kits should preserve target-project conventions unless the kit explicitly documents a required constraint.
+
+## Template Updates
+
+- Put reusable maintenance update packs under `.template/updates/{update-id}/`.
+- Keep update packs as reviewable plain files with metadata, a migration guide, and a focused patch.
+- Use update packs for later changes to projects that already use this template or one of its capability kits.
+- Do not treat update packs as source snapshots; preserve downstream project conventions and use the migration guide when the patch does not apply cleanly.
 
 ## Spec Conventions
 

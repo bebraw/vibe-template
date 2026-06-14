@@ -18,7 +18,7 @@ This template is set up for the local Agent CI runner from `agent-ci.dev`.
 - Local development in this template targets macOS. The documented commands assume a macOS shell environment and are not maintained as a cross-platform baseline.
 - Run `nvm use` before `npm install` or any other development command so your shell uses the Node.js version mirrored in `.nvmrc`, which also keeps the bundled npm release inside the repo's supported npm 11 range.
 - Install dependencies with `npm install`.
-- `npm install` also configures the repo-managed Git hook path and enables the `pre-push` hook that runs `npm run quality:gate:fast`.
+- `npm install` also configures the repo-managed Git hook path and enables the `pre-push` hook that runs affected-file guardrails.
 - The exact Node.js version is pinned in `package.json`, mirrored in `.nvmrc` for `nvm` users, and read directly by CI through `actions/setup-node`.
 - The repo requires npm 11 in `package.json` but does not pin one exact patch release. Local development, CI, and platforms such as Cloudflare may use different npm 11 patch versions as long as they stay inside the supported major range.
 - Copy `.dev.vars.example` to `.dev.vars` and replace placeholder values when a project needs local secrets.
@@ -81,9 +81,11 @@ The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` fil
 
 The README includes a committed application screenshot at `docs/screenshots/home.png`. Refresh that asset manually when the starter UI changes materially, but keep screenshot capture out of the automated development loop, CI, and remote workflows.
 
+Template update packs live under `.template/updates/`. Use them to port later template maintenance changes into projects that already use this template or one of its capability kits. Each pack has metadata, a migration guide, and a focused patch to try first; when the patch does not apply cleanly, use the guide to adapt the change to the target project's conventions.
+
 ## Write Boundaries
 
-Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, Agent CI local caches belong under Agent CI's managed cache directory, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
+Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, Agent CI local caches belong under Agent CI's managed cache directory, template update packs belong in `.template/updates/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
 
 When adding a new tool or workflow that writes files, document the target path in the same change and prefer ignored local output unless the artifact is intentionally reviewed.
 
@@ -102,6 +104,6 @@ Use this expectation for routine changes:
 - `npm run quality:gate` must pass before a change is considered ready.
 - Use `npm run quality:gate:fast` for quicker local iteration when browser coverage is not the immediate focus.
 - `npm run ci:local` should also pass before proposing or landing the change.
-- The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`, so pushes stop locally when the fast gate is already red.
+- The repo-managed `pre-push` hook runs `npm run quality:affected` automatically after `npm install`, so pushes stop locally when affected guardrails are already red.
 
 The quality gate currently runs the fast gate first, then the Playwright browser tests, then incremental mutation tests for faster repeated local runs. GitHub Actions runs separate fast, browser, and full mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which lets Agent CI run independent jobs concurrently while its own warm-cache serialization protects the shared `node_modules` mount during cold installs. The command also pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.

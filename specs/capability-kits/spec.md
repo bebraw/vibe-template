@@ -18,6 +18,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Available kits:** `typescript-setup`, `agent-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
+- **Later maintenance sync:** template update packs under `.template/updates/` cover follow-up changes to projects that already adopted a kit.
 
 ### Anti-Patterns
 
@@ -27,6 +28,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - Do not assume the target repo has the same package manager, docs structure, workflow names, or architecture rules as this template.
 - Do not include secrets or machine-local values in copyable files.
 - Do not let kit instructions drift from the template's own current implementation.
+- Do not use capability kits as the only record for later maintenance changes that should be synced into projects that already adopted the capability.
 
 ## Contract
 
@@ -55,6 +57,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The mutation-testing kit must keep its Stryker config aligned with `stryker.config.mjs`.
 - The pre-push quality-gate kit must keep the hook setup aligned with `.githooks/pre-push` and `scripts/setup-git-hooks.mjs`.
 - The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs`.
+- Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
 
 ### Verification
 

@@ -15,14 +15,15 @@ Local development in this repo targets macOS. Other platforms may need script an
 - Feature and architecture specs: `specs/README.md`
 - Agent behavior and project rules: `AGENTS.md`
 - Partial-upgrade capability kits: `.capabilities/`
+- Template maintenance update packs: `.template/updates/`
 
 ## Runtime
 
 - Run `nvm use` before `npm install` or any other development command so your shell picks up the repo-pinned Node.js version from `.nvmrc` and stays close to the expected npm baseline.
 - Install dependencies with `npm install`.
-- `npm install` also configures the repo-managed `pre-push` hook so `git push` runs `npm run quality:gate:fast` before code leaves your machine.
+- `npm install` also configures the repo-managed `pre-push` hook so `git push` runs affected guardrails before code leaves your machine.
 - The exact project Node.js version is pinned in `package.json` and mirrored in `.nvmrc` for `nvm` users, and CI reads the `package.json` value directly.
-- npm is also pinned exactly in `package.json`; local development is expected to use `nvm use`, and CI upgrades npm to the exact repo pin when the bundled npm version differs.
+- npm is constrained to the supported npm 11 range in `package.json`; local development is expected to use `nvm use`, and CI uses the npm release bundled with the pinned Node setup as long as it satisfies that range.
 - Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
 - Use repo-pinned CLI tools through `npx`, including `npx wrangler` for Cloudflare-based experiments.
 - Start the stub Worker with `npm run dev`, then open `http://127.0.0.1:8787`.
@@ -32,8 +33,8 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 - Run the fast local gate with `npm run quality:gate:fast` during normal iteration.
 - Run the baseline repo gate with `npm run quality:gate`.
-- Run the containerized local workflow with `npm run ci:local`; it uses Agent CI parallelism with a local install lock and pauses failed runners for retry.
-- The repo-managed `pre-push` hook runs `npm run quality:gate:fast` automatically after `npm install`.
+- Run the containerized local workflow with `npm run ci:local`; it uses Agent CI parallelism with warm-cache serialization and pauses failed runners for retry.
+- The repo-managed `pre-push` hook runs `npm run quality:affected` automatically after `npm install`.
 - If local Agent CI warns about `No such remote 'origin'`, set `GITHUB_REPO=owner/repo` in `.env.agent-ci`.
 - Retry a paused local CI run with `npm run ci:local:retry -- --name <runner-name>`.
 - Install the pinned Playwright browser with `npm run playwright:install`.
@@ -55,6 +56,10 @@ To apply a kit to another repo:
 6. Run the kit checks and the target repo's normal quality gate.
 
 For existing projects where the right kit set is unclear, start with the negotiation prompt in `.capabilities/README.md`. It asks an agent to inspect the target repo, present a checkbox-style capability pull plan, and wait for approval before editing files.
+
+## Template Update Packs
+
+Use `.template/updates/` to sync later maintenance changes into projects that already use this template or one of its capability kits. Each update pack has metadata, a short migration guide, and a focused patch to try before porting the change manually.
 
 ## Starter App
 
