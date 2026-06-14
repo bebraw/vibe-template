@@ -6,11 +6,11 @@
 
 ## Toolchain Registry
 
-| Intent         | Command                                          | Notes                                                                            |
-| -------------- | ------------------------------------------------ | -------------------------------------------------------------------------------- |
-| Local CI       | `npm run ci:local`                               | Quietly runs `.github/workflows/ci.yml` through Agent CI with one local job slot |
-| Retry CI       | `npm run ci:local:retry -- --name <runner-name>` | Retries a paused local Agent CI runner                                           |
-| Workflow notes | `docs/development.md`                            | Setup details and prerequisites                                                  |
+| Intent         | Command                                          | Notes                                                                           |
+| -------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Local CI       | `npm run ci:local`                               | Quietly runs `.github/workflows/ci.yml` through Agent CI with local parallelism |
+| Retry CI       | `npm run ci:local:retry -- --name <runner-name>` | Retries a paused local Agent CI runner                                          |
+| Workflow notes | `docs/development.md`                            | Setup details and prerequisites                                                 |
 
 ## Judgment Boundaries
 

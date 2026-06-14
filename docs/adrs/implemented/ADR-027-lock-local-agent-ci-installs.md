@@ -1,6 +1,6 @@
 # ADR-027: Lock Local Agent CI Installs
 
-**Status:** Implemented
+**Status:** Superseded by [ADR-031](./ADR-031-use-agent-ci-warm-cache-serialization.md)
 
 **Date:** 2026-05-31
 

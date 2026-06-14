@@ -20,7 +20,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Local workflow failure mode:** pause failed Agent CI runners for retry
 - **Retry command:** `npm run ci:local:retry -- --name <runner-name>`
 - **Remote workflow:** `.github/workflows/ci.yml`
-- **CI install wrapper:** `scripts/ci-install-dependencies.sh`
+- **CI dependency install:** plain `npm ci`
 - **Action pinning:** every GitHub Actions `uses:` reference must use a full commit SHA
 - **Git hook path:** `.githooks/`
 - **Hook setup script:** `scripts/setup-git-hooks.mjs`
@@ -72,8 +72,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
 - The CI workflow must keep using npm for install and verification steps without depending on one exact npm patch release.
 - The npm release used by CI must stay inside the supported npm range declared in `package.json`.
-- The CI install wrapper must run plain `npm ci` outside local Agent CI.
-- Under local Agent CI, the CI install wrapper must prevent concurrent installs from writing the same warm `node_modules` mount.
+- CI jobs must install dependencies with plain `npm ci`.
+- Local Agent CI must rely on its built-in warm-cache serialization instead of repo-local install locking.
 - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
 - The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
@@ -86,8 +86,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The affected test path must run full unit coverage when package metadata, TypeScript config, Vitest config, coverage-gate logic, or affected-test logic changes.
 - The affected test path must run full unit coverage when affected runtime files have no related tests and no affected unit test files were supplied.
 - The affected guardrail path may fall back to project-level type checking or coverage when a safe per-file check is not available.
-- The repo's local CI scripts should use the repo-pinned `agent-ci` binary directly instead of carrying repo-specific runtime patching.
-- The canonical local CI script should rely on the CI install wrapper instead of forcing `--jobs 1` to avoid warmed dependency races on macOS-hosted Docker.
+- The repo's local CI scripts should use the repo-pinned `agent-ci` binary directly instead of carrying repo-specific runtime patching or install locking.
+- The canonical local CI script should rely on Agent CI warm-cache serialization instead of forcing `--jobs 1` to avoid warmed dependency races on macOS-hosted Docker.
 - The canonical local CI script should use pause-on-failure so agents can fix and retry a failed runner without restarting the whole workflow.
 - The local verification workflow should document macOS as the supported host baseline instead of implying cross-platform support.
 - The Playwright server path must avoid macOS file-watcher exhaustion in local runs without changing the normal `npm run dev` workflow.

@@ -47,7 +47,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: ./scripts/ci-install-dependencies.sh
+        run: npm ci
 
       - name: Run fast quality gate
         shell: bash
@@ -77,7 +77,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: ./scripts/ci-install-dependencies.sh
+        run: npm ci
 
       - name: Run browser quality gate
         shell: bash
@@ -105,7 +105,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: ./scripts/ci-install-dependencies.sh
+        run: npm ci
 
       - name: Run mutation quality gate
         shell: bash

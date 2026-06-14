@@ -59,10 +59,11 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-024](./implemented/ADR-024-disallow-inline-client-code-in-worker-views.md)       | Implemented | Reject untyped inline browser code in Worker-rendered HTML through the fast quality gate.      |
 | [ADR-025](./implemented/ADR-025-skip-agent-ci-for-docs-only-changes.md)               | Implemented | Allow documentation-only changes to skip local Agent CI when executable behavior is unchanged. |
 | [ADR-026](./implemented/ADR-026-run-affected-guardrails-when-possible.md)             | Implemented | Run affected-file guardrails during iteration and pre-push when checks can be scoped safely.   |
-| [ADR-027](./implemented/ADR-027-lock-local-agent-ci-installs.md)                      | Implemented | Allow parallel local Agent CI jobs with a locked warm dependency install.                      |
+| [ADR-027](./implemented/ADR-027-lock-local-agent-ci-installs.md)                      | Superseded  | Allow parallel local Agent CI jobs with a locked warm dependency install.                      |
 | [ADR-028](./implemented/ADR-028-use-incremental-local-mutation-gate.md)               | Implemented | Use incremental Stryker runs in the local quality gate while GitHub CI runs full mutation.     |
 | [ADR-029](./implemented/ADR-029-use-relative-stryker-concurrency.md)                  | Implemented | Use percentage-based Stryker worker concurrency instead of a fixed worker count.               |
 | [ADR-030](./implemented/ADR-030-reserve-full-mutation-ci-for-github.md)               | Implemented | Reserve the full mutation workflow job for GitHub and skip it in local Agent CI.               |
+| [ADR-031](./implemented/ADR-031-use-agent-ci-warm-cache-serialization.md)             | Implemented | Use Agent CI warm-cache serialization instead of a repo-local install lock.                    |
 
 ## Creating A New ADR
 

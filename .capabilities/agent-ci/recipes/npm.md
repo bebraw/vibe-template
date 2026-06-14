@@ -9,7 +9,7 @@ If the target repo has no GitHub Actions workflow, follow `github-actions.md` be
 Add the dev dependency:
 
 ```bash
-npm install --save-dev @redwoodjs/agent-ci@0.13.0
+npm install --save-dev @redwoodjs/agent-ci@0.16.2
 ```
 
 Add or merge these scripts into `package.json`:
@@ -17,7 +17,7 @@ Add or merge these scripts into `package.json`:
 ```json
 {
   "scripts": {
-    "ci:local": "agent-ci run --quiet --jobs 1 --workflow .github/workflows/ci.yml",
+    "ci:local": "agent-ci run --quiet --pause-on-failure --workflow .github/workflows/ci.yml",
     "ci:local:retry": "agent-ci retry"
   }
 }

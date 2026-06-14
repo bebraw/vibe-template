@@ -16,7 +16,7 @@ The baseline still needs named entry points for common checks and for commands t
 
 We will keep one package script per normal workflow:
 
-- `npm run ci:local` is the quiet local Agent CI workflow and uses one local job slot.
+- `npm run ci:local` is the quiet local Agent CI workflow and uses Agent CI's default local parallelism.
 - `npm run quality:gate` runs the fast gate and browser tests.
 - `npm run e2e` is the browser-test command used by the full gate and CI.
 
@@ -38,7 +38,7 @@ The script list had become noisy enough that the same workflows appeared under m
 
 - The package script list is shorter and easier to scan.
 - Local CI has one canonical command.
-- Local CI avoids warmed dependency races seen with concurrent local Agent CI jobs.
+- Local CI delegates warm-cache serialization to Agent CI instead of forcing one local job slot.
 - Browser verification uses the same `npm run e2e` name in local use, the full quality gate, and CI.
 
 **Negative:**
