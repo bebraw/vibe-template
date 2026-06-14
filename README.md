@@ -61,6 +61,10 @@ For existing projects where the right kit set is unclear, start with the negotia
 
 Use `.template/updates/` to sync later maintenance changes into projects that already use this template or one of its capability kits. Each update pack has metadata, a short migration guide, and a focused patch to try before porting the change manually.
 
+For cross-repo agent work, tell the agent:
+
+> Look at `vibe-template/.template/updates/AGENT_SYNC.md` for latest template updates.
+
 ## Starter App
 
 - `GET /` serves a minimal editorial Worker stub with a route index and a primary health-probe link.

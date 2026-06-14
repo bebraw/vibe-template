@@ -6,6 +6,11 @@ This directory stores reviewable update packs for projects that started from
 Update packs are intentionally plain files. Apply them like small migrations,
 not like an upstream merge that overwrites a project.
 
+If you are an agent working in another repository and the user says "look at
+vibe-template for latest updates", start with
+[`AGENT_SYNC.md`](./AGENT_SYNC.md). It is the canonical cross-repo sync
+workflow.
+
 ## Layout
 
 Each update lives under `.template/updates/{update-id}/` and contains:
