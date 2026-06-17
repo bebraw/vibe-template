@@ -29,6 +29,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Hook setup script:** `scripts/setup-git-hooks.mjs`
 - **Affected guardrail logic:** `scripts/run-affected-guardrails.mjs`
 - **Affected test logic:** `scripts/run-affected-tests.mjs`
+- **Affected file helper logic:** `scripts/affected-file-utils.mjs`
 - **Runtime pin source:** `package.json#engines.node`
 - **Package manager hint source:** `package.json#packageManager`
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.60.0-noble`
@@ -92,6 +93,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The affected guardrail path must run package audit only when package metadata or lockfiles change.
 - The affected guardrail path must skip unit tests when no runtime or unit test files are affected.
 - The affected test path must run full unit coverage when package metadata, TypeScript config, Vitest config, coverage-gate logic, or affected-test logic changes.
+- The affected test path must run full unit coverage when affected-file helper logic changes.
 - The affected test path must run full unit coverage when affected runtime files have no related tests and no affected unit test files were supplied.
 - The affected guardrail path may fall back to project-level type checking or coverage when a safe per-file check is not available.
 - The repo's local CI scripts should use the repo-pinned `agent-ci` binary directly instead of carrying repo-specific runtime patching or install locking.

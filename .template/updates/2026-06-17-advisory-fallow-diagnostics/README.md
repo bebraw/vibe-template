@@ -8,7 +8,7 @@ making those findings part of the hard quality gate.
 
 1. Add `fallow` as a pinned development dependency.
 2. Add advisory scripts equivalent to:
-   - `diagnostics:readability`: `fallow audit --quiet --no-cache`
+   - `diagnostics:readability`: `fallow audit --max-crap 100 --quiet --no-cache`
    - `diagnostics:health`: `fallow health --score --hotspots --targets --quiet --no-cache`
    - `diagnostics:codebase`: run both diagnostics.
 3. Add `.fallowrc.json` only for project-specific entry points or false

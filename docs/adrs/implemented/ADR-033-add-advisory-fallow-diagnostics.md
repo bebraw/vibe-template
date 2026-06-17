@@ -37,6 +37,11 @@ The scripts pass `--no-cache` so normal diagnostic runs do not create a
 persistent `.fallow/` cache. `.fallow/` is ignored for contributors who run
 cached Fallow commands manually.
 
+The changed-code readability diagnostic keeps Fallow's default cognitive and
+cyclomatic complexity thresholds, but raises the CRAP threshold to reduce noise
+from untested template tooling scripts. Whole-repo health diagnostics still
+surface those risk scores as refactoring evidence.
+
 The project keeps a small `.fallowrc.json` to mark Playwright E2E tests as
 entry points and ignore the Stryker JSDoc type-only dependency that is resolved
 through installed Stryker packages.

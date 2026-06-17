@@ -1,10 +1,8 @@
-import { existsSync, readFileSync } from "node:fs";
-import { spawnSync } from "node:child_process";
 import process from "node:process";
+import { getAffectedFiles, getRepoRoot, normalizeFiles, run } from "./affected-file-utils.mjs";
 
 const repoRoot = getRepoRoot();
-const zeroSha = "0000000000000000000000000000000000000000";
-const affectedFiles = getAffectedFiles();
+const affectedFiles = normalizeFiles(getAffectedFiles(repoRoot));
 
 if (affectedFiles.length === 0) {
   console.log("Affected guardrails skipped: no affected files found.");
@@ -20,101 +18,9 @@ runWorkerClientGuard(affectedFiles);
 runAuditWhenNeeded(affectedFiles);
 runTestsWhenNeeded(affectedFiles);
 
-function getRepoRoot() {
-  const result = spawnSync("git", ["rev-parse", "--show-toplevel"], {
-    stdio: ["ignore", "pipe", "pipe"],
-    encoding: "utf8",
-  });
-
-  if (result.error) {
-    console.error(result.error.message);
-    process.exit(1);
-  }
-
-  if ((result.status ?? 1) !== 0) {
-    process.exit(result.status ?? 1);
-  }
-
-  return result.stdout.trim();
-}
-
-function getAffectedFiles() {
-  const prePushInput = process.argv.includes("--pre-push") ? readStdin() : "";
-  const files = new Set();
-
-  if (prePushInput.trim().length > 0) {
-    for (const line of prePushInput.trim().split("\n")) {
-      const [, localSha, , remoteSha] = line.trim().split(/\s+/);
-
-      if (!localSha || localSha === zeroSha) {
-        continue;
-      }
-
-      const changedFiles =
-        remoteSha && remoteSha !== zeroSha
-          ? gitFiles(["diff", "--name-only", "--diff-filter=ACMR", `${remoteSha}..${localSha}`])
-          : gitFiles(["diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", localSha]);
-
-      for (const file of changedFiles) {
-        files.add(file);
-      }
-    }
-  }
-
-  for (const file of getWorktreeFiles()) {
-    files.add(file);
-  }
-
-  if (files.size === 0) {
-    for (const file of getBranchFiles()) {
-      files.add(file);
-    }
-  }
-
-  return [...files].filter((file) => existsSync(file)).sort();
-}
-
-function getWorktreeFiles() {
-  return [
-    ...gitFiles(["diff", "--name-only", "--diff-filter=ACMR", "HEAD"]),
-    ...gitFiles(["diff", "--name-only", "--diff-filter=ACMR", "--cached"]),
-    ...gitFiles(["ls-files", "--others", "--exclude-standard"]),
-  ];
-}
-
-function getBranchFiles() {
-  const upstream = spawn("git", ["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}"], {
-    encoding: "utf8",
-    allowFailure: true,
-  });
-
-  if (upstream.status === 0) {
-    return gitFiles(["diff", "--name-only", "--diff-filter=ACMR", `${upstream.stdout.trim()}...HEAD`]);
-  }
-
-  const previousCommit = spawn("git", ["rev-parse", "--verify", "HEAD~1"], {
-    encoding: "utf8",
-    allowFailure: true,
-  });
-
-  if (previousCommit.status === 0) {
-    return gitFiles(["diff", "--name-only", "--diff-filter=ACMR", "HEAD~1..HEAD"]);
-  }
-
-  return gitFiles(["ls-files"]);
-}
-
-function gitFiles(args) {
-  const result = spawn("git", args, { encoding: "utf8" });
-  return result.stdout
-    .split("\n")
-    .map((file) => file.trim())
-    .filter(Boolean);
-}
-
 function runPrettier(files) {
   console.log("Checking formatting for affected files...");
-  run("npx", ["prettier", "--check", "--ignore-unknown", ...files]);
+  run(repoRoot, "npx", ["prettier", "--check", "--ignore-unknown", ...files]);
 }
 
 function runTypecheckWhenNeeded(files) {
@@ -124,7 +30,7 @@ function runTypecheckWhenNeeded(files) {
   }
 
   console.log("Running project typecheck for affected typed files...");
-  run("npm", ["run", "typecheck"]);
+  run(repoRoot, "npm", ["run", "typecheck"]);
 }
 
 function runJavaScriptSyntaxCheckWhenNeeded(files) {
@@ -138,7 +44,7 @@ function runJavaScriptSyntaxCheckWhenNeeded(files) {
   console.log("Running JavaScript syntax checks for affected files...");
 
   for (const file of syntaxCheckFiles) {
-    run("node", ["--check", file]);
+    run(repoRoot, "node", ["--check", file]);
   }
 }
 
@@ -151,7 +57,7 @@ function runWorkerClientGuard(files) {
   }
 
   console.log("Running Worker client guard for affected Worker view files...");
-  run("npm", ["run", "worker:client-guard", "--", ...guardFiles]);
+  run(repoRoot, "npm", ["run", "worker:client-guard", "--", ...guardFiles]);
 }
 
 function runAuditWhenNeeded(files) {
@@ -161,7 +67,7 @@ function runAuditWhenNeeded(files) {
   }
 
   console.log("Running security audit because package files changed...");
-  run("npm", ["run", "security:audit"]);
+  run(repoRoot, "npm", ["run", "security:audit"]);
 }
 
 function runTestsWhenNeeded(files) {
@@ -171,7 +77,7 @@ function runTestsWhenNeeded(files) {
   }
 
   console.log("Running affected tests because affected files include runtime, unit test, or test environment code...");
-  run("npm", ["run", "test:affected", "--", ...files]);
+  run(repoRoot, "npm", ["run", "test:affected", "--", ...files]);
 }
 
 function affectsTypecheck(file) {
@@ -212,46 +118,6 @@ function affectsTestEnvironment(file) {
     "vitest.config.ts",
     "scripts/run-coverage-gate.mjs",
     "scripts/run-affected-tests.mjs",
+    "scripts/affected-file-utils.mjs",
   ].includes(file);
-}
-
-function readStdin() {
-  try {
-    return process.stdin.isTTY ? "" : readFileSync(0, "utf8");
-  } catch {
-    return "";
-  }
-}
-
-function run(command, args) {
-  const result = spawn(command, args, { stdio: "inherit" });
-
-  if (result.error) {
-    console.error(result.error.message);
-    process.exit(1);
-  }
-
-  if ((result.status ?? 1) !== 0) {
-    process.exit(result.status ?? 1);
-  }
-}
-
-function spawn(command, args, options = {}) {
-  const result = spawnSync(command, args, {
-    cwd: repoRoot,
-    env: process.env,
-    stdio: options.encoding ? ["ignore", "pipe", "pipe"] : "inherit",
-    encoding: options.encoding,
-  });
-
-  if (result.error) {
-    console.error(result.error.message);
-    process.exit(1);
-  }
-
-  if (!options.allowFailure && (result.status ?? 1) !== 0) {
-    process.exit(result.status ?? 1);
-  }
-
-  return result;
 }
