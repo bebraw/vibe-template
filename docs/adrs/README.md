@@ -65,6 +65,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-030](./implemented/ADR-030-reserve-full-mutation-ci-for-github.md)               | Implemented | Reserve the full mutation workflow job for GitHub and skip it in local Agent CI.               |
 | [ADR-031](./implemented/ADR-031-use-agent-ci-warm-cache-serialization.md)             | Implemented | Use Agent CI warm-cache serialization instead of a repo-local install lock.                    |
 | [ADR-032](./implemented/ADR-032-add-template-update-packs.md)                         | Implemented | Add plain-file update packs for syncing reusable template maintenance downstream.              |
+| [ADR-033](./implemented/ADR-033-add-advisory-fallow-diagnostics.md)                   | Implemented | Add advisory Fallow diagnostics for readability, health, duplication, and cleanup evidence.    |
 
 ## Creating A New ADR
 

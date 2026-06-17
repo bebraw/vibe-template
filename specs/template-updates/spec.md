@@ -32,6 +32,7 @@ copying unrelated starter structure.
   - `2026-06-13-github-only-mutation-ci`
   - `2026-06-14-agent-ci-warm-cache`
   - `2026-06-14-agent-sync-entrypoint`
+  - `2026-06-17-advisory-fallow-diagnostics`
 
 ### Anti-Patterns
 

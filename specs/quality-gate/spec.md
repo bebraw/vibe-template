@@ -12,6 +12,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Affected guardrails:** `npm run quality:affected`
 - **Browser gate:** `npm run e2e`
 - **Affected test gate:** `npm run test:affected`
+- **Advisory codebase diagnostics:** `npm run diagnostics:codebase`
+- **Changed-code readability diagnostics:** `npm run diagnostics:readability`
+- **Whole-repo health diagnostics:** `npm run diagnostics:health`
 - **Full mutation gate:** `npm run mutation`
 - **Incremental mutation gate:** `npm run mutation:incremental`
 - **Full gate:** `npm run quality:gate`
@@ -31,6 +34,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.60.0-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
+- **Codebase diagnostics config:** `.fallowrc.json`
 - **Mutation config:** `stryker.config.mjs`
 - **Readiness baseline:** `npm run quality:gate` and `npm run ci:local` for non-documentation changes
 - **Documentation-only exception:** documentation-only changes may skip `npm run ci:local` when they do not alter executable config, generated artifacts, package metadata, source code, or tests
@@ -40,6 +44,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Do not collapse fast and browser verification back into one opaque step without a concrete reason.
 - Do not treat colocated tests or test-support files as runtime source code when deciding whether unit coverage is missing.
 - Do not weaken the full gate just to make iteration faster.
+- Do not treat advisory Fallow diagnostics as a replacement for formatting, type checking, runtime audit, unit coverage, browser tests, mutation testing, or Worker-specific guardrails.
 - Do not treat targeted iteration checks as a replacement for the readiness baseline unless the change is documentation-only and qualifies for the documented Agent CI exception.
 - Do not add undocumented workflow write targets for generated output, local state, caches, archives, or tool artifacts.
 
@@ -50,6 +55,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - [ ] The fast gate covers formatting, type checking, Worker client-code guardrails, runtime audit, and unit coverage.
 - [ ] The affected guardrail path scopes formatting, JavaScript syntax checks, Worker client-code checks, package audit, and unit tests to affected files when possible.
 - [ ] The affected test gate runs tests related to affected runtime files, runs affected unit test files directly, and falls back to full coverage for broad test environment changes or affected runtime files with no related tests.
+- [ ] The advisory codebase diagnostics report changed-code readability risk, whole-repo health, hotspots, duplication, and cleanup evidence without becoming part of the hard quality gate.
 - [ ] The browser gate covers the Playwright baseline.
 - [ ] The full mutation gate covers runtime `src/**/*.ts` files with Stryker, Vitest, and TypeScript checking.
 - [ ] The incremental mutation gate reuses prior Stryker results for repeated local quality-gate runs while preserving a complete mutation report.
@@ -65,6 +71,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - `npm run quality:affected` must avoid full-repo work when affected files make a narrower check sufficient.
 - `npm run test:affected` must avoid full coverage work when affected runtime or unit test files can be checked through related or direct Vitest runs.
 - `npm run quality:gate` must continue to represent the local baseline verification path.
+- `npm run diagnostics:codebase` must remain advisory and must not be required by the baseline readiness path.
+- Fallow diagnostics must use `--no-cache` in repo scripts so normal diagnostic runs do not create a persistent `.fallow/` cache.
 - `npm run mutation` must fail when the mutation score is below the configured break threshold.
 - `npm run mutation:incremental` must fail when the resulting mutation score is below the configured break threshold.
 - `npm install` must keep the repo-managed `pre-push` hook configured without requiring extra setup steps.
@@ -102,6 +110,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - GitHub Actions must run the full mutation gate instead of the incremental mutation gate.
 - Mutation reports and Stryker incremental data must be written under ignored `reports/`, and Stryker's temporary sandbox must stay under ignored `.stryker-tmp/`.
 - New workflow write targets must be documented when they are introduced.
+- Manually created Fallow caches must stay ignored under `.fallow/`.
 
 ### Verification
 
@@ -122,6 +131,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: runtime or unit test files are affected
 - When: the contributor runs `npm run test:affected`
 - Then: Vitest checks related runtime tests or affected unit test files without running unrelated unit tests when that is safe
+
+**Scenario: Contributor wants codebase readability diagnostics**
+
+- Given: a change is ready for review or a refactor target is unclear
+- When: the contributor runs `npm run diagnostics:codebase`
+- Then: Fallow reports changed-code readability risk, health scoring, hotspots, duplication, and cleanup evidence without replacing the baseline gate
 
 **Scenario: Contributor wants a fast baseline signal**
 

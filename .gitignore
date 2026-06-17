@@ -1,6 +1,7 @@
 node_modules/
 .cache/
 .generated/
+.fallow/
 .npm/
 .pnpm-store/
 .stryker-tmp/
