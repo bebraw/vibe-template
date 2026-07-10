@@ -41,22 +41,22 @@
     "worker:client-guard": "node ./scripts/assert-no-worker-client-scripts.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.60.0",
+    "@playwright/test": "1.61.1",
     "@redwoodjs/agent-ci": "0.16.2",
     "@stryker-mutator/core": "9.6.1",
     "@stryker-mutator/typescript-checker": "9.6.1",
     "@stryker-mutator/vitest-runner": "9.6.1",
-    "@tailwindcss/cli": "4.3.1",
-    "@types/node": "24.13.2",
-    "@vitest/coverage-v8": "4.1.8",
+    "@tailwindcss/cli": "4.3.2",
+    "@types/node": "26.1.1",
+    "@vitest/coverage-v8": "4.1.10",
     "chrome-launcher": "1.2.1",
-    "fallow": "2.97.0",
+    "fallow": "3.3.0",
     "lighthouse": "13.4.0",
-    "prettier": "3.8.4",
-    "tailwindcss": "4.3.1",
+    "prettier": "3.9.5",
+    "tailwindcss": "4.3.2",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "vitest": "4.1.8",
-    "wrangler": "4.100.0"
+    "vitest": "4.1.10",
+    "wrangler": "4.110.0"
   }
 }

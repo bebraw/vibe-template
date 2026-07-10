@@ -63,9 +63,7 @@ await env.STREAM.send(events);
 ```typescript
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    const event = {
-      /* ... */
-    };
+    const event = {/* ... */};
 
     // Don't block response on send
     ctx.waitUntil(env.STREAM.send([event]));

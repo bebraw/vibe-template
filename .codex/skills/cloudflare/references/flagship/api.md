@@ -259,9 +259,7 @@ Requires an API token with `flagship:evaluate` permission. Context attributes pa
 ```json
 {
   "priority": 1,
-  "conditions": [
-    /* Condition[] */
-  ],
+  "conditions": [/* Condition[] */],
   "serve_variation": "on",
   "rollout": { "percentage": 50, "attribute": "targetingKey" }
 }

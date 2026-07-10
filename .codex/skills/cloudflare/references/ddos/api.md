@@ -75,10 +75,7 @@ interface DDoSAlertConfig {
   name: string;
   enabled: boolean;
   alert_type:
-    | "http_ddos_attack_alert"
-    | "layer_3_4_ddos_attack_alert"
-    | "advanced_http_ddos_attack_alert"
-    | "advanced_layer_3_4_ddos_attack_alert";
+    "http_ddos_attack_alert" | "layer_3_4_ddos_attack_alert" | "advanced_http_ddos_attack_alert" | "advanced_layer_3_4_ddos_attack_alert";
   filters?: {
     zones?: string[];
     hostnames?: string[];

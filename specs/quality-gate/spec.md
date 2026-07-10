@@ -32,7 +32,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Affected file helper logic:** `scripts/affected-file-utils.mjs`
 - **Runtime pin source:** `package.json#engines.node`
 - **Package manager hint source:** `package.json#packageManager`
-- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.60.0-noble`
+- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.61.1-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
 - **Codebase diagnostics config:** `.fallowrc.json`
@@ -84,7 +84,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - CI jobs must install dependencies with plain `npm ci`.
 - Local Agent CI must rely on its built-in warm-cache serialization instead of repo-local install locking.
 - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
-- The browser CI job must use the pinned Playwright container instead of reinstalling Chromium at runtime.
+- The browser CI job must use a container image whose version exactly matches the pinned `@playwright/test` version instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.
 - The Worker client-code guard must fail on inline `<script>` tags, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files.

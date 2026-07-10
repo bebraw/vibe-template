@@ -38,9 +38,7 @@ for iter.Next() {
 const client = new Cloudflare({ maxRetries: 5 });
 
 try {
-  const zone = await client.zones.create({
-    /* ... */
-  });
+  const zone = await client.zones.create({/* ... */});
 } catch (err) {
   if (err instanceof Cloudflare.RateLimitError) {
     // Already retried 5 times with backoff

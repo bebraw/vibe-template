@@ -210,9 +210,7 @@ Resolver types: `createAddressBasedEmailResolver` (recipient → instance name),
 
 ```typescript
 try {
-  const response = await env.EMAIL.send({
-    /* ... */
-  });
+  const response = await env.EMAIL.send({/* ... */});
 } catch (error) {
   // error.code is one of the E_* error codes
   console.error(`Failed: ${error.code} - ${error.message}`);
