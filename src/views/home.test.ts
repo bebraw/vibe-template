@@ -12,6 +12,10 @@ describe("renderHomePage", () => {
     expect(html).toContain("JSON health endpoint for tooling and smoke tests");
     expect(html).toContain("Use the health probe to confirm the Worker is live");
     expect(html).toContain('rel="stylesheet" href="/styles.css"');
+    expect(html).toContain(`<meta name="description" content="A runnable Cloudflare Worker baseline`);
+    expect(html).toContain('<meta name="color-scheme" content="light">');
+    expect(html).toContain('href="#main">Skip to main content</a>');
+    expect(html).toContain('<main id="main"');
     expect(html).not.toContain("Stryker was here!");
     expect(html.match(/<li>/g)).toHaveLength(exampleRoutes.length);
   });

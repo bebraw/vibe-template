@@ -5,6 +5,9 @@ export function renderNotFoundPage(pathname: string): string {
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="robots" content="noindex">
     <title>Not Found</title>
   </head>
   <body>

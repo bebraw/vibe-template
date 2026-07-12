@@ -13,6 +13,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - **Styling pipeline:** `src/tailwind-input.css` compiles to `.generated/styles.css`, which the Worker serves at `/styles.css`.
 - **Starter UI contract:** `src/views/home.ts` renders a narrow editorial page with a route index and a prominent health-probe entry point.
 - **Client code boundary:** Worker-rendered HTML must not embed executable browser code inline. Browser behavior belongs in typed TypeScript modules before being served to clients.
+- **Web response baseline:** HTML responses include a restrictive script-free CSP, a narrow Permissions Policy, a referrer policy, and MIME-sniffing protection. Rendered pages include baseline metadata and keyboard bypass navigation where repeated content exists.
 - **Data models:** None yet. The stub is stateless.
 - **Dependencies:** Wrangler provides the Worker runtime; Playwright and Vitest verify the behavior.
 
@@ -24,6 +25,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - Do not collapse API handling and rendered views back into one file as the starter evolves.
 - Do not move starter styles back into large inline `<style>` blocks.
 - Do not add inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs to Worker-rendered HTML.
+- Do not loosen the shared CSP implicitly when adding scripts, external assets, frames, or cross-origin form actions; update the policy and this spec deliberately.
 
 ## Contract
 
@@ -35,6 +37,8 @@ This template needs a concrete runnable starting point so developers can clone i
 - [ ] The health route returns stable JSON for smoke tests and tooling.
 - [ ] The spec is updated in the same change set.
 - [ ] Automated tests cover the critical behavior.
+- [ ] HTML and stylesheet responses retain the documented security headers.
+- [ ] The starter home page retains baseline metadata and a skip link.
 
 ### Regression Guardrails
 
@@ -44,6 +48,9 @@ This template needs a concrete runnable starting point so developers can clone i
 - Worker/view runtime files must remain free of inline executable browser code.
 - `GET /api/health` must keep returning HTTP 200 JSON with `ok: true`.
 - Unknown routes must return HTTP 404.
+- HTML responses must keep `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and the script-free Content Security Policy.
+- The home page must keep its description, colour-scheme declaration, and skip-to-main-content link.
+- Not-found pages must remain non-indexable.
 
 ### Verification
 

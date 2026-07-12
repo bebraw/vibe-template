@@ -24,11 +24,14 @@ export function renderHomePage(routes: Array<{ path: string; purpose: string }>)
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="${escapeHtml(appDescription)}">
+    <meta name="color-scheme" content="light">
     <title>${escapeHtml(appTitle)}</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body class="min-h-screen bg-app-canvas text-app-text antialiased">
-    <main class="mx-auto w-[min(46rem,calc(100vw-2rem))] py-12 sm:py-16">
+    <a class="fixed left-4 top-4 z-10 -translate-y-24 rounded-lg bg-app-text px-4 py-3 font-semibold text-app-canvas transition focus:translate-y-0" href="#main">Skip to main content</a>
+    <main id="main" class="mx-auto w-[min(46rem,calc(100vw-2rem))] py-12 sm:py-16">
       <article class="space-y-10">
         <section>
           <p class="mb-4 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-app-accent">Starter Surface</p>
