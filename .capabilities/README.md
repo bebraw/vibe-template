@@ -12,7 +12,7 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 | [`mutation-testing`](./mutation-testing/README.md)             | Add Stryker mutation testing for TypeScript projects using Vitest. |
 | [`pre-push-quality-gate`](./pre-push-quality-gate/README.md)   | Add a repo-managed pre-push hook that runs the fast quality gate.  |
 | [`readme-screenshot`](./readme-screenshot/README.md)           | Add local-only README screenshot capture through Playwright.       |
-| [`lighthouse-performance`](./lighthouse-performance/README.md) | Add local Lighthouse performance reports and a performance budget. |
+| [`lighthouse-performance`](./lighthouse-performance/README.md) | Add local Lighthouse web-quality reports and category budgets.     |
 
 ## Reviewed But Not Extracted
 
@@ -76,8 +76,8 @@ Capability Pull Plan
     Include if the repo has a stable local UI worth showing in docs.
 
 [ ] lighthouse-performance
-    Adds local Lighthouse reports and a performance budget.
-    Include if the repo has a browser-visible surface and wants local performance checks.
+    Adds local Lighthouse reports and web-quality category budgets.
+    Include if the repo has a browser-visible surface and wants local performance, accessibility, best-practices, and SEO checks.
 
 For each recommended capability, explain:
 - why it fits this repo

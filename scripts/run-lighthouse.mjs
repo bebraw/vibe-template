@@ -10,6 +10,7 @@ import desktopConfig from "lighthouse/core/config/desktop-config.js";
 const DEFAULT_REPORT_DIR = "reports/lighthouse";
 const DEFAULT_SERVER_START_TIMEOUT_MS = 120_000;
 const DEFAULT_MIN_PERFORMANCE_SCORE = 90;
+const DEFAULT_MIN_QUALITY_SCORE = 90;
 const READY_POLL_INTERVAL_MS = 1_000;
 
 const auditModes = [
@@ -28,6 +29,7 @@ Environment variables:
                                   Optional. Server start timeout in milliseconds. Defaults to 120000.
   LIGHTHOUSE_MIN_PERFORMANCE_SCORE
                                   Optional. Minimum performance score per mode. Defaults to 90.
+  LIGHTHOUSE_MIN_QUALITY_SCORE     Optional. Minimum accessibility, best-practices, and SEO score per mode. Defaults to 90.
   LIGHTHOUSE_REPORT_DIR           Optional. Output directory. Defaults to reports/lighthouse.
 
 Examples:
@@ -46,6 +48,7 @@ const readyUrl = process.env.LIGHTHOUSE_SERVER_READY_URL || targetUrl;
 const serverCommand = process.env.LIGHTHOUSE_SERVER_COMMAND;
 const serverStartTimeoutMs = readIntegerEnv("LIGHTHOUSE_SERVER_START_TIMEOUT_MS", DEFAULT_SERVER_START_TIMEOUT_MS);
 const minPerformanceScore = readIntegerEnv("LIGHTHOUSE_MIN_PERFORMANCE_SCORE", DEFAULT_MIN_PERFORMANCE_SCORE);
+const minQualityScore = readIntegerEnv("LIGHTHOUSE_MIN_QUALITY_SCORE", DEFAULT_MIN_QUALITY_SCORE);
 
 await main();
 
@@ -74,6 +77,7 @@ async function main() {
       generatedAt: new Date().toISOString(),
       url: targetUrl,
       minPerformanceScore,
+      minQualityScore,
       modes: results,
     };
 
@@ -178,7 +182,7 @@ async function runAudit({ mode, chromePath }) {
         port: chrome.port,
         logLevel: "error",
         output: ["html", "json"],
-        onlyCategories: ["performance"],
+        onlyCategories: ["performance", "accessibility", "best-practices", "seo"],
       },
       mode.config,
     );
@@ -203,6 +207,9 @@ function summarizeMode(modeId, lhr) {
   return {
     mode: modeId,
     performanceScore: percentage(lhr.categories.performance?.score),
+    accessibilityScore: percentage(lhr.categories.accessibility?.score),
+    bestPracticesScore: percentage(lhr.categories["best-practices"]?.score),
+    seoScore: percentage(lhr.categories.seo?.score),
     firstContentfulPaintMs: numericAudit(lhr, "first-contentful-paint"),
     largestContentfulPaintMs: numericAudit(lhr, "largest-contentful-paint"),
     speedIndexMs: numericAudit(lhr, "speed-index"),
@@ -245,26 +252,40 @@ function percentage(score) {
 }
 
 function printSummary(results) {
-  console.log("\nLighthouse performance summary");
+  console.log("\nLighthouse web quality summary");
 
   for (const result of results) {
-    console.log(`- ${result.mode}: ${result.performanceScore ?? "n/a"}/100`);
+    console.log(
+      `- ${result.mode}: performance=${result.performanceScore ?? "n/a"}, accessibility=${result.accessibilityScore ?? "n/a"}, best-practices=${result.bestPracticesScore ?? "n/a"}, seo=${result.seoScore ?? "n/a"}`,
+    );
   }
 
   console.log(`Detailed reports written to ${reportDir}`);
 }
 
 function assertBudgets(results) {
-  const failed = results.filter((result) => {
-    return typeof result.performanceScore === "number" && result.performanceScore < minPerformanceScore;
+  const failed = results.flatMap((result) => {
+    return [
+      budgetFailure(result.mode, "performance", result.performanceScore, minPerformanceScore),
+      budgetFailure(result.mode, "accessibility", result.accessibilityScore, minQualityScore),
+      budgetFailure(result.mode, "best-practices", result.bestPracticesScore, minQualityScore),
+      budgetFailure(result.mode, "seo", result.seoScore, minQualityScore),
+    ].filter(Boolean);
   });
 
   if (failed.length === 0) {
     return;
   }
 
-  const details = failed.map((result) => `${result.mode}=${result.performanceScore}`).join(", ");
-  throw new Error(`Lighthouse budget failed: ${details} (minimum ${minPerformanceScore}).`);
+  throw new Error(`Lighthouse budget failed: ${failed.join(", ")}.`);
+}
+
+function budgetFailure(mode, category, score, minimum) {
+  if (typeof score !== "number" || score >= minimum) {
+    return null;
+  }
+
+  return `${mode}.${category}=${score} (minimum ${minimum})`;
 }
 
 function readRequiredUrl(name) {

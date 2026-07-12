@@ -71,7 +71,7 @@ The GitHub Actions CI workflow splits fast checks, browser checks, and mutation 
 
 The starter UI now follows the same Tailwind v4 baseline shape as `thesis-journey-tracker`: Tailwind input lives in `src/tailwind-input.css`, generated CSS is written to `.generated/styles.css`, and Wrangler runs `npm run build:css` automatically before local development.
 
-The Lighthouse setup is also generic, but the Worker stub gives it a concrete local target. Use `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`. Reports are written to `reports/lighthouse/`.
+The Lighthouse setup is also generic, but the Worker stub gives it a concrete local target. Use `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`. Reports cover performance, accessibility, best practices, and SEO in mobile and desktop modes and are written to `reports/lighthouse/`. Configure the performance floor with `LIGHTHOUSE_MIN_PERFORMANCE_SCORE` and the other category floors with `LIGHTHOUSE_MIN_QUALITY_SCORE`.
 
 The Vitest setup is generic as well. `vitest.config.ts` targets colocated `src/**/*.test.ts` files while excluding `src/**/*.e2e.ts`. The default `npm test` command uses `--passWithNoTests` so the template remains usable before a project adds its first test file.
 

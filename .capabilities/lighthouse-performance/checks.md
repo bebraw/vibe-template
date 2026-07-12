@@ -11,5 +11,5 @@ Adapt the URL and server command to the target repo.
 Expected:
 
 - Reports are written under `reports/lighthouse/`.
-- The script exits non-zero when a mode falls below `LIGHTHOUSE_MIN_PERFORMANCE_SCORE`.
+- The script exits non-zero when performance falls below `LIGHTHOUSE_MIN_PERFORMANCE_SCORE` or another audited category falls below `LIGHTHOUSE_MIN_QUALITY_SCORE`.
 - The target repo's normal quality gate still passes.

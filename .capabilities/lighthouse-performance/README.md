@@ -1,18 +1,18 @@
 # Lighthouse Performance Capability Kit
 
-Use this kit to add local Lighthouse performance reports and a configurable performance budget.
+Use this kit to add local Lighthouse web-quality reports and configurable category budgets.
 
 ## Adds
 
 - `scripts/run-lighthouse.mjs`
 - A `lighthouse` script
 - HTML and JSON report output under `reports/lighthouse/`
-- Mobile and desktop performance checks
+- Mobile and desktop performance, accessibility, best-practices, and SEO checks
 
 ## Good Fit
 
 - The target repo has a local or deployed URL to audit.
-- Performance budget checks are useful during local review.
+- Web-quality budget checks are useful during local review.
 - The repo can accept Playwright, Chrome launcher, and Lighthouse as dev dependencies.
 
 ## Poor Fit
