@@ -35,6 +35,7 @@ copying unrelated starter structure.
   - `2026-06-17-advisory-fallow-diagnostics`
   - `2026-06-17-shared-affected-file-utils`
   - `2026-07-10-playwright-1-61-ci-image`
+  - `2026-07-12-web-quality-baseline`
 
 ### Anti-Patterns
 

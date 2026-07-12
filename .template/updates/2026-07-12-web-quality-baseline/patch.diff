@@ -1,0 +1,32 @@
+diff --git a/src/views/shared.ts b/src/views/shared.ts
+--- a/src/views/shared.ts
++++ b/src/views/shared.ts
+@@ -4,5 +4,9 @@ export function htmlResponse(body: string, status = 200): Response {
+       "content-type": "text/html; charset=utf-8",
+       "cache-control": "no-store",
++      "content-security-policy": "default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'",
++      "permissions-policy": "camera=(), geolocation=(), microphone=()",
++      "referrer-policy": "strict-origin-when-cross-origin",
++      "x-content-type-options": "nosniff",
+     },
+   });
+ }
+@@ -14,5 +18,6 @@ export function cssResponse(body: string): Response {
+       "content-type": "text/css; charset=utf-8",
+       "cache-control": "no-store",
++      "x-content-type-options": "nosniff",
+     },
+   });
+ }
+diff --git a/scripts/run-lighthouse.mjs b/scripts/run-lighthouse.mjs
+--- a/scripts/run-lighthouse.mjs
++++ b/scripts/run-lighthouse.mjs
+@@ -178,7 +182,7 @@ async function runAudit({ mode, chromePath }) {
+         logLevel: "error",
+         output: ["html", "json"],
+-        onlyCategories: ["performance"],
++        onlyCategories: ["performance", "accessibility", "best-practices", "seo"],
+       },
+       mode.config,
+     );
+ 

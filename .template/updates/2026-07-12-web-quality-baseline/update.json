@@ -1,0 +1,15 @@
+{
+  "id": "2026-07-12-web-quality-baseline",
+  "title": "Adopt the web quality baseline",
+  "status": "implemented",
+  "risk": "medium",
+  "adrs": ["docs/adrs/implemented/ADR-035-adopt-a-web-response-baseline.md"],
+  "touches": [
+    "src/views/shared.ts",
+    "src/views/home.ts",
+    "scripts/run-lighthouse.mjs",
+    ".capabilities/lighthouse-performance/",
+    ".capabilities/website-baseline/"
+  ],
+  "checks": ["npm run quality:gate", "npm run ci:local"]
+}

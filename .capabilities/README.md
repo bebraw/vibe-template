@@ -13,6 +13,7 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 | [`pre-push-quality-gate`](./pre-push-quality-gate/README.md)   | Add a repo-managed pre-push hook that runs the fast quality gate.  |
 | [`readme-screenshot`](./readme-screenshot/README.md)           | Add local-only README screenshot capture through Playwright.       |
 | [`lighthouse-performance`](./lighthouse-performance/README.md) | Add local Lighthouse web-quality reports and category budgets.     |
+| [`website-baseline`](./website-baseline/README.md)             | Add an applicability-aware website quality checklist.              |
 
 ## Reviewed But Not Extracted
 
@@ -78,6 +79,10 @@ Capability Pull Plan
 [ ] lighthouse-performance
     Adds local Lighthouse reports and web-quality category budgets.
     Include if the repo has a browser-visible surface and wants local performance, accessibility, best-practices, and SEO checks.
+
+[ ] website-baseline
+    Adds a durable, applicability-aware web quality checklist without runtime dependencies.
+    Include if the repo serves browser-visible HTML and lacks an owned standards-based baseline.
 
 For each recommended capability, explain:
 - why it fits this repo

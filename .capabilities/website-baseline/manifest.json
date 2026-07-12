@@ -1,0 +1,23 @@
+{
+  "name": "website-baseline",
+  "description": "Add an applicability-aware web quality checklist without new runtime dependencies.",
+  "dependencies": {},
+  "scripts": {},
+  "files": [
+    {
+      "source": "files/docs/website-baseline.md",
+      "target": "docs/website-baseline.md",
+      "mode": "copy"
+    }
+  ],
+  "docs": [
+    "Assign ownership for the baseline or merge it into an existing product spec.",
+    "Record which conditional requirements apply before enforcing them.",
+    "Link deterministic items to existing automated checks where practical."
+  ],
+  "verify": ["Run the target repo's normal quality gate and browser audit."],
+  "notes": [
+    "This kit does not certify standards or legal compliance.",
+    "Consult the upstream Website Specification for current standards links and implementation guidance."
+  ]
+}
