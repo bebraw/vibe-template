@@ -6,6 +6,8 @@
 
 **Supersedes:** [ADR-027](./ADR-027-lock-local-agent-ci-installs.md)
 
+**Amended by:** [ADR-034](./ADR-034-emit-agent-ci-progress-events.md)
+
 ## Context
 
 ADR-027 added `scripts/ci-install-dependencies.sh` after local Agent CI jobs
@@ -22,7 +24,8 @@ parallelism and pause-on-failure behavior.
 GitHub Actions install steps will run plain `npm ci`.
 
 `npm run ci:local` will keep using the repo-pinned `agent-ci` binary with
-default local parallelism and `--pause-on-failure`.
+default local parallelism and `--pause-on-failure`. ADR-034 later adds the
+structured event stream without changing this cache or retry behavior.
 
 The template will not maintain a repo-local Agent CI install-lock wrapper.
 Local install race protection belongs to Agent CI's warm-cache serialization.

@@ -17,7 +17,7 @@ Add or merge these scripts into `package.json`:
 ```json
 {
   "scripts": {
-    "ci:local": "agent-ci run --quiet --pause-on-failure --workflow .github/workflows/ci.yml",
+    "ci:local": "agent-ci run --quiet --json --pause-on-failure --workflow .github/workflows/ci.yml",
     "ci:local:retry": "agent-ci retry"
   }
 }
@@ -40,5 +40,6 @@ Document these target-project expectations wherever the repo keeps developer set
 
 - Docker must be running before `npm run ci:local`.
 - `npm run ci:local` is the local GitHub Actions check.
+- The local command emits Agent CI's structured NDJSON lifecycle stream so agents can track run, job, step, pause, and completion state.
 - `npm run ci:local:retry -- --name <runner-name>` resumes a paused Agent CI runner.
 - `.env.agent-ci` is local-only and may contain machine-specific Docker or repository overrides.

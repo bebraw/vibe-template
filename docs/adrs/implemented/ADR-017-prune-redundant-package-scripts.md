@@ -4,6 +4,8 @@
 
 **Amended by:** [ADR-022](./ADR-022-add-mutation-testing-gate.md)
 
+**Amended by:** [ADR-034](./ADR-034-emit-agent-ci-progress-events.md)
+
 **Date:** 2026-04-24
 
 ## Context
@@ -16,7 +18,7 @@ The baseline still needs named entry points for common checks and for commands t
 
 We will keep one package script per normal workflow:
 
-- `npm run ci:local` is the quiet local Agent CI workflow and uses Agent CI's default local parallelism.
+- `npm run ci:local` is the canonical local Agent CI workflow and uses Agent CI's default local parallelism. ADR-034 later adds structured progress events while retaining quiet rendering.
 - `npm run quality:gate` runs the fast gate and browser tests.
 - `npm run e2e` is the browser-test command used by the full gate and CI.
 

@@ -52,6 +52,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The negotiation prompt must instruct agents to inspect the target repo, present recommended capabilities with trade-offs, and wait for approval before editing files.
 - The TypeScript setup kit must keep its dependency, `typecheck` script, `tsconfig.json`, and optional CSS declaration guidance aligned with this repo's current TypeScript setup.
 - The Agent CI kit must keep its dependency and command guidance aligned with this repo's `package.json` and `.codex/skills/agent-ci/SKILL.md`.
+- The Agent CI kit must configure structured lifecycle output alongside quiet rendering so agents can monitor local workflow progress without animated terminal output.
 - The Agent CI kit must rely on current Agent CI warm-cache serialization instead of reintroducing a repo-local install-lock pattern for npm workflows.
 - The quality-gate kit must keep the coverage gate script aligned with `scripts/run-coverage-gate.mjs`.
 - The mutation-testing kit must keep its Stryker config aligned with `stryker.config.mjs`.
@@ -72,7 +73,7 @@ The template is useful both as a starter repo and as a source of specific practi
 
 - Given: an npm repo with a GitHub Actions workflow
 - When: the agent follows `.capabilities/agent-ci/recipes/npm.md`
-- Then: the target repo gains the pinned Agent CI dependency, local CI scripts, local env example, Codex skill, and validation path
+- Then: the target repo gains the pinned Agent CI dependency, local CI scripts with structured progress, local env example, Codex skill, and validation path
 
 **Scenario: Target repo has no GitHub Actions workflow**
 

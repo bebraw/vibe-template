@@ -29,6 +29,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - The fast quality gate should fail when Worker/view runtime files contain inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs.
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.
 - Local CI should validate the same baseline checks before non-documentation changes are proposed or merged.
+- The canonical local CI command should emit Agent CI's structured lifecycle event stream so agents can track run, job, step, pause, and completion state without relying on animated terminal output. Agent command wrappers must pass that stream through live instead of buffering it until process exit.
 - Targeted commands are useful while iterating, but `npm run quality:gate` and `npm run ci:local` remain the readiness baseline before proposing or landing non-documentation changes.
 - `npm run diagnostics:codebase` is useful during review and refactoring, but passing or failing it is not a readiness baseline by itself.
 - Documentation-only changes may skip `npm run ci:local` when they do not alter executable config, generated artifacts, package metadata, source code, or tests.

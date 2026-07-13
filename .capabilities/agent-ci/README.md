@@ -5,7 +5,7 @@ Use this kit to add the repo's local GitHub Actions workflow loop to another pro
 ## Adds
 
 - A pinned `@redwoodjs/agent-ci` dev dependency.
-- Canonical local CI scripts for running and retrying Agent CI.
+- Canonical local CI scripts with structured agent progress for running and retrying Agent CI.
 - A local `.env.agent-ci.example` for machine-specific overrides.
 - A Codex skill that teaches agents how to use Agent CI in the target repo.
 - Optional GitHub Actions setup guidance when the target repo has no workflow yet.

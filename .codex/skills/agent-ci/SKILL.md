@@ -15,7 +15,7 @@ Run the full CI pipeline locally before pushing. CI was green before you started
 ## Run
 
 ```bash
-npx @redwoodjs/agent-ci run --quiet --all --pause-on-failure
+npx @redwoodjs/agent-ci run --quiet --json --all --pause-on-failure
 ```
 
 Pipes are safe — pause-on-failure works through `| tee log`, `> log.txt`, etc. When stdout isn't a TTY the launcher detaches the run and the foreground process exits **77** the moment a step pauses, freeing the pipe while the container stays paused for `retry`.
@@ -48,3 +48,5 @@ For programmatic monitoring, add `--json` (or set `AGENT_CI_JSON=1`) to emit an 
 - `diagnostic`
 
 `--json` is decoupled from `--quiet`, and the diff renderer is auto-suppressed under `--json` so ANSI sequences don't collide with the stream. Combined with the exit-77 pause signal above, this gives agents a robust contract: parse `run.paused` events, react, and call `retry` — no plaintext grep required.
+
+When repository instructions require an output-filtering command wrapper, use that wrapper's raw passthrough or proxy mode for Agent CI. Otherwise the wrapper may buffer the NDJSON stream until the process exits and hide the live progress this mode provides.

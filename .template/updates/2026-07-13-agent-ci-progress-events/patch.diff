@@ -1,0 +1,19 @@
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@ -15,4 +15,4 @@
+   "scripts": {
+     "build:css": "mkdir -p ./.generated && tailwindcss -i ./src/tailwind-input.css -o ./.generated/styles.css --minify",
+-    "ci:local": "agent-ci run --quiet --pause-on-failure --workflow .github/workflows/ci.yml",
++    "ci:local": "agent-ci run --quiet --json --pause-on-failure --workflow .github/workflows/ci.yml",
+     "ci:local:retry": "agent-ci retry",
+diff --git a/.codex/skills/agent-ci/SKILL.md b/.codex/skills/agent-ci/SKILL.md
+--- a/.codex/skills/agent-ci/SKILL.md
++++ b/.codex/skills/agent-ci/SKILL.md
+@@ -15,5 +15,5 @@
+ ## Run
+ 
+ ```bash
+-npx @redwoodjs/agent-ci run --quiet --all --pause-on-failure
++npx @redwoodjs/agent-ci run --quiet --json --all --pause-on-failure
+ ```

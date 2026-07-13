@@ -1,0 +1,10 @@
+{
+  "id": "2026-07-13-agent-ci-progress-events",
+  "title": "Emit Agent CI progress events",
+  "status": "implemented",
+  "risk": "low",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-034-emit-agent-ci-progress-events.md"],
+  "touches": ["package.json", ".codex/skills/agent-ci/", ".capabilities/agent-ci/", "docs/", "specs/"],
+  "checks": ["npm run quality:gate", "npm run ci:local"]
+}

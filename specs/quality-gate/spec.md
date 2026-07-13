@@ -99,6 +99,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The repo's local CI scripts should use the repo-pinned `agent-ci` binary directly instead of carrying repo-specific runtime patching or install locking.
 - The canonical local CI script should rely on Agent CI warm-cache serialization instead of forcing `--jobs 1` to avoid warmed dependency races on macOS-hosted Docker.
 - The canonical local CI script should use pause-on-failure so agents can fix and retry a failed runner without restarting the whole workflow.
+- The canonical local CI script should combine quiet rendering with Agent CI's structured JSON event stream so agents receive run, job, step, pause, diagnostic, and completion progress without parsing animated terminal output.
+- Agent command wrappers should use an unbuffered passthrough mode for local CI so structured lifecycle events reach the caller while the workflow is still running.
 - The local verification workflow should document macOS as the supported host baseline instead of implying cross-platform support.
 - The Playwright server path must avoid macOS file-watcher exhaustion in local runs without changing the normal `npm run dev` workflow.
 - The local CI documentation must cover the no-`origin` case through `.env.agent-ci` and `GITHUB_REPO` instead of treating that warning as normal noise.
@@ -151,6 +153,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: a non-documentation change is ready for review or merge
 - When: the contributor runs `npm run quality:gate` and `npm run ci:local`
 - Then: the fast, browser, and local incremental mutation verification paths pass
+
+**Scenario: Agent monitors local CI progress**
+
+- Given: an agent runs the canonical local CI command
+- When: Agent CI advances through the workflow or pauses on a failure through any required command wrapper
+- Then: the command emits structured lifecycle events, including step transitions and the paused runner's retry command, without requiring animated terminal output
 
 **Scenario: Documentation-only change**
 

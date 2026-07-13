@@ -36,7 +36,7 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 
 ### Commands
 
-- Run the quiet local workflow with Agent CI parallelism, warm-cache serialization, and pause-on-failure using `npm run ci:local`.
+- Run the local workflow with Agent CI's quiet renderer, structured NDJSON progress, parallelism, warm-cache serialization, and pause-on-failure using `npm run ci:local`.
 - Rebuild the generated stylesheet manually with `npm run build:css`.
 - Run the fast local gate with `npm run quality:gate:fast`.
 - Run the baseline quality gate with `npm run quality:gate`.
@@ -55,6 +55,10 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 - Format the repo with `npm run format`.
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npm run ci:local:retry -- --name <runner-name>`.
+
+`npm run ci:local` combines `--quiet` with `--json`. Quiet mode suppresses the animated terminal renderer; JSON mode independently emits newline-delimited `run`, `job`, `step`, pause, diagnostic, and completion events. This gives an agent continuous machine-readable lifecycle progress and an explicit retry command when a run pauses instead of leaving it to infer state from sparse quiet output.
+
+Agents following this repo's RTK requirement should invoke the workflow as `rtk proxy npm run ci:local` and retries as `rtk proxy npm run ci:local:retry -- --name <runner-name>`. RTK's proxy mode passes the NDJSON stream through live; its normal filtered mode may buffer this output until the command finishes.
 
 Use targeted checks while iterating, then run the full readiness path before proposing or landing a change:
 
@@ -110,4 +114,4 @@ Use this expectation for routine changes:
 - `npm run ci:local` should also pass before proposing or landing the change.
 - The repo-managed `pre-push` hook runs `npm run quality:affected` automatically after `npm install`, so pushes stop locally when affected guardrails are already red.
 
-The quality gate currently runs the fast gate first, then the Playwright browser tests, then incremental mutation tests for faster repeated local runs. GitHub Actions runs separate fast, browser, and full mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which lets Agent CI run independent jobs concurrently while its own warm-cache serialization protects the shared `node_modules` mount during cold installs. The command also pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.
+The quality gate currently runs the fast gate first, then the Playwright browser tests, then incremental mutation tests for faster repeated local runs. GitHub Actions runs separate fast, browser, and full mutation jobs, with repository-shape validation included in the fast job. Local Agent CI runs should go through `npm run ci:local`, which lets Agent CI run independent jobs concurrently while its own warm-cache serialization protects the shared `node_modules` mount during cold installs. The command emits structured lifecycle progress and pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.

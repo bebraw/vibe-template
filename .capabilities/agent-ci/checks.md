@@ -20,6 +20,7 @@ npm exec -- agent-ci run --help
 
 - `package.json` has `@redwoodjs/agent-ci` in `devDependencies`.
 - `package.json` has `ci:local` and `ci:local:retry` scripts.
+- `ci:local` combines `--quiet` and `--json` so agents receive structured lifecycle events without animated rendering.
 - A GitHub Actions workflow exists, or the user explicitly declined optional workflow setup.
 - `.env.agent-ci.example` exists and does not contain secrets.
 - `.codex/skills/agent-ci/SKILL.md` exists when the target repo uses Codex skills.
