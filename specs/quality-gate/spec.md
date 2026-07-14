@@ -41,6 +41,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
 - **Codebase diagnostics config:** `.fallowrc.json`
 - **Mutation config:** `stryker.config.mjs`
+- **Local mutation concurrency:** 50% of available parallelism
+- **GitHub mutation concurrency:** 100% of available parallelism
 - **Readiness baseline:** `npm run quality:gate` and `npm run ci:local` for non-documentation changes
 - **Documentation-only exception:** documentation-only changes may skip `npm run ci:local` when they do not alter executable config, generated artifacts, package metadata, source code, or tests
 
@@ -126,6 +128,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Mutation testing must exclude colocated tests, end-to-end tests, declarations, and `src/test-support.ts` from mutation.
 - Mutation testing must use the Vitest runner's per-test coverage analysis and related-test narrowing rather than an ad hoc minimization wrapper.
 - Mutation testing must set Stryker worker concurrency as a percentage of available parallelism instead of a fixed worker count.
+- The isolated GitHub mutation job must override local Stryker concurrency to 100% without changing the 50% local default.
 - GitHub Actions must run the full mutation gate instead of the incremental mutation gate.
 - Mutation reports and Stryker incremental data must be written under ignored `reports/`, and Stryker's temporary sandbox must stay under ignored `.stryker-tmp/`.
 - New workflow write targets must be documented when they are introduced.
@@ -222,7 +225,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - Given: a push or pull request runs GitHub Actions
 - When: the `quality-mutation` job runs
-- Then: it runs `npm run mutation` instead of the incremental mutation command
+- Then: it runs the full `npm run mutation` command at 100% runner concurrency instead of the incremental mutation command
 
 **Scenario: Contributor adds browser behavior to a Worker view**
 

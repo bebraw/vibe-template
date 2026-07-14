@@ -132,4 +132,4 @@ jobs:
       - name: Run mutation quality gate
         if: ${{ steps.expensive.outputs.run_expensive == 'true' }}
         shell: bash
-        run: npm run mutation
+        run: npm run mutation -- --concurrency 100%

@@ -72,6 +72,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-037](./implemented/ADR-037-adopt-oxlint-correctness-gate.md)                     | Implemented | Add Oxlint's default correctness rules to the fast and affected quality gates.                 |
 | [ADR-038](./implemented/ADR-038-scope-prettier-to-owned-files.md)                     | Implemented | Exclude duplicated and vendored skill material from the Prettier baseline.                     |
 | [ADR-039](./implemented/ADR-039-skip-expensive-ci-for-non-runtime-changes.md)         | Implemented | Skip remote browser and mutation work for known non-runtime-only changes.                      |
+| [ADR-040](./implemented/ADR-040-use-full-stryker-concurrency-in-ci.md)                | Implemented | Use full available Stryker parallelism in the isolated GitHub mutation job.                    |
 
 ## Creating A New ADR
 
