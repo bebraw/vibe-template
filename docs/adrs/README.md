@@ -73,6 +73,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-038](./implemented/ADR-038-scope-prettier-to-owned-files.md)                     | Implemented | Exclude duplicated and vendored skill material from the Prettier baseline.                     |
 | [ADR-039](./implemented/ADR-039-skip-expensive-ci-for-non-runtime-changes.md)         | Implemented | Skip remote browser and mutation work for known non-runtime-only changes.                      |
 | [ADR-040](./implemented/ADR-040-use-full-stryker-concurrency-in-ci.md)                | Implemented | Use full available Stryker parallelism in the isolated GitHub mutation job.                    |
+| [ADR-041](./implemented/ADR-041-cache-prettier-checks-by-content.md)                  | Implemented | Cache successful Prettier checks by content for faster repeated local gates.                   |
 
 ## Creating A New ADR
 

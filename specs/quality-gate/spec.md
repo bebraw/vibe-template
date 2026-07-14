@@ -10,6 +10,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - **Fast gate:** `npm run quality:gate:fast`
 - **Formatting scope:** project-owned code and documentation, excluding duplicated or vendored skill material listed in `.prettierignore`
+- **Formatting cache:** content-based Prettier cache at ignored `.cache/prettier`
 - **Correctness lint:** `npm run lint`
 - **Affected guardrails:** `npm run quality:affected`
 - **Browser gate:** `npm run e2e`
@@ -63,6 +64,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Definition of Done
 
 - [ ] The fast gate covers formatting, Oxlint correctness checks, type checking, Worker client-code guardrails, runtime audit, and unit coverage.
+- [ ] Repeated formatting checks reuse content-based results for unchanged files without weakening cold-run coverage.
 - [ ] The affected guardrail path scopes formatting, Oxlint, JavaScript syntax checks, Worker client-code checks, package audit, and unit tests to affected files when possible.
 - [ ] The affected test gate runs tests related to affected runtime files, runs affected unit test files directly, and falls back to full coverage for broad test environment changes or affected runtime files with no related tests.
 - [ ] The advisory codebase diagnostics report changed-code readability risk, whole-repo health, hotspots, duplication, and cleanup evidence without becoming part of the hard quality gate.
@@ -80,6 +82,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
 - Prettier must ignore `.github/skills/` and `.codex/skills/**/references/` while continuing to check project-owned skill entry points, specs, ADRs, and documentation.
+- `npm run format:check` must use Prettier's content cache under ignored `.cache/prettier`; CI must remain correct when that cache is absent.
 - `npm run lint` must use the pinned Oxlint dependency, enable only its default rules, and fail when warnings are reported.
 - `npm run quality:affected` must avoid full-repo work when affected files make a narrower check sufficient.
 - `npm run test:affected` must avoid full coverage work when affected runtime or unit test files can be checked through related or direct Vitest runs.
@@ -171,6 +174,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: the repository contains duplicated GitHub skill content and vendored Codex skill references
 - When: the contributor runs `npm run format:check`
 - Then: Prettier checks project-owned code and documentation without traversing those excluded skill trees
+
+**Scenario: Contributor repeats a formatting check**
+
+- Given: a successful formatting check has populated `.cache/prettier`
+- When: the contributor runs `npm run format:check` again without changing a checked file
+- Then: Prettier reuses the content-based result while preserving the same formatting contract
 
 **Scenario: Contributor introduces a JavaScript or TypeScript correctness issue**
 

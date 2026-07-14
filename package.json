@@ -24,7 +24,7 @@
     "e2e": "playwright test --pass-with-no-tests",
     "e2e:server": "CHOKIDAR_USEPOLLING=1 CHOKIDAR_INTERVAL=200 HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8788 --inspector-ip 127.0.0.1 --inspector-port 9230 --log-level error --show-interactive-dev-session=false",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format:check": "prettier --check . --cache --cache-strategy content --cache-location .cache/prettier",
     "lighthouse": "node ./scripts/run-lighthouse.mjs",
     "lint": "oxlint --max-warnings 0",
     "mutation": "stryker run",

@@ -89,6 +89,8 @@ The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` fil
 
 Oxlint provides the baseline JavaScript and TypeScript correctness lint. `npm run lint` uses Oxlint's default rules, treats warnings as failures, and stays separate from both Prettier formatting and TypeScript project checking. The affected-file guardrail scopes Oxlint to changed JavaScript and TypeScript files during iteration and pre-push checks.
 
+`npm run format:check` enables Prettier's content-based cache at `.cache/prettier`. Repeated checks skip unchanged files while content hashing keeps the result safe across branch switches and timestamp changes. The cache is disposable, ignored local state; remove it when measuring a cold formatting run. CI does not restore this cache, so every clean runner still performs a cold check.
+
 Prettier formats project-owned code and documentation. The committed `.prettierignore` excludes duplicated `.github/skills/` content and vendored `.codex/skills/**/references/` material so the fast gate does not repeatedly format externally maintained skill documentation. Project-owned skill entry points remain in the formatting baseline.
 
 Fallow provides advisory codebase readability diagnostics. `npm run diagnostics:readability` runs a changed-code audit for complexity, duplication, dependency hygiene, and cleanup findings while relaxing CRAP-score noise from untested tooling scripts. `npm run diagnostics:health` reports whole-repo health scoring, hotspots, and refactoring targets. `npm run diagnostics:codebase` runs both. These commands use `--no-cache`, so normal diagnostics do not create a persistent `.fallow/` cache. If a contributor runs cached Fallow commands manually, `.fallow/` is ignored and should stay untracked.
@@ -99,7 +101,7 @@ Template update packs live under `.template/updates/`. Use them to port later te
 
 ## Write Boundaries
 
-Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, optional Fallow caches belong in ignored `.fallow/`, Agent CI local caches belong under Agent CI's managed cache directory, template update packs belong in `.template/updates/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
+Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Prettier's disposable content cache belongs in `.cache/prettier`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, optional Fallow caches belong in ignored `.fallow/`, Agent CI local caches belong under Agent CI's managed cache directory, template update packs belong in `.template/updates/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.agent-ci`.
 
 When adding a new tool or workflow that writes files, document the target path in the same change and prefer ignored local output unless the artifact is intentionally reviewed.
 
