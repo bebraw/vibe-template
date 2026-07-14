@@ -25,6 +25,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Local workflow failure mode:** pause failed Agent CI runners for retry
 - **Retry command:** `npm run ci:local:retry -- --name <runner-name>`
 - **Remote workflow:** `.github/workflows/ci.yml`
+- **Remote expensive-gate classifier:** `scripts/classify-expensive-ci.mjs`
+- **Remote expensive-gate policy:** skip browser and mutation setup/execution only when every changed file is in a documented non-runtime area; run on unknown paths or unavailable ranges
 - **CI dependency install:** plain `npm ci`
 - **Action pinning:** every GitHub Actions `uses:` reference must use a full commit SHA
 - **Git hook path:** `.githooks/`
@@ -68,6 +70,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - [ ] The full gate runs the fast, browser, and incremental mutation gates in order.
 - [ ] The repo-managed `pre-push` hook runs affected-file guardrails before a push leaves the machine.
 - [ ] Local and remote CI use the same split verification model for non-documentation changes.
+- [ ] Remote browser and mutation jobs avoid dependency installation and gate execution for known non-runtime-only changes.
 - [ ] Documentation-only changes can skip Agent CI when they do not alter executable behavior or workflow configuration.
 - [ ] The spec is updated in the same change set.
 
@@ -85,6 +88,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - `npm run mutation:incremental` must fail when the resulting mutation score is below the configured break threshold.
 - `npm install` must keep the repo-managed `pre-push` hook configured without requiring extra setup steps.
 - The CI workflow must cancel superseded runs for the same ref.
+- The CI workflow must run browser and mutation gates when any changed path is runtime-related or unknown, when no reliable changed-file range is available, or when classification fails.
+- The CI workflow may skip browser and mutation setup and execution only when every changed file is in the classifier's explicit non-runtime allowlist.
 - The CI workflow must read the pinned Node version from `package.json` instead of a separate version file.
 - The CI workflow must keep using npm for install and verification steps without depending on one exact npm patch release.
 - The npm release used by CI must stay inside the supported npm range declared in `package.json`.
@@ -188,6 +193,18 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - And: it does not alter executable config, generated artifacts, package metadata, source code, or tests
 - When: the contributor runs the smallest relevant local checks
 - Then: they may skip `npm run ci:local`
+
+**Scenario: Remote non-runtime-only change**
+
+- Given: a push or pull request changes only documented non-runtime paths
+- When: GitHub Actions classifies the changed commit range
+- Then: the fast job still runs while browser and mutation dependency installation and gate execution are skipped
+
+**Scenario: Remote change classification is uncertain**
+
+- Given: a changed path is not explicitly classified as non-runtime or the commit range cannot be inspected
+- When: GitHub Actions classifies the change
+- Then: browser and mutation verification run instead of risking a false skip
 
 **Scenario: Contributor checks test assertion strength**
 

@@ -33,11 +33,12 @@
     "prepare": "node ./scripts/setup-git-hooks.mjs",
     "quality:affected": "node ./scripts/run-affected-guardrails.mjs",
     "quality:gate": "npm run quality:gate:fast && npm run e2e && npm run mutation:incremental",
-    "quality:gate:fast": "npm run format:check && npm run lint && npm run typecheck && npm run worker:client-guard && npm run security:audit && npm run test:coverage",
+    "quality:gate:fast": "npm run format:check && npm run lint && npm run typecheck && npm run worker:client-guard && npm run test:tooling && npm run security:audit && npm run test:coverage",
     "security:audit": "npm audit --omit=dev --audit-level high",
     "test": "vitest run --passWithNoTests",
     "test:affected": "node ./scripts/run-affected-tests.mjs",
     "test:coverage": "node ./scripts/run-coverage-gate.mjs",
+    "test:tooling": "node --test scripts/classify-expensive-ci.test.mjs",
     "typecheck": "node ./node_modules/typescript-7/bin/tsc --noEmit",
     "worker:client-guard": "node ./scripts/assert-no-worker-client-scripts.mjs"
   },

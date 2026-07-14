@@ -1,0 +1,25 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@
+       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
++      - name: Classify expensive gate inputs
++        id: expensive
++        env:
++          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
++          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
++        run: node ./scripts/classify-expensive-ci.mjs "$BASE_SHA" "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+@@
+       - name: Install dependencies
++        if: ${{ steps.expensive.outputs.run_expensive == 'true' }}
+         run: npm ci
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@
++    "test:tooling": "node --test scripts/classify-expensive-ci.test.mjs",
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@
++- Remote browser and mutation jobs should skip dependency installation and execution when every changed file is in a documented non-runtime area. Unknown paths and unavailable change ranges must run the expensive gates.
