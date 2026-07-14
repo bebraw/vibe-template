@@ -82,7 +82,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The CI workflow must keep using npm for install and verification steps without depending on one exact npm patch release.
 - The npm release used by CI must stay inside the supported npm range declared in `package.json`.
 - CI jobs must install dependencies with plain `npm ci`.
-- Local Agent CI must rely on its built-in warm-cache serialization instead of repo-local install locking.
+- Local Agent CI must rely on its built-in warm-cache preparation and isolated per-job dependency views instead of repo-local install locking.
+- Local Agent CI must explicitly prewarm through one stable npm install step before parallel jobs start.
 - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
 - The browser CI job must use a container image whose version exactly matches the pinned `@playwright/test` version instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
@@ -97,7 +98,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The affected test path must run full unit coverage when affected runtime files have no related tests and no affected unit test files were supplied.
 - The affected guardrail path may fall back to project-level type checking or coverage when a safe per-file check is not available.
 - The repo's local CI scripts should use the repo-pinned `agent-ci` binary directly instead of carrying repo-specific runtime patching or install locking.
-- The canonical local CI script should rely on Agent CI warm-cache serialization instead of forcing `--jobs 1` to avoid warmed dependency races on macOS-hosted Docker.
+- The canonical local CI script should rely on Agent CI's managed warm cache and per-job dependency isolation instead of forcing `--jobs 1` to avoid dependency races on macOS-hosted Docker.
+- The explicit Agent CI prewarm selector and its workflow install-step id must stay aligned.
 - The canonical local CI script should use pause-on-failure so agents can fix and retry a failed runner without restarting the whole workflow.
 - The canonical local CI script should combine quiet rendering with Agent CI's structured JSON event stream so agents receive run, job, step, pause, diagnostic, and completion progress without parsing animated terminal output.
 - Agent command wrappers should use an unbuffered passthrough mode for local CI so structured lifecycle events reach the caller while the workflow is still running.

@@ -1,0 +1,10 @@
+{
+  "id": "2026-07-14-agent-ci-cache-isolation",
+  "title": "Isolate Agent CI job caches",
+  "status": "implemented",
+  "risk": "low",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-036-prewarm-agent-ci-dependencies-explicitly.md"],
+  "touches": ["package.json", "package-lock.json", ".github/workflows/ci.yml", ".capabilities/agent-ci/", "docs/", "specs/"],
+  "checks": ["npm run quality:gate", "npm run ci:local"]
+}

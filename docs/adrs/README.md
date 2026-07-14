@@ -67,6 +67,8 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-032](./implemented/ADR-032-add-template-update-packs.md)                         | Implemented | Add plain-file update packs for syncing reusable template maintenance downstream.              |
 | [ADR-033](./implemented/ADR-033-add-advisory-fallow-diagnostics.md)                   | Implemented | Add advisory Fallow diagnostics for readability, health, duplication, and cleanup evidence.    |
 | [ADR-034](./implemented/ADR-034-emit-agent-ci-progress-events.md)                     | Implemented | Emit structured local Agent CI lifecycle progress while retaining quiet rendering.             |
+| [ADR-035](./implemented/ADR-035-adopt-a-web-response-baseline.md)                     | Implemented | Adopt explicit response, routing, and styling contracts for the starter Worker.                |
+| [ADR-036](./implemented/ADR-036-prewarm-agent-ci-dependencies-explicitly.md)          | Implemented | Prewarm dependencies once before isolated parallel Agent CI jobs start.                        |
 
 ## Creating A New ADR
 

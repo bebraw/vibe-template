@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build:css": "mkdir -p ./.generated && tailwindcss -i ./src/tailwind-input.css -o ./.generated/styles.css --minify",
-    "ci:local": "agent-ci run --quiet --json --pause-on-failure --workflow .github/workflows/ci.yml",
+    "ci:local": "agent-ci run --quiet --json --pause-on-failure --workflow .github/workflows/ci.yml --prewarm-through .github/workflows/ci.yml:quality-fast:install",
     "ci:local:retry": "agent-ci retry",
     "deploy": "wrangler deploy",
     "dev": "HOME=$PWD wrangler dev --local --ip 127.0.0.1 --port 8787 --inspector-ip 127.0.0.1 --inspector-port 9229 --log-level error --show-interactive-dev-session=false",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
-    "@redwoodjs/agent-ci": "0.16.2",
+    "@redwoodjs/agent-ci": "0.17.1",
     "@stryker-mutator/core": "9.6.1",
     "@stryker-mutator/typescript-checker": "9.6.1",
     "@stryker-mutator/vitest-runner": "9.6.1",

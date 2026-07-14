@@ -6,7 +6,7 @@
 
 **Supersedes:** [ADR-027](./ADR-027-lock-local-agent-ci-installs.md)
 
-**Amended by:** [ADR-034](./ADR-034-emit-agent-ci-progress-events.md)
+**Amended by:** [ADR-034](./ADR-034-emit-agent-ci-progress-events.md), [ADR-036](./ADR-036-prewarm-agent-ci-dependencies-explicitly.md)
 
 ## Context
 
@@ -26,6 +26,8 @@ GitHub Actions install steps will run plain `npm ci`.
 `npm run ci:local` will keep using the repo-pinned `agent-ci` binary with
 default local parallelism and `--pause-on-failure`. ADR-034 later adds the
 structured event stream without changing this cache or retry behavior.
+ADR-036 updates the cache implementation to use explicit prewarming and private
+per-job dependency views.
 
 The template will not maintain a repo-local Agent CI install-lock wrapper.
 Local install race protection belongs to Agent CI's warm-cache serialization.
@@ -48,8 +50,7 @@ its parallel behavior enough that local workarounds might be removable.
 
 **Negative:**
 
-- The template now depends on Agent CI's warm-cache serialization for local
-  parallel install safety.
+- The template depends on Agent CI for local parallel install safety.
 
 **Neutral:**
 

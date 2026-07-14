@@ -9,7 +9,7 @@ If the target repo has no GitHub Actions workflow, follow `github-actions.md` be
 Add the dev dependency:
 
 ```bash
-npm install --save-dev @redwoodjs/agent-ci@0.16.2
+npm install --save-dev --save-exact @redwoodjs/agent-ci@0.17.1
 ```
 
 Add or merge these scripts into `package.json`:
@@ -17,13 +17,23 @@ Add or merge these scripts into `package.json`:
 ```json
 {
   "scripts": {
-    "ci:local": "agent-ci run --quiet --json --pause-on-failure --workflow .github/workflows/ci.yml",
+    "ci:local": "agent-ci run --quiet --json --pause-on-failure --workflow .github/workflows/ci.yml --prewarm-through .github/workflows/ci.yml:quality-fast:install",
     "ci:local:retry": "agent-ci retry"
   }
 }
 ```
 
 If the target repo uses a workflow path other than `.github/workflows/ci.yml`, adjust the `--workflow` value instead of renaming the workflow.
+
+Give the selected install step a stable `id`:
+
+```yaml
+- name: Install dependencies
+  id: install
+  run: npm ci
+```
+
+Adjust the `--prewarm-through` workflow path and job identifier when the target repo uses different names.
 
 ## Files
 
@@ -41,5 +51,7 @@ Document these target-project expectations wherever the repo keeps developer set
 - Docker must be running before `npm run ci:local`.
 - `npm run ci:local` is the local GitHub Actions check.
 - The local command emits Agent CI's structured NDJSON lifecycle stream so agents can track run, job, step, pause, and completion state.
+- Agent CI isolates each parallel job's writable `node_modules` view while retaining its managed warm cache.
+- The explicit prewarm selector populates the dependency tree once before parallel jobs copy their private views.
 - `npm run ci:local:retry -- --name <runner-name>` resumes a paused Agent CI runner.
 - `.env.agent-ci` is local-only and may contain machine-specific Docker or repository overrides.
