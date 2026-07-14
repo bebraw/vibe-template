@@ -1,0 +1,10 @@
+{
+  "id": "2026-07-14-scope-prettier-to-owned-files",
+  "title": "Scope Prettier to project-owned files",
+  "status": "implemented",
+  "risk": "low",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-038-scope-prettier-to-owned-files.md"],
+  "touches": [".prettierignore", "ARCHITECTURE.md", "docs/", "specs/"],
+  "checks": ["npm run format:check", "npm run quality:gate", "npm run ci:local"]
+}

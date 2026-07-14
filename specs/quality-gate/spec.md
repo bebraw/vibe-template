@@ -9,6 +9,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Architecture
 
 - **Fast gate:** `npm run quality:gate:fast`
+- **Formatting scope:** project-owned code and documentation, excluding duplicated or vendored skill material listed in `.prettierignore`
 - **Correctness lint:** `npm run lint`
 - **Affected guardrails:** `npm run quality:affected`
 - **Browser gate:** `npm run e2e`
@@ -46,6 +47,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Do not collapse fast and browser verification back into one opaque step without a concrete reason.
 - Do not treat colocated tests or test-support files as runtime source code when deciding whether unit coverage is missing.
 - Do not weaken the full gate just to make iteration faster.
+- Do not spend the full formatting budget on duplicated or vendored skill documentation that the project does not author.
 - Do not replace Prettier formatting or TypeScript project checking with Oxlint.
 - Do not enable broad Oxlint style, restriction, pedantic, or type-aware rule sets without an explicit decision and compatibility review.
 - Do not treat advisory Fallow diagnostics as a replacement for formatting, type checking, runtime audit, unit coverage, browser tests, mutation testing, or Worker-specific guardrails.
@@ -72,6 +74,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Regression Guardrails
 
 - `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
+- Prettier must ignore `.github/skills/` and `.codex/skills/**/references/` while continuing to check project-owned skill entry points, specs, ADRs, and documentation.
 - `npm run lint` must use the pinned Oxlint dependency, enable only its default rules, and fail when warnings are reported.
 - `npm run quality:affected` must avoid full-repo work when affected files make a narrower check sufficient.
 - `npm run test:affected` must avoid full coverage work when affected runtime or unit test files can be checked through related or direct Vitest runs.
@@ -154,6 +157,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: a change that does not need immediate browser verification
 - When: the contributor runs `npm run quality:gate:fast`
 - Then: formatting, correctness linting, typing, audit, and unit coverage run without waiting for Playwright
+
+**Scenario: Fast formatting skips vendored skill material**
+
+- Given: the repository contains duplicated GitHub skill content and vendored Codex skill references
+- When: the contributor runs `npm run format:check`
+- Then: Prettier checks project-owned code and documentation without traversing those excluded skill trees
 
 **Scenario: Contributor introduces a JavaScript or TypeScript correctness issue**
 

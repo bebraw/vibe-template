@@ -70,6 +70,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-035](./implemented/ADR-035-adopt-a-web-response-baseline.md)                     | Implemented | Adopt explicit response, routing, and styling contracts for the starter Worker.                |
 | [ADR-036](./implemented/ADR-036-prewarm-agent-ci-dependencies-explicitly.md)          | Implemented | Prewarm dependencies once before isolated parallel Agent CI jobs start.                        |
 | [ADR-037](./implemented/ADR-037-adopt-oxlint-correctness-gate.md)                     | Implemented | Add Oxlint's default correctness rules to the fast and affected quality gates.                 |
+| [ADR-038](./implemented/ADR-038-scope-prettier-to-owned-files.md)                     | Implemented | Exclude duplicated and vendored skill material from the Prettier baseline.                     |
 
 ## Creating A New ADR
 

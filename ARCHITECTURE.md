@@ -24,6 +24,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
 - The repo-managed `pre-push` Git hook should run affected-file guardrails before code is pushed.
 - Formatting, Oxlint correctness checks, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
+- Keep duplicated `.github/skills/` content and vendored `.codex/skills/**/references/` material outside the Prettier baseline. Continue formatting project-owned skill entry points, specs, ADRs, and documentation.
 - Keep Oxlint focused on its default correctness rules unless additional rule categories are adopted through an explicit, documented decision. Oxlint does not replace Prettier or TypeScript checking.
 - Fallow codebase diagnostics are advisory readability checks for complexity, duplication, dependency hygiene, and cleanup evidence; they do not replace the baseline quality gate.
 - Affected-file guardrails should scope checks to changed files when the underlying tool supports it and fall back to project-level checks only when needed.

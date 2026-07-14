@@ -89,6 +89,8 @@ The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` fil
 
 Oxlint provides the baseline JavaScript and TypeScript correctness lint. `npm run lint` uses Oxlint's default rules, treats warnings as failures, and stays separate from both Prettier formatting and TypeScript project checking. The affected-file guardrail scopes Oxlint to changed JavaScript and TypeScript files during iteration and pre-push checks.
 
+Prettier formats project-owned code and documentation. The committed `.prettierignore` excludes duplicated `.github/skills/` content and vendored `.codex/skills/**/references/` material so the fast gate does not repeatedly format externally maintained skill documentation. Project-owned skill entry points remain in the formatting baseline.
+
 Fallow provides advisory codebase readability diagnostics. `npm run diagnostics:readability` runs a changed-code audit for complexity, duplication, dependency hygiene, and cleanup findings while relaxing CRAP-score noise from untested tooling scripts. `npm run diagnostics:health` reports whole-repo health scoring, hotspots, and refactoring targets. `npm run diagnostics:codebase` runs both. These commands use `--no-cache`, so normal diagnostics do not create a persistent `.fallow/` cache. If a contributor runs cached Fallow commands manually, `.fallow/` is ignored and should stay untracked.
 
 The README includes a committed application screenshot at `docs/screenshots/home.png`. Refresh that asset manually when the starter UI changes materially, but keep screenshot capture out of the automated development loop, CI, and remote workflows.

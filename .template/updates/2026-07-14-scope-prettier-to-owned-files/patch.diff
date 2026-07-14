@@ -1,0 +1,14 @@
+diff --git a/.prettierignore b/.prettierignore
+--- a/.prettierignore
++++ b/.prettierignore
+@@
+ .asdlc
++.github/skills
++.codex/skills/**/references
+ playwright-report
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@
+ - Formatting, Oxlint correctness checks, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
++- Keep duplicated `.github/skills/` content and vendored `.codex/skills/**/references/` material outside the Prettier baseline. Continue formatting project-owned skill entry points, specs, ADRs, and documentation.
