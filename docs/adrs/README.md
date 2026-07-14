@@ -69,6 +69,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-034](./implemented/ADR-034-emit-agent-ci-progress-events.md)                     | Implemented | Emit structured local Agent CI lifecycle progress while retaining quiet rendering.             |
 | [ADR-035](./implemented/ADR-035-adopt-a-web-response-baseline.md)                     | Implemented | Adopt explicit response, routing, and styling contracts for the starter Worker.                |
 | [ADR-036](./implemented/ADR-036-prewarm-agent-ci-dependencies-explicitly.md)          | Implemented | Prewarm dependencies once before isolated parallel Agent CI jobs start.                        |
+| [ADR-037](./implemented/ADR-037-adopt-oxlint-correctness-gate.md)                     | Implemented | Add Oxlint's default correctness rules to the fast and affected quality gates.                 |
 
 ## Creating A New ADR
 

@@ -9,6 +9,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Architecture
 
 - **Fast gate:** `npm run quality:gate:fast`
+- **Correctness lint:** `npm run lint`
 - **Affected guardrails:** `npm run quality:affected`
 - **Browser gate:** `npm run e2e`
 - **Affected test gate:** `npm run test:affected`
@@ -45,6 +46,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Do not collapse fast and browser verification back into one opaque step without a concrete reason.
 - Do not treat colocated tests or test-support files as runtime source code when deciding whether unit coverage is missing.
 - Do not weaken the full gate just to make iteration faster.
+- Do not replace Prettier formatting or TypeScript project checking with Oxlint.
+- Do not enable broad Oxlint style, restriction, pedantic, or type-aware rule sets without an explicit decision and compatibility review.
 - Do not treat advisory Fallow diagnostics as a replacement for formatting, type checking, runtime audit, unit coverage, browser tests, mutation testing, or Worker-specific guardrails.
 - Do not treat targeted iteration checks as a replacement for the readiness baseline unless the change is documentation-only and qualifies for the documented Agent CI exception.
 - Do not add undocumented workflow write targets for generated output, local state, caches, archives, or tool artifacts.
@@ -53,8 +56,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 ### Definition of Done
 
-- [ ] The fast gate covers formatting, type checking, Worker client-code guardrails, runtime audit, and unit coverage.
-- [ ] The affected guardrail path scopes formatting, JavaScript syntax checks, Worker client-code checks, package audit, and unit tests to affected files when possible.
+- [ ] The fast gate covers formatting, Oxlint correctness checks, type checking, Worker client-code guardrails, runtime audit, and unit coverage.
+- [ ] The affected guardrail path scopes formatting, Oxlint, JavaScript syntax checks, Worker client-code checks, package audit, and unit tests to affected files when possible.
 - [ ] The affected test gate runs tests related to affected runtime files, runs affected unit test files directly, and falls back to full coverage for broad test environment changes or affected runtime files with no related tests.
 - [ ] The advisory codebase diagnostics report changed-code readability risk, whole-repo health, hotspots, duplication, and cleanup evidence without becoming part of the hard quality gate.
 - [ ] The browser gate covers the Playwright baseline.
@@ -69,6 +72,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 ### Regression Guardrails
 
 - `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
+- `npm run lint` must use the pinned Oxlint dependency, enable only its default rules, and fail when warnings are reported.
 - `npm run quality:affected` must avoid full-repo work when affected files make a narrower check sufficient.
 - `npm run test:affected` must avoid full coverage work when affected runtime or unit test files can be checked through related or direct Vitest runs.
 - `npm run quality:gate` must continue to represent the local baseline verification path.
@@ -90,6 +94,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The coverage gate must work in both the normal workspace and local Agent CI's warmed `node_modules` layout.
 - The Worker client-code guard must fail on inline `<script>` tags, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files.
 - The affected guardrail path must pass only affected Worker/view runtime files to the Worker client-code guard.
+- The affected guardrail path must pass only affected JavaScript and TypeScript files to Oxlint.
 - The affected guardrail path must run JavaScript syntax checks only for affected JavaScript files.
 - The affected guardrail path must run package audit only when package metadata or lockfiles change.
 - The affected guardrail path must skip unit tests when no runtime or unit test files are affected.
@@ -148,7 +153,13 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - Given: a change that does not need immediate browser verification
 - When: the contributor runs `npm run quality:gate:fast`
-- Then: formatting, typing, audit, and unit coverage run without waiting for Playwright
+- Then: formatting, correctness linting, typing, audit, and unit coverage run without waiting for Playwright
+
+**Scenario: Contributor introduces a JavaScript or TypeScript correctness issue**
+
+- Given: a JavaScript or TypeScript file violates an Oxlint default rule
+- When: the contributor runs `npm run lint`, the fast gate, or the applicable affected-file guardrail
+- Then: the command fails without replacing Prettier formatting or TypeScript project checking
 
 **Scenario: Full verification before landing code changes**
 

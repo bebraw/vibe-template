@@ -12,6 +12,7 @@ if (affectedFiles.length === 0) {
 console.log(`Affected guardrails checking ${affectedFiles.length} file(s).`);
 
 runPrettier(affectedFiles);
+runOxlint(affectedFiles);
 runJavaScriptSyntaxCheckWhenNeeded(affectedFiles);
 runTypecheckWhenNeeded(affectedFiles);
 runWorkerClientGuard(affectedFiles);
@@ -21,6 +22,18 @@ runTestsWhenNeeded(affectedFiles);
 function runPrettier(files) {
   console.log("Checking formatting for affected files...");
   run(repoRoot, "npx", ["prettier", "--check", "--ignore-unknown", ...files]);
+}
+
+function runOxlint(files) {
+  const lintFiles = files.filter(affectsOxlint);
+
+  if (lintFiles.length === 0) {
+    console.log("Oxlint skipped: no affected JavaScript or TypeScript files.");
+    return;
+  }
+
+  console.log("Running Oxlint for affected files...");
+  run(repoRoot, "npx", ["oxlint", "--max-warnings", "0", ...lintFiles]);
 }
 
 function runTypecheckWhenNeeded(files) {
@@ -88,6 +101,10 @@ function affectsTypecheck(file) {
 
 function affectsJavaScriptSyntax(file) {
   return /\.(?:js|jsx|mjs|cjs)$/.test(file);
+}
+
+function affectsOxlint(file) {
+  return /\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/.test(file);
 }
 
 function isWorkerClientGuardFile(file) {

@@ -1,0 +1,53 @@
+diff --git a/package.json b/package.json
+--- a/package.json
++++ b/package.json
+@@
+     "lighthouse": "node ./scripts/run-lighthouse.mjs",
++    "lint": "oxlint --max-warnings 0",
+     "mutation": "stryker run",
+@@
+-    "quality:gate:fast": "npm run format:check && npm run typecheck && npm run worker:client-guard && npm run security:audit && npm run test:coverage",
++    "quality:gate:fast": "npm run format:check && npm run lint && npm run typecheck && npm run worker:client-guard && npm run security:audit && npm run test:coverage",
+@@
+     "lighthouse": "13.4.0",
++    "oxlint": "1.74.0",
+     "prettier": "3.9.5",
+diff --git a/scripts/run-affected-guardrails.mjs b/scripts/run-affected-guardrails.mjs
+--- a/scripts/run-affected-guardrails.mjs
++++ b/scripts/run-affected-guardrails.mjs
+@@
+ runPrettier(affectedFiles);
++runOxlint(affectedFiles);
+ runJavaScriptSyntaxCheckWhenNeeded(affectedFiles);
+@@
+ function runPrettier(files) {
+   console.log("Checking formatting for affected files...");
+   run(repoRoot, "npx", ["prettier", "--check", "--ignore-unknown", ...files]);
+ }
++
++function runOxlint(files) {
++  const lintFiles = files.filter(affectsOxlint);
++
++  if (lintFiles.length === 0) {
++    console.log("Oxlint skipped: no affected JavaScript or TypeScript files.");
++    return;
++  }
++
++  console.log("Running Oxlint for affected files...");
++  run(repoRoot, "npx", ["oxlint", "--max-warnings", "0", ...lintFiles]);
++}
+@@
+ function affectsJavaScriptSyntax(file) {
+   return /\.(?:js|jsx|mjs|cjs)$/.test(file);
+ }
++
++function affectsOxlint(file) {
++  return /\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/.test(file);
++}
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@
+- Formatting, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
++- Formatting, Oxlint correctness checks, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
++- Keep Oxlint focused on its default correctness rules unless additional rule categories are adopted through an explicit, documented decision. Oxlint does not replace Prettier or TypeScript checking.

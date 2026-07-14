@@ -52,6 +52,7 @@ If local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 - Run incremental mutation tests with `npm run mutation:incremental`.
 - Run TypeScript checks with `npm run typecheck`.
 - Run Lighthouse with `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`.
+- Run JavaScript and TypeScript correctness linting with `npm run lint`.
 - Format the repo with `npm run format`.
 - Check formatting with `npm run format:check`.
 - If a run pauses on failure, fix the issue and resume with `npm run ci:local:retry -- --name <runner-name>`.
@@ -63,6 +64,7 @@ Agents following this repo's RTK requirement should invoke the workflow as `rtk 
 Use targeted checks while iterating, then run the full readiness path before proposing or landing a change:
 
 - Docs-only changes: `npm run format:check`
+- JavaScript or TypeScript changes: `npm run lint`
 - TypeScript or typed tooling changes: `npm run typecheck`
 - Runtime `src/` changes while iterating: `npm run typecheck` and `npm run test:affected`
 - Browser behavior or UI changes: `npm run quality:gate`
@@ -84,6 +86,8 @@ The coverage gate is stricter than the basic test run. `npm run test:coverage` m
 Mutation testing uses Stryker with Vitest and the TypeScript checker. `npm run mutation` performs a full mutation run against runtime `src/**/*.ts` files while excluding declarations, unit tests, end-to-end tests, and `src/test-support.ts`. `npm run mutation:incremental` enables Stryker incremental mode so repeated local quality-gate runs can reuse previous mutant results while still producing a complete mutation report. The Vitest runner uses Stryker's per-test coverage analysis and related-test narrowing, so each mutant runs against the tests Stryker can associate with the mutated file instead of blindly rerunning the whole suite. Stryker worker concurrency is set to `50%` so mutation testing can use parallel workers without assuming a fixed core count for every clone of the template. Mutation reports and Stryker incremental data are written under `reports/`, and Stryker's temporary `.stryker-tmp/` sandbox must stay untracked.
 
 The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `src/**/*.ts`, and `npm run typecheck` runs TypeScript 7. During the TypeScript 7.0 transition, `typescript` is intentionally pinned to the `@typescript/typescript6` compatibility package for tools that import the compiler API, while `typescript-7` provides the compiler used by the typecheck script.
+
+Oxlint provides the baseline JavaScript and TypeScript correctness lint. `npm run lint` uses Oxlint's default rules, treats warnings as failures, and stays separate from both Prettier formatting and TypeScript project checking. The affected-file guardrail scopes Oxlint to changed JavaScript and TypeScript files during iteration and pre-push checks.
 
 Fallow provides advisory codebase readability diagnostics. `npm run diagnostics:readability` runs a changed-code audit for complexity, duplication, dependency hygiene, and cleanup findings while relaxing CRAP-score noise from untested tooling scripts. `npm run diagnostics:health` reports whole-repo health scoring, hotspots, and refactoring targets. `npm run diagnostics:codebase` runs both. These commands use `--no-cache`, so normal diagnostics do not create a persistent `.fallow/` cache. If a contributor runs cached Fallow commands manually, `.fallow/` is ignored and should stay untracked.
 
