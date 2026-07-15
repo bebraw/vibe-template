@@ -38,6 +38,7 @@ copying unrelated starter structure.
   - `2026-07-12-web-quality-baseline`
   - `2026-07-13-agent-ci-progress-events`
   - `2026-07-14-agent-ci-cache-isolation`
+  - `2026-07-15-quality-gate-progress`
 
 ### Anti-Patterns
 

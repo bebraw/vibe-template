@@ -74,6 +74,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-039](./implemented/ADR-039-skip-expensive-ci-for-non-runtime-changes.md)         | Implemented | Skip remote browser and mutation work for known non-runtime-only changes.                      |
 | [ADR-040](./implemented/ADR-040-use-full-stryker-concurrency-in-ci.md)                | Implemented | Use full available Stryker parallelism in the isolated GitHub mutation job.                    |
 | [ADR-041](./implemented/ADR-041-cache-prettier-checks-by-content.md)                  | Implemented | Cache successful Prettier checks by content for faster repeated local gates.                   |
+| [ADR-042](./implemented/ADR-042-emit-quality-gate-progress.md)                        | Implemented | Emit named phase transitions and elapsed-time heartbeats from the full local quality gate.     |
 
 ## Creating A New ADR
 
