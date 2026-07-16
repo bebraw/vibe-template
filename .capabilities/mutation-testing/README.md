@@ -6,7 +6,7 @@ Use this kit to add the template's Stryker mutation testing setup to another npm
 
 - Stryker mutation testing with the Vitest runner.
 - TypeScript checker integration so type-invalid mutants are rejected before tests run.
-- A `mutation` script suitable for a full quality gate.
+- Full and incremental mutation scripts suitable for CI and an explicit deep local gate.
 - Runtime-source mutation globs that exclude declarations, colocated unit tests, end-to-end tests, and test support.
 - HTML and JSON mutation reports under `reports/mutation/`.
 
@@ -15,7 +15,7 @@ Use this kit to add the template's Stryker mutation testing setup to another npm
 - The target repo uses npm, TypeScript, and Vitest.
 - Runtime code lives under `src/` or can be adapted to that convention.
 - The repo already has meaningful unit tests and wants to measure assertion strength.
-- Mutation testing can run as a full/readiness gate instead of a fast iteration check.
+- Mutation testing can run as a clean CI gate with optional deep local feedback.
 
 ## Poor Fit
 

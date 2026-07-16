@@ -21,6 +21,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Full mutation gate:** `npm run mutation`
 - **Incremental mutation gate:** `npm run mutation:incremental`
 - **Full gate:** `npm run quality:gate`
+- **Deep local gate:** `npm run quality:gate:deep`
 - **Full gate progress:** named phase transitions plus a 30-second elapsed-time heartbeat while a phase is running
 - **Local workflow:** `npm run ci:local`
 - **Local workflow concurrency:** Agent CI job auto-concurrency
@@ -52,7 +53,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - Do not collapse fast and browser verification back into one opaque step without a concrete reason.
 - Do not treat colocated tests or test-support files as runtime source code when deciding whether unit coverage is missing.
-- Do not weaken the full gate just to make iteration faster.
+- Do not weaken the deterministic baseline checks just to make iteration faster.
 - Do not spend the full formatting budget on duplicated or vendored skill documentation that the project does not author.
 - Do not replace Prettier formatting or TypeScript project checking with Oxlint.
 - Do not enable broad Oxlint style, restriction, pedantic, or type-aware rule sets without an explicit decision and compatibility review.
@@ -71,9 +72,10 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - [ ] The advisory codebase diagnostics report changed-code readability risk, whole-repo health, hotspots, duplication, and cleanup evidence without becoming part of the hard quality gate.
 - [ ] The browser gate covers the Playwright baseline.
 - [ ] The full mutation gate covers runtime `src/**/*.ts` files with Stryker, Vitest, and TypeScript checking.
-- [ ] The incremental mutation gate reuses prior Stryker results for repeated local quality-gate runs while preserving a complete mutation report.
-- [ ] The full gate runs the fast, browser, and incremental mutation gates in order.
-- [ ] The full gate reports phase starts, completions, failures, and periodic elapsed-time heartbeats.
+- [ ] The incremental mutation gate reuses prior Stryker results for explicit deep local runs while preserving a complete mutation report.
+- [ ] The full gate runs the fast and browser gates in order without unconditionally running mutation testing.
+- [ ] The deep local gate runs the fast, browser, and incremental mutation gates in order.
+- [ ] The full and deep local gates report phase starts, completions, failures, and periodic elapsed-time heartbeats.
 - [ ] The repo-managed `pre-push` hook runs affected-file guardrails before a push leaves the machine.
 - [ ] Local and remote CI use the same split verification model for non-documentation changes.
 - [ ] Remote browser and mutation jobs avoid dependency installation and gate execution for known non-runtime-only changes.
@@ -89,7 +91,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - `npm run quality:affected` must avoid full-repo work when affected files make a narrower check sufficient.
 - `npm run test:affected` must avoid full coverage work when affected runtime or unit test files can be checked through related or direct Vitest runs.
 - `npm run quality:gate` must continue to represent the local baseline verification path.
+- `npm run quality:gate:deep` must remain an explicit opt-in path for local mutation feedback rather than part of the baseline readiness requirement.
 - `npm run quality:gate` must preserve each child command's live output and emit a progress heartbeat at least every 30 seconds while that command is still running.
+- `npm run quality:gate:deep` must preserve each child command's live output and emit a progress heartbeat at least every 30 seconds while that command is still running.
 - `npm run diagnostics:codebase` must remain advisory and must not be required by the baseline readiness path.
 - Fallow diagnostics must use `--no-cache` in repo scripts so normal diagnostic runs do not create a persistent `.fallow/` cache.
 - `npm run mutation` must fail when the mutation score is below the configured break threshold.
@@ -194,7 +198,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 - Given: a non-documentation change is ready for review or merge
 - When: the contributor runs `npm run quality:gate` and `npm run ci:local`
-- Then: the fast, browser, and local incremental mutation verification paths pass
+- Then: the fast and browser verification paths pass locally, while GitHub supplies the clean full mutation signal for runtime-relevant changes
 
 **Scenario: Contributor monitors the full quality gate**
 
@@ -233,10 +237,10 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - When: the contributor runs `npm run mutation`
 - Then: Stryker mutates runtime source only and fails if the mutation score is below the configured break threshold
 
-**Scenario: Contributor repeats the local quality gate**
+**Scenario: Contributor requests deep local verification**
 
 - Given: Stryker has an existing incremental report under `reports/`
-- When: the contributor runs `npm run quality:gate`
+- When: the contributor runs `npm run quality:gate:deep`
 - Then: the fast and browser gates pass before Stryker reuses valid prior mutant results and reruns affected mutants
 
 **Scenario: GitHub verifies mutation strength**

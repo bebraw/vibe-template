@@ -16,3 +16,4 @@ Expected:
 - The command exits non-zero when the mutation score is below the configured break threshold.
 
 Also run the target repo's full quality gate before treating the change as ready.
+If the target repo adds the optional deep gate, run `npm run quality:gate:deep` once to verify its integration.

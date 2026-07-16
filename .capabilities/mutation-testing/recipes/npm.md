@@ -17,17 +17,18 @@ Add or merge this script:
 ```json
 {
   "scripts": {
-    "mutation": "stryker run"
+    "mutation": "stryker run",
+    "mutation:incremental": "stryker run --incremental"
   }
 }
 ```
 
-If the target repo has a full quality gate and the user wants mutation testing in that readiness path, merge it there:
+If the target repo wants explicit local mutation feedback, add a deep gate without making mutation testing part of the default readiness path:
 
 ```json
 {
   "scripts": {
-    "quality:gate": "npm run quality:gate:fast && npm run e2e && npm run mutation"
+    "quality:gate:deep": "npm run quality:gate && npm run mutation:incremental"
   }
 }
 ```

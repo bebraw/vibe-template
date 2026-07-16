@@ -6,8 +6,13 @@ const defaultHeartbeatMs = 30_000;
 export const qualityGateSteps = [
   { label: "fast checks", script: "quality:gate:fast" },
   { label: "browser tests", script: "e2e" },
-  { label: "incremental mutation tests", script: "mutation:incremental" },
 ];
+
+export const deepQualityGateSteps = [...qualityGateSteps, { label: "incremental mutation tests", script: "mutation:incremental" }];
+
+export function selectQualityGateSteps(args) {
+  return args.includes("--deep") ? deepQualityGateSteps : qualityGateSteps;
+}
 
 export async function runQualityGate({
   heartbeatMs = defaultHeartbeatMs,
@@ -79,5 +84,6 @@ function runNpmScript(script) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  process.exitCode = await runQualityGate();
+  const steps = selectQualityGateSteps(process.argv.slice(2));
+  process.exitCode = await runQualityGate({ steps });
 }

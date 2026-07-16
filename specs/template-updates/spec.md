@@ -39,6 +39,7 @@ copying unrelated starter structure.
   - `2026-07-13-agent-ci-progress-events`
   - `2026-07-14-agent-ci-cache-isolation`
   - `2026-07-15-quality-gate-progress`
+  - `2026-07-16-opt-in-local-mutation`
 
 ### Anti-Patterns
 

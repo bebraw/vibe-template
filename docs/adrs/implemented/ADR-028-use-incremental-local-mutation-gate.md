@@ -1,12 +1,12 @@
 # ADR-028: Use Incremental Local Mutation Gate
 
-**Status:** Implemented
+**Status:** Superseded by [ADR-043](./ADR-043-make-local-mutation-opt-in.md)
 
 **Date:** 2026-05-31
 
 **Amends:** [ADR-022](./ADR-022-add-mutation-testing-gate.md)
 
-**Amended by:** [ADR-030](./ADR-030-reserve-full-mutation-ci-for-github.md)
+**Amended by:** [ADR-030](./ADR-030-reserve-full-mutation-ci-for-github.md), [ADR-043](./ADR-043-make-local-mutation-opt-in.md)
 
 ## Context
 

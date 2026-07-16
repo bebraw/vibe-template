@@ -4,6 +4,8 @@
 
 **Date:** 2026-07-15
 
+**Amended by:** [ADR-043](./ADR-043-make-local-mutation-opt-in.md)
+
 ## Context
 
 The local `quality:gate` ran three npm scripts through a shell chain. npm announced each child command, but a long browser or mutation phase could produce no output for long enough to look hung. The gate must retain its sequential fail-fast behavior and stream the underlying tools' output without adding a dependency or a persistent state target.

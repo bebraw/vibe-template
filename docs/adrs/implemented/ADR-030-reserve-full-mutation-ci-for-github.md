@@ -6,6 +6,8 @@
 
 **Amends:** [ADR-022](./ADR-022-add-mutation-testing-gate.md), [ADR-028](./ADR-028-use-incremental-local-mutation-gate.md)
 
+**Amended by:** [ADR-043](./ADR-043-make-local-mutation-opt-in.md)
+
 ## Context
 
 ADR-022 added a full Stryker mutation job to the GitHub Actions workflow, and ADR-028 moved the local quality gate to incremental mutation testing while keeping GitHub CI on a clean full mutation run.

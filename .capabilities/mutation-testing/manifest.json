@@ -10,10 +10,11 @@
     }
   },
   "scripts": {
-    "mutation": "stryker run"
+    "mutation": "stryker run",
+    "mutation:incremental": "stryker run --incremental"
   },
   "optionalScripts": {
-    "quality:gate": "npm run quality:gate:fast && npm run e2e && npm run mutation"
+    "quality:gate:deep": "npm run quality:gate && npm run mutation:incremental"
   },
   "files": [
     {
@@ -24,7 +25,7 @@
   ],
   "docs": [
     "Document npm run mutation as the mutation testing command.",
-    "Document whether mutation testing belongs in the target repo's full quality gate.",
+    "Document the explicit deep local gate when local mutation feedback is desired.",
     "Document report output under reports/mutation/.",
     "Document .stryker-tmp/ as an ignored temporary sandbox."
   ],
