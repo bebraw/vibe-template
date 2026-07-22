@@ -4,16 +4,17 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 
 ## Available Kits
 
-| Kit                                                            | Purpose                                                            |
-| -------------------------------------------------------------- | ------------------------------------------------------------------ |
-| [`typescript-setup`](./typescript-setup/README.md)             | Add strict no-emit TypeScript checking for npm projects.           |
-| [`agent-ci`](./agent-ci/README.md)                             | Add local GitHub Actions execution through Agent CI.               |
-| [`quality-gate`](./quality-gate/README.md)                     | Add the fast verification baseline and optional browser gate.      |
-| [`mutation-testing`](./mutation-testing/README.md)             | Add Stryker mutation testing for TypeScript projects using Vitest. |
-| [`pre-push-quality-gate`](./pre-push-quality-gate/README.md)   | Add a repo-managed pre-push hook that runs the fast quality gate.  |
-| [`readme-screenshot`](./readme-screenshot/README.md)           | Add local-only README screenshot capture through Playwright.       |
-| [`lighthouse-performance`](./lighthouse-performance/README.md) | Add local Lighthouse web-quality reports and category budgets.     |
-| [`website-baseline`](./website-baseline/README.md)             | Add an applicability-aware website quality checklist.              |
+| Kit                                                                    | Purpose                                                            |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [`typescript-setup`](./typescript-setup/README.md)                     | Add strict no-emit TypeScript checking for npm projects.           |
+| [`agent-ci`](./agent-ci/README.md)                                     | Add local GitHub Actions execution through Agent CI.               |
+| [`quality-gate`](./quality-gate/README.md)                             | Add the fast verification baseline and optional browser gate.      |
+| [`mutation-testing`](./mutation-testing/README.md)                     | Add Stryker mutation testing for TypeScript projects using Vitest. |
+| [`pre-push-quality-gate`](./pre-push-quality-gate/README.md)           | Add a repo-managed pre-push hook that runs the fast quality gate.  |
+| [`readme-screenshot`](./readme-screenshot/README.md)                   | Add local-only README screenshot capture through Playwright.       |
+| [`lighthouse-performance`](./lighthouse-performance/README.md)         | Add local Lighthouse web-quality reports and category budgets.     |
+| [`website-baseline`](./website-baseline/README.md)                     | Add an applicability-aware website quality checklist.              |
+| [`engineering-quality-skills`](./engineering-quality-skills/README.md) | Add focused correctness review, test review, and debugging skills. |
 
 ## Reviewed But Not Extracted
 
@@ -44,6 +45,7 @@ First, inspect the target repo for:
 - existing GitHub Actions workflows
 - existing local quality/test scripts
 - existing mutation testing setup or assertion-strength checks
+- existing coding-agent skills for correctness review, test review, or debugging
 - existing Git hooks or hook managers
 - app/runtime surface that might need browser, screenshot, or Lighthouse checks
 - durable docs where new workflow contracts should be recorded
@@ -83,6 +85,10 @@ Capability Pull Plan
 [ ] website-baseline
     Adds a durable, applicability-aware web quality checklist without runtime dependencies.
     Include if the repo serves browser-visible HTML and lacks an owned standards-based baseline.
+
+[ ] engineering-quality-skills
+    Adds focused correctness review, test review, and systematic debugging skills without runtime dependencies.
+    Include if the repo uses Codex-compatible skills and lacks equivalent evidence-driven review and debugging workflows.
 
 For each recommended capability, explain:
 - why it fits this repo

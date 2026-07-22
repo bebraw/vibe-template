@@ -47,6 +47,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Keep capability kits instructional and reviewable rather than fully automated by default.
 - Each capability kit should include a README, a machine-readable manifest, any copyable files, package-manager recipes, and validation notes.
 - Capability kits should preserve target-project conventions unless the kit explicitly documents a required constraint.
+- Vendor third-party agent skills at a reviewed source revision, retain their license and source metadata, and adapt only where template compatibility requires it.
 
 ## Template Updates
 

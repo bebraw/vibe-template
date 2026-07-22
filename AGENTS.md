@@ -78,6 +78,17 @@
 - Use the project-local [`review`](./.codex/skills/review/SKILL.md) skill when the user asks for review, risk analysis, or a merge-readiness pass.
 - Treat the skill as guidance for prioritizing bugs, regressions, and quality-gate gaps over style commentary.
 
+## Focused Review
+
+- Use the project-local [`correctness-review`](./.codex/skills/correctness-review/SKILL.md) skill when the user asks whether changed logic is behaviorally correct or wants edge cases and broken contracts checked.
+- Use the project-local [`test-review`](./.codex/skills/test-review/SKILL.md) skill when the user asks whether changed behavior has meaningful, maintainable test coverage.
+- Treat both focused review skills as evidence-driven lenses that complement the broader `review` skill without inventing findings.
+
+## Debugging
+
+- Use the project-local [`debug`](./.codex/skills/debug/SKILL.md) skill when tests fail, builds break, or runtime behavior differs from expectations.
+- Treat the skill as a stop-the-line workflow: reproduce, localize, reduce, fix the root cause, add a regression test, and verify end to end.
+
 ## Security
 
 - Use the project-local [`security`](./.codex/skills/security/SKILL.md) skill when the user is working on auth, secrets, access control, sensitive data handling, or security hardening.

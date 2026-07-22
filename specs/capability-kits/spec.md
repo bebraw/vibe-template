@@ -15,7 +15,8 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Copyable files:** `files/`
 - **Package-manager recipes:** `recipes/`
 - **Validation notes:** `checks.md`
-- **Available kits:** `typescript-setup`, `agent-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`
+- **Available kits:** `typescript-setup`, `agent-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`
+- **Third-party skill provenance:** vendored skills retain their license, upstream repository, and reviewed revision in the copyable files.
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 - **Later maintenance sync:** template update packs under `.template/updates/` cover follow-up changes to projects that already adopted a kit.
@@ -59,6 +60,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The pre-push quality-gate kit must keep the hook setup aligned with `.githooks/pre-push` and `scripts/setup-git-hooks.mjs`.
 - The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs` and audit performance, accessibility, best practices, and SEO.
 - The website baseline kit must separate universal browser requirements from public-site and feature-dependent requirements, and must keep emerging agent-readiness conventions opt-in.
+- The engineering quality skills kit must keep its copyable `correctness-review`, `test-review`, and `debug` skills aligned with the project-local versions and preserve upstream MIT attribution.
 - Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
 
 ### Verification
@@ -122,3 +124,9 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: another repo serves HTML but has no durable standards-based web quality contract
 - When: the agent applies `.capabilities/website-baseline/`
 - Then: the target repo receives a checklist whose conditional requirements are classified before enforcement and whose emerging agent conventions remain opt-in
+
+**Scenario: Consumer adopts focused engineering workflows**
+
+- Given: another repo uses coding-agent skills and wants stronger behavioral review and debugging guidance
+- When: the agent applies `.capabilities/engineering-quality-skills/`
+- Then: the target repo receives correctness review, test review, and debug skills with source metadata and MIT attribution, without runtime dependencies

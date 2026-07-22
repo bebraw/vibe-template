@@ -1,0 +1,53 @@
+{
+  "name": "engineering-quality-skills",
+  "description": "Add focused correctness review, test review, and systematic debugging skills.",
+  "dependencies": {},
+  "scripts": {},
+  "files": [
+    {
+      "source": "files/.codex/skills/correctness-review/SKILL.md",
+      "target": ".codex/skills/correctness-review/SKILL.md",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/.codex/skills/correctness-review/LICENSE",
+      "target": ".codex/skills/correctness-review/LICENSE",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/test-review/SKILL.md",
+      "target": ".codex/skills/test-review/SKILL.md",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/.codex/skills/test-review/LICENSE",
+      "target": ".codex/skills/test-review/LICENSE",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/debug/SKILL.md",
+      "target": ".codex/skills/debug/SKILL.md",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/.codex/skills/debug/LICENSE",
+      "target": ".codex/skills/debug/LICENSE",
+      "mode": "copy"
+    }
+  ],
+  "docs": [
+    "Register the installed skills in AGENTS.md or the target repo's equivalent capability registry.",
+    "Keep project-specific severity labels, authorization boundaries, and verification commands authoritative.",
+    "Retain upstream source metadata and MIT license files when redistributing the skills."
+  ],
+  "verify": [
+    "Confirm each SKILL.md has valid frontmatter and matches its directory name.",
+    "Confirm every copied skill retains its LICENSE file and pinned source revision.",
+    "Run the target repo's normal documentation or quality checks."
+  ],
+  "notes": [
+    "The skills are vendored from cniska/skills revision 7d79c7754f2b9d656f7db7b9ecefcb7532b6d256.",
+    "The debug skill is adapted to avoid depending on a separate /plan skill.",
+    "Do not overwrite stronger project-local review or debugging guidance."
+  ]
+}

@@ -14,6 +14,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 - Architecture decisions: `docs/adrs/README.md`
 - Feature and architecture specs: `specs/README.md`
 - Agent behavior and project rules: `AGENTS.md`
+- Project-local agent capabilities: `.codex/skills/`
 - Partial-upgrade capability kits: `.capabilities/`
 - Template maintenance update packs: `.template/updates/`
 
@@ -46,6 +47,8 @@ Local development in this repo targets macOS. Other platforms may need script an
 ## Capability Kits
 
 Use `.capabilities/` when another project needs one template practice without adopting the whole starter. Each kit is a reviewable partial-upgrade guide with a README, manifest, package-manager recipe, copyable files, and validation checks.
+
+The `engineering-quality-skills` kit exposes focused correctness review, test review, and systematic debugging workflows to downstream coding agents without adding runtime dependencies.
 
 To apply a kit to another repo:
 
