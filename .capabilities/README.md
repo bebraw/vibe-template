@@ -15,6 +15,9 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 | [`lighthouse-performance`](./lighthouse-performance/README.md)         | Add local Lighthouse web-quality reports and category budgets.     |
 | [`website-baseline`](./website-baseline/README.md)                     | Add an applicability-aware website quality checklist.              |
 | [`engineering-quality-skills`](./engineering-quality-skills/README.md) | Add focused correctness review, test review, and debugging skills. |
+| [`workers-ai`](./workers-ai/README.md)                                 | Add typed, validated Workers AI structured-output calls.           |
+| [`room-state`](./room-state/README.md)                                 | Add one Durable Object per room for replaceable voting.            |
+| [`progressive-interaction`](./progressive-interaction/README.md)       | Enhance conventional forms with fragment replacement.              |
 
 ## Reviewed But Not Extracted
 
@@ -48,6 +51,8 @@ First, inspect the target repo for:
 - existing coding-agent skills for correctness review, test review, or debugging
 - existing Git hooks or hook managers
 - app/runtime surface that might need browser, screenshot, or Lighthouse checks
+- Cloudflare Wrangler config, bindings, generated environment types, and Worker test setup
+- server-rendered form behavior, typed browser entrypoints, CSP, and history/focus conventions
 - durable docs where new workflow contracts should be recorded
 
 Then present a capability selection UI:
@@ -89,6 +94,18 @@ Capability Pull Plan
 [ ] engineering-quality-skills
     Adds focused correctness review, test review, and systematic debugging skills without runtime dependencies.
     Include if the repo uses Codex-compatible skills and lacks equivalent evidence-driven review and debugging workflows.
+
+[ ] workers-ai
+    Adds a generated-type binding adapter, configurable model, runtime structured-output validation, timeout, deterministic fallback, and mock runner.
+    Include if a Cloudflare Worker needs structured inference and the adopting feature can own its prompt, schema, validator, and fallback.
+
+[ ] room-state
+    Adds one SQLite-backed Durable Object per room, predefined replaceable anonymous voting, aggregates, authorized seed/reset helpers, and conventional HTML GET/POST behavior.
+    Include if a room is the coordination atom and the target accepts a Durable Object migration plus Workers-runtime test dependency.
+
+[ ] progressive-interaction
+    Adds optional background form submission, declared fragment replacement, coherent URL/history/focus behavior, and a JavaScript-disabled browser test.
+    Include only after the conventional server form works and the target has or approves a typed client build path. It is optional even when room-state is selected.
 
 For each recommended capability, explain:
 - why it fits this repo

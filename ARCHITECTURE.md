@@ -21,6 +21,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Treat `.architecture-check.json` limits as generous smoke alarms for architectural review. Do not split code mechanically to satisfy them; consolidate responsibilities or add an exact rationale-bearing exception.
 - Keep the quality gate green before considering a change ready.
 - Keep workflow writes explicit. New generated output, local state, cache, archive, or tool-artifact paths should be documented in the same change that introduces them.
+- Keep deploy preflight read-only with respect to Cloudflare: authentication checks, generated binding inspection, and deploy bundling may write only to a disposable operating-system temporary directory, while existing configured build steps retain their documented write targets.
 - Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules before it is served to browsers.
 
 ## Tooling Baseline
@@ -58,6 +59,8 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Keep capability kits instructional and reviewable rather than fully automated by default.
 - Each capability kit should include a README, a machine-readable manifest, any copyable files, package-manager recipes, and validation notes.
 - Capability kits should preserve target-project conventions unless the kit explicitly documents a required constraint.
+- Keep application capabilities such as Workers AI, room-scoped Durable Objects, and progressive form enhancement out of the default runtime; expose them as independently selectable kits.
+- Keep progressive interaction separate from room state until repeated project use justifies making it a core browser opinion. Conventional HTML GET/POST behavior remains authoritative when the enhancement is absent or fails.
 - Vendor third-party agent skills at a reviewed source revision, retain their license and source metadata, and adapt only where template compatibility requires it.
 
 ## Template Updates

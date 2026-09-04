@@ -73,6 +73,7 @@ Each linked `SKILL.md` is the source of truth for boundaries and workflow detail
 
 - Run the fast local gate with `npm run quality:gate:fast` during normal iteration.
 - Run the baseline repo gate with `npm run quality:gate`.
+- Run `npm run preflight` before deployment to check the pinned runtime, Wrangler authentication, declared bindings, and a non-provisioning deploy dry run.
 - Run the deterministic source-shape smoke alarms directly with `npm run quality:structure`; threshold failures call for architecture review or an exact rationale-bearing exception, not mechanical file splitting.
 - Run the containerized local workflow with `npm run ci:local` when changing GitHub Actions, dependencies or installation behavior, build or container setup, browser CI setup, or when performing a full PR or release readiness check. It emits structured run, job, and step progress for agents, uses Local CI parallelism with warm-cache serialization, and pauses failed runners for retry.
 - Run advisory codebase readability diagnostics with `npm run diagnostics:codebase`.
@@ -89,6 +90,8 @@ Each linked `SKILL.md` is the source of truth for boundaries and workflow detail
 Use `.capabilities/` when another project needs one template practice without adopting the whole starter. Each kit is a reviewable partial-upgrade guide with a README, manifest, package-manager recipe, copyable files, and validation checks.
 
 The `engineering-quality-skills` kit exposes focused correctness review, test review, and systematic debugging workflows to downstream coding agents without adding runtime dependencies.
+
+The application-facing kits stay opt-in: `workers-ai` adds a typed structured-output boundary and fallback, `room-state` adds one SQLite-backed Durable Object per room, and `progressive-interaction` enhances conventional forms without making JavaScript mandatory. They contain no lecture-specific prompts, choices, URLs, or seed data.
 
 To apply a kit to another repo:
 

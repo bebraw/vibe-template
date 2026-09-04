@@ -15,11 +15,35 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Copyable files:** `files/`
 - **Package-manager recipes:** `recipes/`
 - **Validation notes:** `checks.md`
-- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`
+- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`, `workers-ai`, `room-state`, `progressive-interaction`
 - **Third-party skill provenance:** vendored skills retain their license, upstream repository, and reviewed revision in the copyable files.
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 - **Later maintenance sync:** template update packs under `.template/updates/` cover follow-up changes to projects that already adopted a kit.
+
+#### Workers AI Kit
+
+- **Capability source root:** `.capabilities/workers-ai/`
+- **Target composition root:** the adopting Worker's request handler creates a runner from its generated `Env` binding and injects it into feature code
+- **State authority:** `wrangler.jsonc` owns `AI` and `AI_MODEL`; the committed generated environment declaration owns their compile-time shape; the adopting feature owns prompts, schemas, validators, and deterministic fallbacks
+- **Public contracts:** `WorkersAiRunner`, `runStructuredAi`, its discriminated model/fallback result, and the mock runner
+- **Dependency direction:** feature code may depend on the small runner contract; only the Worker composition boundary depends on the generated Workers AI binding
+
+#### Room State Kit
+
+- **Capability source root:** `.capabilities/room-state/`
+- **Target composition root:** the adopting Worker exports `RoomState`, routes `/rooms/:roomId` through `handleRoomRequest`, and places application authorization before seed/reset calls
+- **State authority:** one SQLite-backed Durable Object selected by `ROOM_STATE.getByName(roomId)` owns predefined choices and pseudonymous replaceable votes; aggregate counts are derived from that database
+- **Public contracts:** room choice/snapshot/vote result types, `RoomState` RPC methods, conventional HTML GET/POST semantics, and authorized seed/reset helpers
+- **Dependency direction:** Worker routing and administration composition depend on the room RPC contract; room state does not depend on browser enhancement or application-specific choices
+
+#### Progressive Interaction Kit
+
+- **Capability source root:** `.capabilities/progressive-interaction/`
+- **Target composition root:** an existing typed browser entrypoint installs the delegated form enhancer; the server's conventional route remains the authoritative workflow
+- **State authority:** the server-rendered URL and HTML response remain canonical; browser history stores only an enhancement marker and current URL
+- **Public contracts:** `data-progressive-form`, `data-progressive-target`, `data-progressive-fragment`, optional `data-progressive-focus`, and the `installProgressiveForms` entrypoint
+- **Dependency direction:** the browser module depends on semantic form/fragment markup and returned HTML; server behavior must not depend on the browser module
 
 ### Anti-Patterns
 
@@ -63,6 +87,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs` and audit performance, accessibility, best practices, and SEO.
 - The website baseline kit must separate universal browser requirements from public-site and feature-dependent requirements, and must keep emerging agent-readiness conventions opt-in.
 - The engineering quality skills kit must keep its copyable `correctness-review`, `test-review`, and `debug` skills aligned with the project-local versions and preserve upstream MIT attribution.
+- The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, and contain no application prompts or schemas.
+- The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep seed/reset behind an application-owned authorization check.
+- The Room State kit must bound buffered form bodies and store only a per-room digest of its opaque first-party voter cookie. It must not claim cryptographic ballot secrecy or authenticated identity.
+- The Progressive Interaction kit must leave unmarked, cross-origin, unsupported-method, text/plain, and GET-with-file forms on the native path; enhancement failure must return to native submission.
+- The Progressive Interaction kit must keep conventional forms functional without JavaScript and include a JavaScript-disabled browser scenario. URL, history, and focus must remain coherent on the enhanced path.
+- The Progressive Interaction kit must remain independently selectable from Room State until a later explicit decision promotes it into the core template or another kit.
 - Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
 
 ### Verification
@@ -132,3 +162,33 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: another repo uses coding-agent skills and wants stronger behavioral review and debugging guidance
 - When: the agent applies `.capabilities/engineering-quality-skills/`
 - Then: the target repo receives correctness review, test review, and debug skills with source metadata and MIT attribution, without runtime dependencies
+
+**Scenario: Worker adds bounded structured inference**
+
+- Given: a Cloudflare Worker has a feature-owned prompt, JSON Schema, runtime validator, and deterministic fallback
+- When: the agent applies `.capabilities/workers-ai/`
+- Then: the target receives a generated-type AI binding adapter, configurable model, timeout, explicit model/fallback result, and network-free mock runner without inheriting lecture content
+
+**Scenario: Room receives replaceable votes**
+
+- Given: a room id is the coordination atom and an authorized setup path has seeded predefined choices
+- When: an anonymous browser submits a choice and later submits a different choice
+- Then: the room's Durable Object stores one pseudonymous voter key, moves that vote, and derives aggregates whose total remains one
+
+**Scenario: Room administration is composed**
+
+- Given: a target project exposes seed or reset through an application route
+- When: the route composes the Room State helpers
+- Then: an application-owned authorization callback succeeds before the Durable Object operation is invoked
+
+**Scenario: Form enhancement is unavailable**
+
+- Given: a marked server-rendered form has a valid action, method, named controls, and submit button
+- When: JavaScript is disabled or the client enhancement fails
+- Then: native submission completes the workflow and the browser renders the server response
+
+**Scenario: Form enhancement succeeds**
+
+- Given: the current and returned HTML contain the same declared fragment
+- When: the optional browser module submits the form in the background
+- Then: it replaces only that fragment, preserves or deliberately moves focus, updates history when the URL changes, and reloads the matching server URL during history traversal

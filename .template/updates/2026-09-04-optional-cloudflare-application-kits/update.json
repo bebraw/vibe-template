@@ -1,0 +1,10 @@
+{
+  "id": "2026-09-04-optional-cloudflare-application-kits",
+  "title": "Add optional Cloudflare application kits and deploy preflight",
+  "status": "implemented",
+  "risk": "medium",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-055-add-optional-cloudflare-application-kits.md"],
+  "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "README.md", "docs/", "package.json", "scripts/", "specs/"],
+  "checks": ["npm run quality:gate", "npm run ci:local"]
+}
