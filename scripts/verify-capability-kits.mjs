@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const execFileAsync = promisify(execFile);
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
-const capabilityNames = ["workers-ai", "room-state"];
+const capabilityNames = ["workers-ai", "room-state", "browser-static-assets"];
 
 const fixtureDefinitions = {
   "workers-ai": {
@@ -50,6 +50,25 @@ export default {
       main: "src/worker.ts",
       migrations: [{ new_sqlite_classes: ["RoomState"], tag: "v1" }],
       name: "capability-room-state-verification",
+    },
+  },
+  "browser-static-assets": {
+    entrypoint: `export default {
+  fetch(): Response {
+    return new Response(
+      '<!doctype html><html><head><script type="module" src="/assets/browser-entry.js"></script></head><body>Browser fixture</body></html>',
+      { headers: { "content-security-policy": "default-src 'self'; script-src 'self'", "content-type": "text/html" } },
+    );
+  },
+};
+`,
+    runDeployDryRun: true,
+    runVitest: false,
+    typecheckInclude: ["worker-configuration.d.ts", "src/worker.ts"],
+    wrangler: {
+      compatibility_date: "2026-03-28",
+      main: "src/worker.ts",
+      name: "capability-browser-static-assets-verification",
     },
   },
 };
@@ -105,14 +124,27 @@ async function verifyCapabilityKit({ capabilityName, log, packageManager, root, 
       definition,
       dependencies: collectFixtureDependencies(manifest, toolchain),
       fixtureRoot: temporaryRoot,
+      manifest,
       packageManager,
     });
     await runFixtureCommand("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false"], temporaryRoot);
 
     const binaryRoot = path.join(temporaryRoot, "node_modules", ".bin");
+    if (manifest.scripts?.["build:browser"]) {
+      await runFixtureCommand("npm", ["run", "build:browser"], temporaryRoot);
+    }
     await runFixtureCommand(path.join(binaryRoot, "wrangler"), ["types"], temporaryRoot);
     await runFixtureCommand(path.join(binaryRoot, "tsc"), ["--noEmit", "--project", "tsconfig.json"], temporaryRoot);
-    await runFixtureCommand(path.join(binaryRoot, "vitest"), ["run", "--config", "vitest.config.ts"], temporaryRoot);
+    if (definition.runVitest !== false) {
+      await runFixtureCommand(path.join(binaryRoot, "vitest"), ["run", "--config", "vitest.config.ts"], temporaryRoot);
+    }
+    if (definition.runDeployDryRun) {
+      await runFixtureCommand(
+        path.join(binaryRoot, "wrangler"),
+        ["deploy", "--dry-run", "--experimental-provision=false", "--experimental-auto-create=false"],
+        temporaryRoot,
+      );
+    }
 
     log(`[capabilities:verify] ${capabilityName}: passed type and runtime checks`);
   } finally {
@@ -120,13 +152,14 @@ async function verifyCapabilityKit({ capabilityName, log, packageManager, root, 
   }
 }
 
-async function writeFixtureFiles({ definition, dependencies, fixtureRoot, packageManager }) {
+async function writeFixtureFiles({ definition, dependencies, fixtureRoot, manifest, packageManager }) {
   const fixturePackage = {
     name: "capability-verification-fixture",
     private: true,
     type: "module",
     packageManager,
     devDependencies: dependencies,
+    scripts: manifest.scripts,
   };
   const tsconfig = {
     compilerOptions: {
@@ -142,13 +175,16 @@ async function writeFixtureFiles({ definition, dependencies, fixtureRoot, packag
       target: "ES2022",
       types: ["node"],
     },
-    include: ["worker-configuration.d.ts", "src/**/*.ts", "vitest.config.ts"],
+    include: definition.typecheckInclude ?? ["worker-configuration.d.ts", "src/**/*.ts", "vitest.config.ts"],
   };
 
   await mkdir(path.join(fixtureRoot, "src"), { recursive: true });
   await writeFile(path.join(fixtureRoot, "package.json"), `${JSON.stringify(fixturePackage, null, 2)}\n`);
   await writeFile(path.join(fixtureRoot, "tsconfig.json"), `${JSON.stringify(tsconfig, null, 2)}\n`);
-  await writeFile(path.join(fixtureRoot, "wrangler.jsonc"), `${JSON.stringify(definition.wrangler, null, 2)}\n`);
+  await writeFile(
+    path.join(fixtureRoot, "wrangler.jsonc"),
+    `${JSON.stringify({ ...definition.wrangler, ...manifest.wrangler }, null, 2)}\n`,
+  );
   await writeFile(path.join(fixtureRoot, "src", "worker.ts"), definition.entrypoint);
   if (definition.vitestConfig) {
     await writeFile(path.join(fixtureRoot, "vitest.config.ts"), definition.vitestConfig);

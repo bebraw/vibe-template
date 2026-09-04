@@ -25,4 +25,4 @@ npm run quality:gate
 - A failed fetch or malformed HTML response falls back to native submission.
 - No executable browser code is embedded inline in Worker-rendered HTML.
 - At least one Playwright scenario runs with `javaScriptEnabled: false` against a functional form path.
-- The enhanced path has browser coverage for fragment replacement, URL, and focus behavior.
+- The enhanced path has browser coverage for fragment replacement, URL, focus, and Back/Forward behavior.

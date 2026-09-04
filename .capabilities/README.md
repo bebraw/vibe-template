@@ -18,6 +18,7 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 | [`workers-ai`](./workers-ai/README.md)                                 | Add typed, validated Workers AI structured-output calls.           |
 | [`room-state`](./room-state/README.md)                                 | Add one Durable Object per room for replaceable voting.            |
 | [`progressive-interaction`](./progressive-interaction/README.md)       | Enhance conventional forms with fragment replacement.              |
+| [`browser-static-assets`](./browser-static-assets/README.md)           | Add a typed browser module build and Worker static assets.         |
 
 ## Reviewed But Not Extracted
 
@@ -53,6 +54,7 @@ First, inspect the target repo for:
 - app/runtime surface that might need browser, screenshot, or Lighthouse checks
 - Cloudflare Wrangler config, bindings, generated environment types, and Worker test setup
 - server-rendered form behavior, typed browser entrypoints, CSP, and history/focus conventions
+- browser TypeScript build output, generated-asset ignores, and Worker static-assets routing
 - durable docs where new workflow contracts should be recorded
 
 Then present a capability selection UI:
@@ -105,7 +107,11 @@ Capability Pull Plan
 
 [ ] progressive-interaction
     Adds optional background form submission, declared fragment replacement, coherent URL/history/focus behavior, and a JavaScript-disabled browser test.
-    Include only after the conventional server form works and the target has or approves a typed client build path. It is optional even when room-state is selected.
+    Include only after the conventional server form works and the target has or approves a typed client build path. Offer browser-static-assets when that path is absent. It is optional even when room-state is selected.
+
+[ ] browser-static-assets
+    Adds a native ES-module TypeScript build, watch command, Worker static-assets routing, CSP/cache headers, and a JavaScript-enabled browser smoke test.
+    Include when a server-rendered Worker needs a small typed client path and does not already have a framework or bundler pipeline.
 
 For each recommended capability, explain:
 - why it fits this repo

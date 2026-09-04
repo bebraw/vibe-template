@@ -52,6 +52,7 @@ copying unrelated starter structure.
   - `2026-08-17-dependency-toolchain-refresh`
   - `2026-08-31-compact-agent-skills`
   - `2026-09-04-executable-capability-verification`
+  - `2026-09-04-browser-static-assets-kit`
 
 ### Anti-Patterns
 

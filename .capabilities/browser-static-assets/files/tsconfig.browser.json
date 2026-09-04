@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": false,
+    "outDir": "./public/assets",
+    "rootDir": "./src/browser",
+    "sourceMap": false,
+    "target": "ES2022",
+    "types": []
+  },
+  "include": ["src/browser/**/*.ts"],
+  "exclude": ["src/browser/**/*.test.ts"]
+}

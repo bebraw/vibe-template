@@ -3,7 +3,8 @@
   "description": "Enhance conventional HTML forms with background submission and declared fragment replacement.",
   "dependencies": {
     "dev": {
-      "@playwright/test": "1.62.1"
+      "@playwright/test": "1.62.1",
+      "typescript": "npm:@typescript/typescript6@6.0.2"
     }
   },
   "files": [
@@ -31,10 +32,10 @@
   ],
   "optionalSteps": [
     {
-      "name": "client-build",
+      "name": "browser-static-assets",
       "when": "The target has no existing typed browser-code build and serving path.",
-      "prompt": "This repo has no client bundle path. Which existing build convention should serve the progressive-form entry module?",
-      "recipe": "recipes/npm.md"
+      "prompt": "This repo has no client module path. Do you want to apply the browser-static-assets kit before installing progressive interaction?",
+      "kit": "../browser-static-assets"
     }
   ],
   "docs": [

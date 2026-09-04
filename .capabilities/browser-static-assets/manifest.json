@@ -1,0 +1,57 @@
+{
+  "name": "browser-static-assets",
+  "description": "Add a typed native browser-module build and a Cloudflare Workers static-assets path.",
+  "dependencies": {
+    "dev": {
+      "@playwright/test": "1.62.1",
+      "typescript": "npm:@typescript/typescript6@6.0.2",
+      "typescript-7": "npm:typescript@7.0.2"
+    }
+  },
+  "scripts": {
+    "build:browser": "node ./node_modules/typescript-7/bin/tsc --project tsconfig.browser.json",
+    "watch:browser": "node ./node_modules/typescript-7/bin/tsc --project tsconfig.browser.json --watch --preserveWatchOutput"
+  },
+  "files": [
+    { "source": "files/tsconfig.browser.json", "target": "tsconfig.browser.json", "mode": "copy-or-merge" },
+    {
+      "source": "files/src/browser/browser-entry.ts",
+      "target": "src/browser/browser-entry.ts",
+      "mode": "copy-or-merge"
+    },
+    { "source": "files/src/browser-entry.e2e.ts", "target": "src/browser-entry.e2e.ts", "mode": "copy-or-merge" },
+    { "source": "files/public/_headers", "target": "public/_headers", "mode": "copy-or-merge" }
+  ],
+  "generatedFiles": ["public/assets/**/*.js"],
+  "wrangler": {
+    "assets": {
+      "directory": "./public",
+      "html_handling": "none",
+      "not_found_handling": "none",
+      "run_worker_first": ["/*", "!/assets/*"]
+    },
+    "build": {
+      "command": "npm run build:browser",
+      "watch_dir": ["src/browser", "tsconfig.browser.json"]
+    }
+  },
+  "optionalSteps": [
+    {
+      "name": "progressive-interaction",
+      "when": "The target has a conventional server form that should gain background submission and fragment replacement.",
+      "prompt": "Do you want to apply the separate progressive-interaction kit and install it from the browser entrypoint?",
+      "kit": "../progressive-interaction"
+    }
+  ],
+  "docs": [
+    "Document public/assets as generated output and public/_headers as authored deployment configuration.",
+    "Document that Worker-generated HTML owns its own CSP and security headers.",
+    "Document the server-rendered no-JavaScript path for every installed browser behavior."
+  ],
+  "verify": ["npm run build:browser", "npm run typecheck", "npm run e2e", "npm run quality:gate"],
+  "notes": [
+    "Native module scripts are deferred by default and require explicit .js suffixes for relative emitted imports.",
+    "Stable, unhashed module names use revalidation rather than immutable caching.",
+    "Worker application routes run first while /assets/* uses the static-assets path."
+  ]
+}

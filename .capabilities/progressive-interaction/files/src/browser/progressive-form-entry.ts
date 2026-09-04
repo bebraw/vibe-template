@@ -1,3 +1,3 @@
-import { installProgressiveForms } from "./progressive-form";
+import { installProgressiveForms } from "./progressive-form.js";
 
 installProgressiveForms();

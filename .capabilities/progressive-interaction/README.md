@@ -9,7 +9,7 @@ Use this kit to enhance conventional server-rendered forms without making JavaSc
 - URL and browser-history updates when the response URL changes.
 - Focus preservation or a declared replacement focus target.
 - Native resubmission when the enhancement fails.
-- A Playwright scenario that proves form submission with JavaScript disabled.
+- Playwright scenarios for the native no-JavaScript path and enhanced fragment, URL, focus, and history behavior.
 
 ## Good Fit
 
@@ -26,11 +26,11 @@ Use this kit to enhance conventional server-rendered forms without making JavaSc
 ## Apply
 
 1. Read `manifest.json` and inspect existing form markup, browser entrypoints, CSP, build output, history handling, and Playwright setup.
-2. Copy or merge `files/src/browser/` into the existing typed client source.
-3. Follow `recipes/npm.md` to serve the entry module without introducing a second client build system silently.
-4. Add the markup contract only to forms whose normal action and method already work.
-5. Adapt the JavaScript-disabled test to one real target workflow, keeping the supplied self-contained scenario if it remains useful.
-6. Add an enhanced-path browser test for fragment replacement, URL, and focus behavior in the target application.
+2. Confirm the target already has a typed browser build and serving path. If not, offer the separate `browser-static-assets` kit and wait for approval before adding it.
+3. Copy or merge `files/src/browser/` into the existing typed client source.
+4. Follow `recipes/npm.md` to serve the entry module without introducing a second client build system silently.
+5. Add the markup contract only to forms whose normal action and method already work.
+6. Adapt the supplied JavaScript-disabled and enhanced-path tests to a real target workflow, keeping the self-contained scenarios if they remain useful.
 7. Run `checks.md` and the target repo's normal readiness gate.
 
 This kit remains optional until repeated project use demonstrates that the pattern belongs in the template's core browser opinion.

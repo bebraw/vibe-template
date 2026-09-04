@@ -92,7 +92,7 @@ Use `.capabilities/` when another project needs one template practice without ad
 
 The `engineering-quality-skills` kit exposes focused correctness review, test review, and systematic debugging workflows to downstream coding agents without adding runtime dependencies.
 
-The application-facing kits stay opt-in: `workers-ai` adds a typed structured-output boundary and fallback, `room-state` adds one SQLite-backed Durable Object per room, and `progressive-interaction` enhances conventional forms without making JavaScript mandatory. They contain no lecture-specific prompts, choices, URLs, or seed data.
+The application-facing kits stay opt-in: `workers-ai` adds a typed structured-output boundary and fallback, `room-state` adds one SQLite-backed Durable Object per room, `browser-static-assets` adds a small native browser-module build and Worker asset path, and `progressive-interaction` enhances conventional forms without making JavaScript mandatory. They contain no lecture-specific prompts, choices, URLs, or seed data.
 
 To apply a kit to another repo:
 

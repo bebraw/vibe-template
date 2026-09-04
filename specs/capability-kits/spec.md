@@ -15,7 +15,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Copyable files:** `files/`
 - **Package-manager recipes:** `recipes/`
 - **Validation notes:** `checks.md`
-- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`, `workers-ai`, `room-state`, `progressive-interaction`
+- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`, `workers-ai`, `room-state`, `progressive-interaction`, `browser-static-assets`
 - **Third-party skill provenance:** vendored skills retain their license, upstream repository, and reviewed revision in the copyable files.
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
@@ -49,6 +49,14 @@ The template is useful both as a starter repo and as a source of specific practi
 - **State authority:** the server-rendered URL and HTML response remain canonical; browser history stores only an enhancement marker and current URL
 - **Public contracts:** `data-progressive-form`, `data-progressive-target`, `data-progressive-fragment`, optional `data-progressive-focus`, and the `installProgressiveForms` entrypoint
 - **Dependency direction:** the browser module depends on semantic form/fragment markup and returned HTML; server behavior must not depend on the browser module
+
+#### Browser Static Assets Kit
+
+- **Capability source root:** `.capabilities/browser-static-assets/`
+- **Target composition root:** the adopting Worker's document renderer references `public/assets/browser-entry.js`, while Wrangler runs the browser compiler and routes `/assets/*` through static assets
+- **State authority:** typed source under `src/browser/` is authoritative; `public/assets/` is disposable generated output and `public/_headers` is authored static-response configuration
+- **Public contracts:** `build:browser`, `watch:browser`, the external module URL, `data-browser-module="ready"`, the Wrangler assets/build fragment, and static-response headers
+- **Dependency direction:** feature installers may be imported by the browser entrypoint; server-rendered core behavior must remain usable without the emitted module, and Worker routes must not depend on browser state
 
 ### Anti-Patterns
 
@@ -99,6 +107,9 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Progressive Interaction kit must leave unmarked, cross-origin, unsupported-method, text/plain, and GET-with-file forms on the native path; enhancement failure must return to native submission.
 - The Progressive Interaction kit must keep conventional forms functional without JavaScript and include a JavaScript-disabled browser scenario. URL, history, and focus must remain coherent on the enhanced path.
 - The Progressive Interaction kit must remain independently selectable from Room State until a later explicit decision promotes it into the core template or another kit.
+- The Browser Static Assets kit must use native ES modules, keep stable unhashed module names on revalidated caching, keep Worker application routes authoritative, and document `public/assets/` as generated output.
+- The Browser Static Assets kit must not replace an established client pipeline or imply that `_headers` affects Worker-generated responses.
+- Progressive Interaction must include JavaScript-enabled browser coverage for fragment replacement, URL, focus, and Back/Forward behavior in addition to its no-JavaScript scenario.
 - Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
 - Executable verification must reject manifest paths outside the kit or fixture, reject toolchain version conflicts, remove temporary Workers after each run, and fail when generated bindings, type checking, or kit tests fail.
 - Each executable kit manifest must declare the exact development dependencies required by its copied tests; another kit or the root repository must not satisfy undeclared test dependencies accidentally.
@@ -207,3 +218,9 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: the current and returned HTML contain the same declared fragment
 - When: the optional browser module submits the form in the background
 - Then: it replaces only that fragment, preserves or deliberately moves focus, updates history when the URL changes, and reloads the matching server URL during history traversal
+
+**Scenario: Worker needs its first browser module**
+
+- Given: a server-rendered Worker has no client framework, browser compiler, or static-assets path
+- When: the agent applies `.capabilities/browser-static-assets/`
+- Then: TypeScript emits an external native module, Wrangler serves it through `/assets/*`, stable filenames revalidate, and the server-rendered page remains functional when JavaScript is unavailable

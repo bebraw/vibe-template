@@ -62,6 +62,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Each capability kit should include a README, a machine-readable manifest, any copyable files, package-manager recipes, and validation notes.
 - Capability kits should preserve target-project conventions unless the kit explicitly documents a required constraint.
 - Keep application capabilities such as Workers AI, room-scoped Durable Objects, and progressive form enhancement out of the default runtime; expose them as independently selectable kits.
+- Keep the native browser-module/static-assets path optional and generated-output-aware; projects with an established client pipeline should retain it rather than adopting a second build system.
 - Keep progressive interaction separate from room state until repeated project use justifies making it a core browser opinion. Conventional HTML GET/POST behavior remains authoritative when the enhancement is absent or fails.
 - Vendor third-party agent skills at a reviewed source revision, retain their license and source metadata, and adapt only where template compatibility requires it.
 
