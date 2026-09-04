@@ -31,6 +31,7 @@
     "mutation": "stryker run",
     "mutation:incremental": "stryker run --incremental",
     "playwright:install": "playwright install chromium",
+    "preflight": "node ./scripts/run-preflight.mjs",
     "prepare": "node ./scripts/setup-git-hooks.mjs",
     "quality:affected": "node ./scripts/run-affected-guardrails.mjs",
     "quality:gate": "node ./scripts/run-quality-gate.mjs",

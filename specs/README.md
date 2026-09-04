@@ -22,6 +22,7 @@ Skip a spec for small fixes, trivial copy changes, or narrow tactical edits.
 - Global rules belong in [`ARCHITECTURE.md`](../ARCHITECTURE.md).
 - Feature specs belong in `specs/{feature-domain}/spec.md`.
 - Capability-kit contracts belong in `specs/capability-kits/spec.md`.
+- Deployment-readiness preflight contracts belong in `specs/deploy-preflight/spec.md`.
 - Agent-skill baseline contracts belong in `specs/agent-skills/spec.md`.
 - Project initialization and pruning contracts belong in `specs/project-start/spec.md`.
 - Template update-pack contracts belong in `specs/template-updates/spec.md`.
