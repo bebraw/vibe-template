@@ -19,6 +19,7 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 | [`room-state`](./room-state/README.md)                                 | Add one Durable Object per room for replaceable voting.            |
 | [`progressive-interaction`](./progressive-interaction/README.md)       | Enhance conventional forms with fragment replacement.              |
 | [`browser-static-assets`](./browser-static-assets/README.md)           | Add a typed browser module build and Worker static assets.         |
+| [`deployment-safety`](./deployment-safety/README.md)                   | Review a version preview before explicit promotion or rollback.    |
 
 ## Reviewed But Not Extracted
 
@@ -55,6 +56,7 @@ First, inspect the target repo for:
 - Cloudflare Wrangler config, bindings, generated environment types, and Worker test setup
 - server-rendered form behavior, typed browser entrypoints, CSP, and history/focus conventions
 - browser TypeScript build output, generated-asset ignores, and Worker static-assets routing
+- Worker version/deployment workflow, preview support, access control, and rollback limits
 - durable docs where new workflow contracts should be recorded
 
 Then present a capability selection UI:
@@ -112,6 +114,10 @@ Capability Pull Plan
 [ ] browser-static-assets
     Adds a native ES-module TypeScript build, watch command, Worker static-assets routing, CSP/cache headers, and a JavaScript-enabled browser smoke test.
     Include when a server-rendered Worker needs a small typed client path and does not already have a framework or bundler pipeline.
+
+[ ] deployment-safety
+    Makes deploy upload an undeployed version preview, then requires an exact version ID for promotion or rollback.
+    Include for Workers that support preview URLs and need a human approval boundary. Do not recommend it for Workers with Durable Objects, Containers, or Sandbox; design an isolated preview environment instead.
 
 For each recommended capability, explain:
 - why it fits this repo

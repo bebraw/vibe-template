@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 const execFileAsync = promisify(execFile);
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 const capabilityNames = ["workers-ai", "room-state", "browser-static-assets"];
+const capabilityToolingTests = [".capabilities/deployment-safety/files/scripts/run-deployment-safety.test.mjs"];
 
 const fixtureDefinitions = {
   "workers-ai": {
@@ -104,6 +105,11 @@ export async function verifyCapabilityKits({ log = console.log, root = repositor
     "typescript-7": packageJson.devDependencies["typescript-7"],
     wrangler: packageJson.devDependencies.wrangler,
   };
+
+  for (const testPath of capabilityToolingTests) {
+    log(`[capabilities:verify] ${testPath}: running copyable tooling tests`);
+    await runFixtureCommand(process.execPath, ["--test", path.join(root, testPath)], root);
+  }
 
   for (const capabilityName of capabilityNames) {
     await verifyCapabilityKit({ capabilityName, log, packageManager: packageJson.packageManager, root, toolchain });

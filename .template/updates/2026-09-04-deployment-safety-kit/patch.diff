@@ -1,0 +1,9 @@
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 0000000..0000000 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -1,3 +1,4 @@
+ # Architecture
+ 
+ This file stores cross-cutting rules that apply to the whole repo and to projects cloned from it.
++Keep deployment preview, traffic promotion, and rollback as distinct authorized operations; reject version-preview workflows for unsupported Durable Object applications.

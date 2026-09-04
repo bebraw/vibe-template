@@ -1,0 +1,10 @@
+{
+  "id": "2026-09-04-deployment-safety-kit",
+  "title": "Add an optional preview, promotion, and rollback deployment workflow",
+  "status": "implemented",
+  "risk": "medium",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-058-add-preview-promotion-deployment-safety-kit.md"],
+  "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "README.md", "scripts/", "specs/"],
+  "checks": ["npm run capabilities:verify", "npm run quality:gate"]
+}

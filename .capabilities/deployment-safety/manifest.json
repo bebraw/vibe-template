@@ -1,0 +1,41 @@
+{
+  "name": "deployment-safety",
+  "description": "Upload a version preview, review it, then explicitly promote or roll back a known Worker version.",
+  "dependencies": {},
+  "scripts": {
+    "deploy": "npm run deploy:preview",
+    "deploy:preview": "node ./scripts/run-deployment-safety.mjs preview",
+    "deploy:status": "node ./scripts/run-deployment-safety.mjs status",
+    "deploy:promote": "node ./scripts/run-deployment-safety.mjs promote",
+    "deploy:rollback": "node ./scripts/run-deployment-safety.mjs rollback"
+  },
+  "files": [
+    {
+      "source": "files/scripts/run-deployment-safety.mjs",
+      "target": "scripts/run-deployment-safety.mjs",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/scripts/run-deployment-safety.test.mjs",
+      "target": "scripts/run-deployment-safety.test.mjs",
+      "mode": "copy-or-merge"
+    },
+    { "source": "files/docs/deployment-safety.md", "target": "docs/deployment-safety.md", "mode": "copy-or-merge" }
+  ],
+  "wrangler": { "preview_urls": true },
+  "config": [
+    "Enable preview_urls explicitly only after reviewing public accessibility.",
+    "Do not apply this version-preview workflow to Workers that implement Durable Objects, Containers, or Sandbox."
+  ],
+  "docs": [
+    "Record the candidate version ID, preview URL, active version before promotion, review result, and rollback target.",
+    "Document preview access control and the application-specific smoke checklist.",
+    "Document binding, migration, and data compatibility limits for rollback."
+  ],
+  "verify": ["node --test scripts/run-deployment-safety.test.mjs", "npm run preflight", "npm run quality:gate"],
+  "notes": [
+    "Preview upload creates a remote Worker version but does not change active traffic.",
+    "Promotion and rollback are explicit remote traffic mutations and require authorization.",
+    "Preview URLs are public by default when enabled and do not currently expose Workers logs."
+  ]
+}

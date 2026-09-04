@@ -53,6 +53,7 @@ copying unrelated starter structure.
   - `2026-08-31-compact-agent-skills`
   - `2026-09-04-executable-capability-verification`
   - `2026-09-04-browser-static-assets-kit`
+  - `2026-09-04-deployment-safety-kit`
 
 ### Anti-Patterns
 

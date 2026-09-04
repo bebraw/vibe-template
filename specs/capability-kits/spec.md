@@ -15,7 +15,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Copyable files:** `files/`
 - **Package-manager recipes:** `recipes/`
 - **Validation notes:** `checks.md`
-- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`, `workers-ai`, `room-state`, `progressive-interaction`, `browser-static-assets`
+- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`, `workers-ai`, `room-state`, `progressive-interaction`, `browser-static-assets`, `deployment-safety`
 - **Third-party skill provenance:** vendored skills retain their license, upstream repository, and reviewed revision in the copyable files.
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
@@ -58,6 +58,14 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Public contracts:** `build:browser`, `watch:browser`, the external module URL, `data-browser-module="ready"`, the Wrangler assets/build fragment, and static-response headers
 - **Dependency direction:** feature installers may be imported by the browser entrypoint; server-rendered core behavior must remain usable without the emitted module, and Worker routes must not depend on browser state
 
+#### Deployment Safety Kit
+
+- **Capability source root:** `.capabilities/deployment-safety/`
+- **Target composition root:** package scripts call the copyable deployment wrapper, which invokes only the target's pinned Wrangler executable
+- **State authority:** Cloudflare owns uploaded versions and active deployment traffic; the review runbook owns the exact candidate, prior active version, approval result, and rollback target
+- **Public contracts:** `deploy`/`deploy:preview`, `deploy:status`, `deploy:promote -- <version-id>`, `deploy:rollback -- <version-id>`, `WORKER_PREVIEW_ALIAS`, and `DEPLOY_MESSAGE`
+- **Dependency direction:** deployment orchestration may depend on the pinned Wrangler CLI and preflight; application runtime and capability code must not depend on deployment wrapper state
+
 ### Anti-Patterns
 
 - Do not make capability kits hidden automation that rewrites target repos without review.
@@ -67,6 +75,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - Do not include secrets or machine-local values in copyable files.
 - Do not let kit instructions drift from the template's own current implementation.
 - Do not use capability kits as the only record for later maintenance changes that should be synced into projects that already adopted the capability.
+- Do not present version preview URLs as available or isolated for Workers with Durable Objects, Containers, or Sandbox.
 
 ## Contract
 
@@ -110,6 +119,8 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Browser Static Assets kit must use native ES modules, keep stable unhashed module names on revalidated caching, keep Worker application routes authoritative, and document `public/assets/` as generated output.
 - The Browser Static Assets kit must not replace an established client pipeline or imply that `_headers` affects Worker-generated responses.
 - Progressive Interaction must include JavaScript-enabled browser coverage for fragment replacement, URL, focus, and Back/Forward behavior in addition to its no-JavaScript scenario.
+- Deployment Safety must leave traffic unchanged during preview upload, require exact version IDs for non-interactive promotion and rollback, and emit structured operation logs without credentials or environment contents.
+- Deployment Safety must document that preview URLs are public unless protected, preview logs are unavailable, preview requests may reach production bindings, and connected resources are not rolled back with code.
 - Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
 - Executable verification must reject manifest paths outside the kit or fixture, reject toolchain version conflicts, remove temporary Workers after each run, and fail when generated bindings, type checking, or kit tests fail.
 - Each executable kit manifest must declare the exact development dependencies required by its copied tests; another kit or the root repository must not satisfy undeclared test dependencies accidentally.
@@ -224,3 +235,15 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: a server-rendered Worker has no client framework, browser compiler, or static-assets path
 - When: the agent applies `.capabilities/browser-static-assets/`
 - Then: TypeScript emits an external native module, Wrangler serves it through `/assets/*`, stable filenames revalidate, and the server-rendered page remains functional when JavaScript is unavailable
+
+**Scenario: Presenter reviews a candidate without changing stage**
+
+- Given: an active Worker supports preview URLs and stage is on a known-good version
+- When: `npm run deploy` uploads a candidate and the presenter reviews its returned preview URL
+- Then: active traffic remains unchanged until `deploy:promote` receives that exact reviewed version ID
+
+**Scenario: Worker uses Durable Objects**
+
+- Given: the Worker implements a Durable Object
+- When: deployment safety is considered
+- Then: the version-preview kit is rejected as a poor fit and the project designs a separately isolated preview environment
