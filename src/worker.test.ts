@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
 import worker, { handleRequest } from "./worker";
-import { ensureGeneratedStylesheet } from "./test-support";
-
-ensureGeneratedStylesheet();
 
 describe("worker", () => {
   it("renders the stub home page", async () => {
@@ -51,12 +48,14 @@ describe("worker", () => {
   });
 
   it("serves generated styles", async () => {
-    const response = await handleRequest(new Request("http://example.com/styles.css"));
+    const response = await handleRequest(new Request("http://example.com/styles.css"), {
+      loadStylesheet: async () => ":root{--test-injected:true;}",
+    });
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("text/css");
     expect(response.headers.get("cache-control")).toBe("no-store");
     expect(response.headers.get("x-content-type-options")).toBe("nosniff");
-    await expect(response.text()).resolves.toContain("--color-app-canvas:#f3eee6");
+    await expect(response.text()).resolves.toContain("--test-injected:true");
   });
 });

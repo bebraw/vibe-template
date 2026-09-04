@@ -38,7 +38,7 @@
     "quality:affected": "node ./scripts/run-affected-guardrails.mjs",
     "quality:gate": "node ./scripts/run-quality-gate.mjs",
     "quality:gate:deep": "node ./scripts/run-quality-gate.mjs --deep",
-    "quality:gate:fast": "npm run format:check && npm run lint && npm run typecheck && npm run quality:structure && npm run worker:client-guard && npm run test:tooling && npm run security:audit && npm run test:coverage",
+    "quality:gate:fast": "npm run format:check && npm run lint && npm run typecheck && npm run quality:structure && npm run worker:client-guard && npm run worker:node-import-guard && npm run test:tooling && npm run security:audit && npm run test:coverage",
     "quality:structure": "node ./scripts/check-source-shape.mjs",
     "security:audit": "npm audit --omit=dev --audit-level high",
     "test": "vitest run --passWithNoTests",
@@ -46,7 +46,8 @@
     "test:coverage": "node ./scripts/run-coverage-gate.mjs",
     "test:tooling": "node --test scripts/*.test.mjs",
     "typecheck": "node ./node_modules/typescript-7/bin/tsc --noEmit",
-    "worker:client-guard": "node ./scripts/assert-no-worker-client-scripts.mjs"
+    "worker:client-guard": "node ./scripts/assert-no-worker-client-scripts.mjs",
+    "worker:node-import-guard": "node ./scripts/assert-no-worker-node-imports.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1",

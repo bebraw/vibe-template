@@ -17,6 +17,7 @@ runJavaScriptSyntaxCheckWhenNeeded(affectedFiles);
 runTypecheckWhenNeeded(affectedFiles);
 runSourceShapeCheckWhenNeeded(affectedFiles);
 runWorkerClientGuard(affectedFiles);
+runWorkerNodeImportGuard(affectedFiles);
 runAuditWhenNeeded(affectedFiles);
 runTestsWhenNeeded(affectedFiles);
 
@@ -84,6 +85,18 @@ function runWorkerClientGuard(files) {
   run(repoRoot, "npm", ["run", "worker:client-guard", "--", ...guardFiles]);
 }
 
+function runWorkerNodeImportGuard(files) {
+  const guardFiles = files.filter(isWorkerRuntimeFile);
+
+  if (guardFiles.length === 0) {
+    console.log("Worker Node import guard skipped: no affected production source files.");
+    return;
+  }
+
+  console.log("Running Worker Node import guard for affected production source files...");
+  run(repoRoot, "npm", ["run", "worker:node-import-guard", "--", ...guardFiles]);
+}
+
 function runAuditWhenNeeded(files) {
   if (!files.some((file) => file === "package.json" || file === "package-lock.json")) {
     console.log("Security audit skipped: package files unchanged.");
@@ -136,6 +149,17 @@ function isSourceShapeFile(file) {
       /\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/.test(file) &&
       !/\.(?:test|e2e)\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/.test(file) &&
       !file.endsWith(".d.ts"))
+  );
+}
+
+function isWorkerRuntimeFile(file) {
+  return (
+    file.startsWith("src/") &&
+    /\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/.test(file) &&
+    !/\.(?:test|e2e)\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/.test(file) &&
+    !/\.d\.(?:ts|mts|cts)$/.test(file) &&
+    file !== "src/test-support.ts" &&
+    !file.startsWith("src/test-support/")
   );
 }
 
