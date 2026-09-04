@@ -52,27 +52,39 @@ export async function runStructuredAi<T>({
   timeoutMs = defaultTimeoutMs,
   validate,
 }: StructuredAiRequest<T>): Promise<StructuredAiResult<T>> {
+  if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
+    throw new TypeError("timeoutMs must be a positive finite number.");
+  }
+
   emit(log, { event: "workers-ai.call.start" });
   const controller = new AbortController();
+  const timeoutError = new Error("Workers AI request timed out.");
   let timedOut = false;
-  const timer = setTimeout(() => {
-    timedOut = true;
-    controller.abort();
-  }, timeoutMs);
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timeoutHandle = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+      reject(timeoutError);
+    }, timeoutMs);
+  });
 
   let rawOutput: unknown;
 
   try {
-    rawOutput = await runner.run(
-      {
-        messages,
-        response_format: {
-          json_schema: schema,
-          type: "json_schema",
+    rawOutput = await Promise.race([
+      runner.run(
+        {
+          messages,
+          response_format: {
+            json_schema: schema,
+            type: "json_schema",
+          },
         },
-      },
-      controller.signal,
-    );
+        controller.signal,
+      ),
+      timeout,
+    ]);
   } catch {
     const reason = timedOut ? "timeout" : "binding-error";
     emit(log, { event: "workers-ai.call.finish", outcome: "fallback", reason });
@@ -82,7 +94,7 @@ export async function runStructuredAi<T>({
       reason,
     };
   } finally {
-    clearTimeout(timer);
+    if (timeoutHandle !== undefined) clearTimeout(timeoutHandle);
   }
 
   const candidate = parseCandidate(rawOutput);

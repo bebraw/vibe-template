@@ -59,3 +59,5 @@ Copy or merge:
 Adjust directories to the target repo's established source layout. Keep the generated `Env` type at the binding adapter; inject `WorkersAiRunner` into feature code and tests.
 
 `runStructuredAi` logs redacted lifecycle objects as JSON by default. Inject `log` to route those objects through an established application logger. Preserve the bounded event fields; prompts, schemas, raw output, deterministic fallback values, and exception messages do not belong in these logs.
+
+The adapter races the runner against its own rejection deadline and aborts the supplied signal at the same time. Keep both behaviors: the race bounds runners that ignore aborts, while the signal lets cooperative runners stop unnecessary work. Configure only positive finite `timeoutMs` values.

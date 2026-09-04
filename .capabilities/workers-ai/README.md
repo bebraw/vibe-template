@@ -7,7 +7,7 @@ Use this kit to add one small, typed Workers AI boundary without committing the 
 - A Wrangler AI binding and generated `Env` types.
 - A configurable `AI_MODEL` variable.
 - JSON Schema requests followed by application-owned runtime validation.
-- A bounded request timeout and deterministic caller-provided fallback.
+- A strictly raced request timeout and deterministic caller-provided fallback, even when an injected runner ignores abort signals.
 - Redacted structured start/finish events for model and fallback outcomes.
 - A mock runner for tests without unsafe casts to the full generated binding type.
 
@@ -33,4 +33,4 @@ Use this kit to add one small, typed Workers AI boundary without committing the 
 6. Keep the default JSON logger or inject an application logger. Do not add prompts, schemas, raw output, or fallback values to these events.
 7. Run `checks.md` and the target repo's normal readiness gate.
 
-The default five-second timeout is only a starting point. Set it from the user-visible latency budget of the adopting workflow.
+The default five-second timeout is only a starting point. Set it to a positive finite duration from the user-visible latency budget of the adopting workflow.

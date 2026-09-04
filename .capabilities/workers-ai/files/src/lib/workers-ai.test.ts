@@ -124,4 +124,40 @@ describe("runStructuredAi", () => {
       }),
     ).resolves.toMatchObject({ reason: "timeout", source: "fallback" });
   });
+
+  it("returns the timeout fallback when a runner ignores abort signals", async () => {
+    const fallback = { summary: "fallback value" };
+    const stalled = createMockWorkersAi(() => new Promise(() => undefined));
+
+    const outcome = await Promise.race([
+      runStructuredAi({
+        fallback,
+        messages: [],
+        runner: stalled.runner,
+        schema,
+        timeoutMs: 1,
+        validate: isExampleOutput,
+      }),
+      new Promise<"still-pending">((resolve) => setTimeout(() => resolve("still-pending"), 50)),
+    ]);
+
+    expect(outcome).toEqual({ reason: "timeout", source: "fallback", value: fallback });
+    expect(stalled.calls[0]?.signal.aborted).toBe(true);
+  });
+
+  it.each([0, -1, Number.NaN, Number.POSITIVE_INFINITY])("rejects invalid timeout %s", async (timeoutMs) => {
+    const mock = createMockWorkersAi(() => ({ response: { summary: "model value" } }));
+
+    await expect(
+      runStructuredAi({
+        fallback: { summary: "fallback value" },
+        messages: [],
+        runner: mock.runner,
+        schema,
+        timeoutMs,
+        validate: isExampleOutput,
+      }),
+    ).rejects.toThrow(/positive finite number/);
+    expect(mock.calls).toHaveLength(0);
+  });
 });
