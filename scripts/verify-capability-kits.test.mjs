@@ -4,7 +4,17 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { collectFixtureDependencies, copyManifestFiles } from "./verify-capability-kits.mjs";
+import { assertGeneratedTypeDriftCoverage, collectFixtureDependencies, copyManifestFiles } from "./verify-capability-kits.mjs";
+
+test("requires generated binding drift checks in a kit's normal verification contract", () => {
+  assert.doesNotThrow(() =>
+    assertGeneratedTypeDriftCoverage({ generatedFiles: ["worker-configuration.d.ts"], verify: ["npm run types:check"] }),
+  );
+  assert.throws(
+    () => assertGeneratedTypeDriftCoverage({ generatedFiles: ["worker-configuration.d.ts"], verify: ["npm run types"] }),
+    /types:check/,
+  );
+});
 
 test("collects each kit's declared test dependencies with the verification toolchain", () => {
   assert.deepEqual(

@@ -35,12 +35,14 @@
   ],
   "docs": [
     "Document the selected model, timeout, schema owner, validator, and deterministic fallback.",
+    "Document the redacted Workers AI lifecycle event names and the application's log destination.",
     "Keep application prompts and domain schemas in the adopting feature rather than in this kit."
   ],
   "verify": ["npm run types:check", "npm test", "npm run typecheck", "npm run quality:gate"],
   "notes": [
     "The generated Env type is the source of truth for AI and AI_MODEL.",
     "JSON mode can still return invalid output, so the runtime validator is mandatory.",
+    "Default lifecycle logs contain no prompt, schema, output, fallback value, or exception text.",
     "The mock implements the local runner seam instead of casting a partial object to the full generated binding type."
   ]
 }

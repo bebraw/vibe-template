@@ -55,6 +55,7 @@ copying unrelated starter structure.
   - `2026-09-04-browser-static-assets-kit`
   - `2026-09-04-deployment-safety-kit`
   - `2026-09-04-room-state-hardening`
+  - `2026-09-04-worker-operational-cleanup`
 
 ### Anti-Patterns
 

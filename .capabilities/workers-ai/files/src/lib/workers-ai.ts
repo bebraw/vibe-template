@@ -7,16 +7,24 @@ export interface WorkersAiRunner {
   run(input: Record<string, unknown>, signal: AbortSignal): Promise<unknown>;
 }
 
+export type StructuredAiFallbackReason = "binding-error" | "invalid-output" | "timeout";
+
+export type StructuredAiEvent =
+  | { event: "workers-ai.call.start" }
+  | { event: "workers-ai.call.finish"; outcome: "model" }
+  | { event: "workers-ai.call.finish"; outcome: "fallback"; reason: StructuredAiFallbackReason };
+
 export type StructuredAiResult<T> =
   | { source: "model"; value: T }
   | {
       source: "fallback";
       value: T;
-      reason: "binding-error" | "invalid-output" | "timeout";
+      reason: StructuredAiFallbackReason;
     };
 
 export interface StructuredAiRequest<T> {
   fallback: T;
+  log?(event: StructuredAiEvent): void;
   messages: AiMessage[];
   runner: WorkersAiRunner;
   schema: Record<string, unknown>;
@@ -25,6 +33,7 @@ export interface StructuredAiRequest<T> {
 }
 
 const defaultTimeoutMs = 5_000;
+const defaultLog = (event: StructuredAiEvent): void => console.log(JSON.stringify(event));
 
 export function createWorkersAiRunner(env: Pick<Env, "AI" | "AI_MODEL">): WorkersAiRunner {
   return {
@@ -36,12 +45,14 @@ export function createWorkersAiRunner(env: Pick<Env, "AI" | "AI_MODEL">): Worker
 
 export async function runStructuredAi<T>({
   fallback,
+  log = defaultLog,
   messages,
   runner,
   schema,
   timeoutMs = defaultTimeoutMs,
   validate,
 }: StructuredAiRequest<T>): Promise<StructuredAiResult<T>> {
+  emit(log, { event: "workers-ai.call.start" });
   const controller = new AbortController();
   let timedOut = false;
   const timer = setTimeout(() => {
@@ -63,10 +74,12 @@ export async function runStructuredAi<T>({
       controller.signal,
     );
   } catch {
+    const reason = timedOut ? "timeout" : "binding-error";
+    emit(log, { event: "workers-ai.call.finish", outcome: "fallback", reason });
     return {
       source: "fallback",
       value: fallback,
-      reason: timedOut ? "timeout" : "binding-error",
+      reason,
     };
   } finally {
     clearTimeout(timer);
@@ -74,7 +87,21 @@ export async function runStructuredAi<T>({
 
   const candidate = parseCandidate(rawOutput);
 
-  return validate(candidate) ? { source: "model", value: candidate } : { source: "fallback", value: fallback, reason: "invalid-output" };
+  if (validate(candidate)) {
+    emit(log, { event: "workers-ai.call.finish", outcome: "model" });
+    return { source: "model", value: candidate };
+  }
+
+  emit(log, { event: "workers-ai.call.finish", outcome: "fallback", reason: "invalid-output" });
+  return { source: "fallback", value: fallback, reason: "invalid-output" };
+}
+
+function emit(log: (event: StructuredAiEvent) => void, event: StructuredAiEvent): void {
+  try {
+    log(event);
+  } catch {
+    // Observability must not change the inference or fallback result.
+  }
 }
 
 function parseCandidate(rawOutput: unknown): unknown {

@@ -1,5 +1,5 @@
 import { env } from "cloudflare:workers";
-import { describe, it } from "vitest";
+import { describe, it, vi } from "vitest";
 
 describe("RoomState", () => {
   it("counts predefined choices and replaces an anonymous vote", async ({ expect }) => {
@@ -71,6 +71,7 @@ describe("RoomState", () => {
     await firstRoom.seedChoices(choices);
     await secondRoom.seedChoices(choices);
     await firstRoom.castVote("anonymous-voter", "only");
+    const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     await expect(secondRoom.getSnapshot()).resolves.toMatchObject({ revision: 1, totalVotes: 0 });
     await expect(firstRoom.resetVotes()).resolves.toEqual({
@@ -80,5 +81,9 @@ describe("RoomState", () => {
       status: "open",
       totalVotes: 0,
     });
+    expect(log).toHaveBeenCalledWith(JSON.stringify({ event: "room.reset", outcome: "changed", removedVotes: 1, revision: 3 }));
+    await expect(firstRoom.resetVotes()).resolves.toMatchObject({ revision: 3, totalVotes: 0 });
+    expect(log).toHaveBeenLastCalledWith(JSON.stringify({ event: "room.reset", outcome: "unchanged", removedVotes: 0, revision: 3 }));
+    log.mockRestore();
   });
 });

@@ -1,0 +1,12 @@
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 0000000..0000000 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -1,3 +1,7 @@
+ # Architecture
+ 
+ This file stores cross-cutting rules that apply to the whole repo and to projects cloned from it.
++Keep the deployed starter Worker Web-standards-only; on compatibility dates that default Node.js support on, use the platform's explicit opt-out flags unless an ADR adopts Node runtime APIs.
++Keep the npm package module format explicit.
++Run generated Worker binding drift checks in the normal quality gate of every project that commits those declarations.
++Keep inference, room-reset, and deployment lifecycle logs structured, bounded, and free of sensitive payloads.

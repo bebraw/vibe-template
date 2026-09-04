@@ -110,11 +110,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs` and audit performance, accessibility, best practices, and SEO.
 - The website baseline kit must separate universal browser requirements from public-site and feature-dependent requirements, and must keep emerging agent-readiness conventions opt-in.
 - The engineering quality skills kit must keep its copyable `correctness-review`, `test-review`, and `debug` skills aligned with the project-local versions and preserve upstream MIT attribution.
-- The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, and contain no application prompts or schemas.
+- The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, and contain no application prompts or schemas. It must emit redacted start/finish events without prompts, schemas, raw output, fallback values, or exception text.
 - The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep seed/reset behind an application-owned authorization check.
 - The Room State kit must bound buffered form bodies and store only a per-room digest of its opaque first-party voter cookie. It must not claim cryptographic ballot secrecy or authenticated identity.
 - The Room State kit must reject vote POSTs without a same-origin or explicitly allowlisted `Origin`, default new voter cookies to eight hours, and bound configured cookie lifetimes.
 - Room snapshots must include open/locked status, a monotonic revision, and only the requesting participant's current selection. Locked rooms must reject votes without advancing their revision.
+- Room resets must emit a structured changed/unchanged event with removed count and resulting revision, without room or voter identifiers.
 - The Progressive Interaction kit must leave unmarked, cross-origin, unsupported-method, text/plain, and GET-with-file forms on the native path; enhancement failure must return to native submission.
 - The Progressive Interaction kit must keep conventional forms functional without JavaScript and include a JavaScript-disabled browser scenario. URL, history, and focus must remain coherent on the enhanced path.
 - The Progressive Interaction kit must remain independently selectable from Room State until a later explicit decision promotes it into the core template or another kit.
@@ -126,6 +127,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
 - Executable verification must reject manifest paths outside the kit or fixture, reject toolchain version conflicts, remove temporary Workers after each run, and fail when generated bindings, type checking, or kit tests fail.
 - Each executable kit manifest must declare the exact development dependencies required by its copied tests; another kit or the root repository must not satisfy undeclared test dependencies accidentally.
+- A kit that commits `worker-configuration.d.ts` must include `npm run types:check` in its normal verification contract, and executable verification must prove the freshly generated declaration is stable.
 
 ### Verification
 
@@ -165,6 +167,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: a kit omits a test dependency, its generated binding shape drifts, or its copied application no longer type-checks
 - When: `npm run capabilities:verify` materializes that kit into a disposable Worker
 - Then: verification fails without depending on root application source or leaving generated files in the repository
+
+**Scenario: Generated bindings drift in an adopter**
+
+- Given: an adopting project commits `worker-configuration.d.ts`
+- When: its normal quality gate runs after Wrangler bindings, variables, flags, migrations, or compatibility date change
+- Then: `npm run types:check` fails until the declaration is regenerated and reviewed
 
 **Scenario: Contributor chooses a narrow upgrade**
 

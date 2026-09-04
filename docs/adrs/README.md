@@ -88,6 +88,11 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-053](./implemented/ADR-053-adopt-local-ci-canonical-interface.md)                 | Implemented | Use Local CI's canonical package, executable, configuration, and agent-skill names.               |
 | [ADR-054](./implemented/ADR-054-target-a-compact-agent-skill-baseline.md)              | Implemented | Target capable agents with compact, retrieval-first skills and remove overlapping or unused ones. |
 | [ADR-055](./implemented/ADR-055-add-optional-cloudflare-application-kits.md)           | Implemented | Add optional Workers AI, room state, and progressive interaction kits plus deploy preflight.      |
+| [ADR-056](./implemented/ADR-056-verify-executable-capability-kits.md)                  | Implemented | Verify executable capability kits as isolated disposable adopter Workers.                         |
+| [ADR-057](./implemented/ADR-057-add-browser-static-assets-kit.md)                      | Implemented | Add an optional native browser-module and Worker static-assets capability kit.                    |
+| [ADR-058](./implemented/ADR-058-add-preview-promotion-deployment-safety-kit.md)        | Implemented | Add guarded preview upload, explicit promotion, and rollback tooling.                             |
+| [ADR-059](./implemented/ADR-059-harden-anonymous-room-state.md)                        | Implemented | Harden anonymous room voting with origin checks, bounded cookies, and lockable revisions.         |
+| [ADR-060](./implemented/ADR-060-refresh-worker-operational-contracts.md)               | Implemented | Refresh runtime, module, binding-drift, logging, and warm-up contracts.                           |
 
 ## Creating A New ADR
 

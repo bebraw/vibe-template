@@ -41,6 +41,8 @@ npx wrangler types
 
 Add `types` and `types:check` package scripts if the target does not already have equivalent commands.
 
+Prefix the target project's existing normal quality-gate command with `npm run types:check`. Do not leave generated binding drift as a deploy-only or manual check.
+
 ## Test Configuration
 
 Merge `files/vitest.config.ts` into the target's current Vitest config. The current Workers pool uses the `cloudflareTest()` Vite plugin; do not restore the removed `@cloudflare/vitest-pool-workers/config` entrypoint or discard existing include, coverage, or alias settings.
@@ -68,3 +70,5 @@ await handleRoomRequest(request, env, {
 ```
 
 The request URL's own origin is always accepted. Additional origins must be exact origins, not URL prefixes or wildcard strings. Browsers must send an accepted `Origin` on vote POSTs; missing and opaque origins are rejected. Keep the default eight-hour cookie lifetime or choose a bounded duration that matches the event rather than restoring the old one-year default.
+
+`resetVotes` logs a redacted `room.reset` JSON event with only the changed/unchanged outcome, removed vote count, and resulting revision. Route Worker console logs through the target's normal observability destination; do not add room or voter identifiers without a documented data-retention decision.

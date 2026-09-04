@@ -28,7 +28,8 @@ export default defineConfig({ test: { include: ["src/**/*.test.ts"] } });
 `,
     wrangler: {
       ai: { binding: "AI" },
-      compatibility_date: "2026-03-28",
+      compatibility_date: "2026-09-04",
+      compatibility_flags: ["no_nodejs_compat", "no_nodejs_compat_v2"],
       main: "src/worker.ts",
       name: "capability-workers-ai-verification",
       vars: { AI_MODEL: "@cf/meta/llama-3.1-8b-instruct" },
@@ -46,7 +47,9 @@ export default {
 };
 `,
     wrangler: {
-      compatibility_date: "2026-03-28",
+      // @cloudflare/vitest-pool-workers 0.22.0 currently bundles a runtime that supports dates through 2026-08-22.
+      compatibility_date: "2026-08-22",
+      compatibility_flags: ["no_nodejs_compat", "no_nodejs_compat_v2"],
       durable_objects: { bindings: [{ class_name: "RoomState", name: "ROOM_STATE" }] },
       main: "src/worker.ts",
       migrations: [{ new_sqlite_classes: ["RoomState"], tag: "v1" }],
@@ -67,7 +70,8 @@ export default {
     runVitest: false,
     typecheckInclude: ["worker-configuration.d.ts", "src/worker.ts"],
     wrangler: {
-      compatibility_date: "2026-03-28",
+      compatibility_date: "2026-09-04",
+      compatibility_flags: ["no_nodejs_compat", "no_nodejs_compat_v2"],
       main: "src/worker.ts",
       name: "capability-browser-static-assets-verification",
     },
@@ -87,6 +91,12 @@ export function collectFixtureDependencies(manifest, toolchain) {
   }
 
   return Object.fromEntries(Object.entries(dependencies).sort(([left], [right]) => left.localeCompare(right)));
+}
+
+export function assertGeneratedTypeDriftCoverage(manifest) {
+  if (manifest.generatedFiles?.includes("worker-configuration.d.ts") && !manifest.verify?.includes("npm run types:check")) {
+    throw new Error('Capability kits with generated files must include "npm run types:check" in their normal verification contract.');
+  }
 }
 
 export async function copyManifestFiles(kitRoot, manifest, fixtureRoot) {
@@ -120,6 +130,7 @@ async function verifyCapabilityKit({ capabilityName, log, packageManager, root, 
   const definition = fixtureDefinitions[capabilityName];
   const kitRoot = path.join(root, ".capabilities", capabilityName);
   const manifest = JSON.parse(await readFile(path.join(kitRoot, "manifest.json"), "utf8"));
+  assertGeneratedTypeDriftCoverage(manifest);
   const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), `vibe-template-${capabilityName}-`));
 
   log(`[capabilities:verify] ${capabilityName}: materializing disposable Worker`);
@@ -140,6 +151,9 @@ async function verifyCapabilityKit({ capabilityName, log, packageManager, root, 
       await runFixtureCommand("npm", ["run", "build:browser"], temporaryRoot);
     }
     await runFixtureCommand(path.join(binaryRoot, "wrangler"), ["types"], temporaryRoot);
+    if (manifest.generatedFiles?.includes("worker-configuration.d.ts")) {
+      await runFixtureCommand(path.join(binaryRoot, "wrangler"), ["types", "--check"], temporaryRoot);
+    }
     await runFixtureCommand(path.join(binaryRoot, "tsc"), ["--noEmit", "--project", "tsconfig.json"], temporaryRoot);
     if (definition.runVitest !== false) {
       await runFixtureCommand(path.join(binaryRoot, "vitest"), ["run", "--config", "vitest.config.ts"], temporaryRoot);

@@ -1,0 +1,10 @@
+{
+  "id": "2026-09-04-worker-operational-cleanup",
+  "title": "Refresh Worker runtime and operational contracts",
+  "status": "implemented",
+  "risk": "medium",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-060-refresh-worker-operational-contracts.md"],
+  "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "docs/", "package.json", "scripts/", "specs/", "wrangler.jsonc"],
+  "checks": ["npm run capabilities:verify", "npm run quality:gate", "npm run ci:local"]
+}

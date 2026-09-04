@@ -24,6 +24,38 @@ function isExampleOutput(value: unknown): value is ExampleOutput {
 }
 
 describe("runStructuredAi", () => {
+  it("emits redacted lifecycle events for model and fallback outcomes", async () => {
+    const events: unknown[] = [];
+    const log = (event: unknown) => events.push(event);
+    const successful = createMockWorkersAi(() => ({ response: { summary: "model value" } }));
+    const invalid = createMockWorkersAi(() => ({ response: { unexpected: true } }));
+
+    await runStructuredAi({
+      fallback: { summary: "fallback value" },
+      log,
+      messages: [{ role: "user", content: "Sensitive prompt" }],
+      runner: successful.runner,
+      schema,
+      validate: isExampleOutput,
+    });
+    await runStructuredAi({
+      fallback: { summary: "Sensitive fallback" },
+      log,
+      messages: [],
+      runner: invalid.runner,
+      schema,
+      validate: isExampleOutput,
+    });
+
+    expect(events).toEqual([
+      { event: "workers-ai.call.start" },
+      { event: "workers-ai.call.finish", outcome: "model" },
+      { event: "workers-ai.call.start" },
+      { event: "workers-ai.call.finish", outcome: "fallback", reason: "invalid-output" },
+    ]);
+    expect(JSON.stringify(events)).not.toContain("Sensitive");
+  });
+
   it("returns validated structured model output", async () => {
     const mock = createMockWorkersAi(() => ({ response: { summary: "model value" } }));
 

@@ -18,6 +18,8 @@ npm run quality:gate
 - `worker-configuration.d.ts` exposes both values through the generated `Env` interface.
 - Model output is accepted only after an application-owned runtime validator succeeds.
 - Binding failures, malformed output, and timeout paths return the caller's deterministic fallback.
+- Every call emits redacted start and finish events; fallback finishes include only the bounded reason code.
+- The target's normal quality gate runs `npm run types:check` so committed binding declarations cannot drift silently.
 - Tests use the mock runner without network or account access.
 - Prompts, schemas, and fallbacks belong to the adopting feature; the generic boundary contains no product data.
 

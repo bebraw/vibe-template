@@ -46,6 +46,8 @@ npm run types
 
 Ensure the target `tsconfig.json` includes that declaration file. Regenerate it whenever bindings, variables, migrations, compatibility flags, or the compatibility date changes.
 
+Prefix the target project's existing normal quality-gate command with `npm run types:check`. Do not leave generated binding drift as a deploy-only or manual check.
+
 ## Files
 
 Copy or merge:
@@ -55,3 +57,5 @@ Copy or merge:
 - `files/src/lib/workers-ai.test.ts` to `src/lib/workers-ai.test.ts`
 
 Adjust directories to the target repo's established source layout. Keep the generated `Env` type at the binding adapter; inject `WorkersAiRunner` into feature code and tests.
+
+`runStructuredAi` logs redacted lifecycle objects as JSON by default. Inject `log` to route those objects through an established application logger. Preserve the bounded event fields; prompts, schemas, raw output, deterministic fallback values, and exception messages do not belong in these logs.

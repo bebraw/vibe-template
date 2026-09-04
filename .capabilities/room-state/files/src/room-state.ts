@@ -108,7 +108,16 @@ export class RoomState extends DurableObject<Env> {
         this.incrementRevision();
       });
     }
-    return this.readSnapshot();
+    const snapshot = this.readSnapshot();
+    console.log(
+      JSON.stringify({
+        event: "room.reset",
+        outcome: voteCount > 0 ? "changed" : "unchanged",
+        removedVotes: voteCount,
+        revision: snapshot.revision,
+      }),
+    );
+    return snapshot;
   }
 
   async seedChoices(choices: RoomChoice[], status: RoomStatus = "open"): Promise<RoomSnapshot> {

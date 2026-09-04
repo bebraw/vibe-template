@@ -13,6 +13,7 @@ Use this kit to add one Durable Object per room for small, strongly consistent v
 - Conventional `GET /rooms/:roomId` and bounded form `POST /rooms/:roomId` behavior with a `303` redirect.
 - Same-origin or explicitly allowlisted vote origins and a configurable voter-cookie lifetime that defaults to eight hours.
 - Worker-runtime tests for replacement, validation, isolation, reset, origin, cookie, selection, revision, and lock behavior.
+- A redacted structured reset event with mutation outcome, removed count, and resulting revision.
 
 ## Good Fit
 

@@ -32,6 +32,8 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Use the scoped `modern-web-guidance` skill as pinned, telemetry-disabled implementation input for substantive web-platform decisions. Repository architecture, specs, source conventions, and verification remain authoritative, and upstream upgrades require deliberate review.
 - Use a connected Cloudflare MCP as the retrieval and account-operation layer for current Cloudflare product work. Keep only the `workers-best-practices` and `wrangler` skills in the template baseline; add product-specific Cloudflare skills when a project actually adopts those products.
 - Node is pinned exactly through `package.json`, npm is constrained to a compatible major there instead of an exact patch pin, and `@types/node` stays on the supported Node major.
+- Keep the deployed starter Worker Web-standards-only. Compatibility dates on or after 2026-08-04 must explicitly set both `no_nodejs_compat` and `no_nodejs_compat_v2` unless an ADR adopts Node runtime APIs.
+- Keep the npm package explicitly ESM so TypeScript-based Vite configuration has one unambiguous module format.
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
 - The repo-managed `pre-push` Git hook should run affected-file guardrails before code is pushed.
 - Formatting, Oxlint correctness checks, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
@@ -47,6 +49,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - The fast quality gate should fail when Worker/view runtime files contain inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs.
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.
 - The baseline quality gate and CI should type-check and test executable capability kits through `npm run capabilities:verify`, independently of the root Vitest source glob.
+- Capability kits that commit generated Worker binding declarations must put `wrangler types --check` in the adopting project's normal quality gate, not only in deploy preparation.
 - Local CI should validate the same baseline checks when changes cross workflow-sensitive boundaries or when full PR or release readiness is requested.
 - The canonical local CI command should emit Local CI's structured lifecycle event stream so agents can track run, job, step, pause, and completion state without relying on animated terminal output. Agent command wrappers must pass that stream through live instead of buffering it until process exit.
 - Targeted commands are useful while iterating, but `npm run quality:gate` remains the readiness baseline before proposing or landing non-documentation changes.
@@ -65,6 +68,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Keep the native browser-module/static-assets path optional and generated-output-aware; projects with an established client pipeline should retain it rather than adopting a second build system.
 - Keep progressive interaction separate from room state until repeated project use justifies making it a core browser opinion. Conventional HTML GET/POST behavior remains authoritative when the enhancement is absent or fails.
 - Keep deployment preview, traffic promotion, and rollback as distinct authorized operations. Version-preview workflows must reject unsupported Durable Object applications rather than claiming their preview is isolated or available.
+- Keep capability lifecycle logs structured and redacted: inference events identify model/fallback outcomes, room resets identify mutation outcome and revision, and deployment events identify operation and traffic impact without carrying prompts, output, voter identifiers, credentials, or environment contents.
 - Anonymous room voting must validate POST origins, minimize voter-cookie retention, and expose participant selection plus lockable monotonic revisions without claiming cookie-based identity.
 - Vendor third-party agent skills at a reviewed source revision, retain their license and source metadata, and adapt only where template compatibility requires it.
 

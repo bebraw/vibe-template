@@ -30,6 +30,21 @@ This template is set up for the Local CI runner.
 
 The repo pins CLI tooling in `devDependencies`, including Wrangler for Cloudflare-based experiments. Prefer invoking those tools through `npx` or repo scripts so the project version is used instead of a global install.
 
+### Time-sensitive session warm-up
+
+Before a lecture, workshop, release rehearsal, or other time-sensitive local session, warm every slow dependency path from the exact checkout and network you will use:
+
+```bash
+nvm use
+npm install
+npm run playwright:install
+npm run capabilities:verify
+docker pull ghcr.io/actions/actions-runner:latest
+npm run ci:local
+```
+
+Run this early enough to resolve registry, browser-download, Docker, authentication, and pinned-runtime failures before the session. These commands populate normal npm, Playwright, Docker, and Local CI caches; they do not create a lecture-specific application surface in the template.
+
 If local CI fails with `No such image: ghcr.io/actions/actions-runner:latest`, pull that image manually and re-run the workflow.
 
 If Local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` to `.env.local-ci` and rerun the workflow.
@@ -79,6 +94,8 @@ Use targeted checks while iterating, then run the checks that match the change b
 Workflow-sensitive changes include GitHub Actions workflows, package metadata or dependency installation, build or container setup, and browser CI setup. Ordinary source, test, and tooling changes that stay outside those boundaries do not require Local CI. Documentation-only changes should use the smallest relevant checks unless they alter executable instructions or workflow contracts.
 
 `npm run preflight` checks the active Node and npm versions against `package.json`, verifies the repo-pinned Wrangler binary and current authentication, generates binding types into a disposable operating-system temporary directory, and runs `wrangler deploy --dry-run` with automatic provisioning disabled. It does not deploy or create Cloudflare resources, and it suppresses child command output so account identities are not printed in the summary. Existing Wrangler build hooks may still refresh their already documented outputs, such as `.generated/styles.css`.
+
+The starter Worker uses compatibility date `2026-09-04`. Cloudflare enables Node.js compatibility by default for dates on or after `2026-08-04`, so `wrangler.jsonc` deliberately carries both opt-out flags. Local scripts and tests may use Node; the deployed starter Worker does not adopt Node runtime APIs. The Room State verifier stays on `2026-08-22`, the newest date supported by its pinned Workers test runtime, until that test dependency is deliberately upgraded.
 
 The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. The e2e server forces Chokidar polling mode to avoid file-watcher exhaustion in macOS-hosted local runs while preserving the normal `npm run dev` developer loop. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
 

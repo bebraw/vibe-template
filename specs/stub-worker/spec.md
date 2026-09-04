@@ -16,6 +16,8 @@ This template needs a concrete runnable starting point so developers can clone i
 - **Web response baseline:** HTML responses include a restrictive script-free CSP, a narrow Permissions Policy, a referrer policy, and MIME-sniffing protection. Rendered pages include baseline metadata and keyboard bypass navigation where repeated content exists.
 - **Data models:** None yet. The stub is stateless.
 - **Dependencies:** Wrangler provides the Worker runtime; Playwright and Vitest verify the behavior.
+- **Runtime compatibility:** Wrangler uses the reviewed `2026-09-04` compatibility date and explicitly disables both default Node.js compatibility modes. Local tooling remains Node-based, but the deployed starter contract is Web standards only.
+- **Module format:** The npm package is explicitly ESM so Vite loads TypeScript configuration without CommonJS ambiguity.
 
 ### Anti-Patterns
 
@@ -48,6 +50,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - Worker/view runtime files must remain free of inline executable browser code.
 - `GET /api/health` must keep returning HTTP 200 JSON with `ok: true`.
 - Unknown routes must return HTTP 404.
+- The Worker compatibility date must remain deliberately reviewed, and a date at or after `2026-08-04` must retain both Node.js compatibility opt-out flags unless a later ADR adopts Node APIs.
 - HTML responses must keep `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and the script-free Content Security Policy.
 - The home page must keep its description, colour-scheme declaration, and skip-to-main-content link.
 - Not-found pages must remain non-indexable.
