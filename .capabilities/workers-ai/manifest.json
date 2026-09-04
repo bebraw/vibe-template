@@ -1,7 +1,11 @@
 {
   "name": "workers-ai",
   "description": "Add a typed Workers AI binding boundary with validated structured output and deterministic fallback behavior.",
-  "dependencies": {},
+  "dependencies": {
+    "dev": {
+      "vitest": "4.1.11"
+    }
+  },
   "scripts": {
     "types": "wrangler types",
     "types:check": "wrangler types --check"

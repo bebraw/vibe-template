@@ -20,6 +20,11 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 - **Later maintenance sync:** template update packs under `.template/updates/` cover follow-up changes to projects that already adopted a kit.
+- **Executable verification owner:** `scripts/verify-capability-kits.mjs` materializes supported application kits into independent disposable Workers.
+- **Verification composition root:** each kit manifest supplies copyable files and exact test dependencies; the verifier supplies only the repository-pinned Wrangler, TypeScript, generated binding config, and minimal Worker entrypoint.
+- **Verification state authority:** manifests own kit dependency declarations; generated types, installed packages, and materialized source live only in operating-system temporary directories that are removed after each run.
+- **Verification public contract:** `npm run capabilities:verify` generates binding types, type-checks, and runs the materialized kit tests.
+- **Verification dependency direction:** the root verifier reads kit manifests and files; kit code does not depend on root application source or the root Vitest configuration.
 
 #### Workers AI Kit
 
@@ -67,6 +72,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - [ ] The capability index includes a prompt-style selection UI for negotiating which kits to pull into another project.
 - [ ] Validation steps live in `checks.md`.
 - [ ] Durable docs mention capability kits as a supported partial-upgrade path.
+- [ ] Executable application kits are verified as independent adopter Workers by the baseline quality gate and CI.
 
 ### Regression Guardrails
 
@@ -94,10 +100,13 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Progressive Interaction kit must keep conventional forms functional without JavaScript and include a JavaScript-disabled browser scenario. URL, history, and focus must remain coherent on the enhanced path.
 - The Progressive Interaction kit must remain independently selectable from Room State until a later explicit decision promotes it into the core template or another kit.
 - Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
+- Executable verification must reject manifest paths outside the kit or fixture, reject toolchain version conflicts, remove temporary Workers after each run, and fail when generated bindings, type checking, or kit tests fail.
+- Each executable kit manifest must declare the exact development dependencies required by its copied tests; another kit or the root repository must not satisfy undeclared test dependencies accidentally.
 
 ### Verification
 
 - **Repo check:** `npm run quality:gate`; add `npm run ci:local` only when a kit change crosses a workflow-sensitive boundary
+- **Executable kits:** `npm run capabilities:verify`
 - **Manifest parse:** `node -e "JSON.parse(require('node:fs').readFileSync('.capabilities/local-ci/manifest.json', 'utf8'))"`
 - **Docs check:** `rg "capability kits|\\.capabilities|Local CI Capability Kit"`
 
@@ -126,6 +135,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: this repo changes its Local CI setup
 - When: the Local CI kit still documents the old command or dependency
 - Then: the quality review treats the kit as stale and updates it in the same change set
+
+**Scenario: Executable kit is incompatible in isolation**
+
+- Given: a kit omits a test dependency, its generated binding shape drifts, or its copied application no longer type-checks
+- When: `npm run capabilities:verify` materializes that kit into a disposable Worker
+- Then: verification fails without depending on root application source or leaving generated files in the repository
 
 **Scenario: Contributor chooses a narrow upgrade**
 

@@ -1,6 +1,12 @@
 # npm Recipe
 
-This kit adds no application dependency. It assumes Wrangler is already pinned in the target project; ask before installing or upgrading it.
+This kit adds no application dependency. Its network-free tests require Vitest `4.1.11`; reconcile that exact version with the target's test stack before installing it. The kit also assumes Wrangler is already pinned in the target project; ask before installing or upgrading either tool.
+
+If the target does not already provide the compatible Vitest version, install it after approval:
+
+```bash
+npm install --save-dev --save-exact vitest@4.1.11
+```
 
 ## Wrangler Configuration
 

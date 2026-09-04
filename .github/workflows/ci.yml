@@ -54,6 +54,10 @@ jobs:
         shell: bash
         run: npm run quality:gate:fast
 
+      - name: Verify executable capability kits
+        shell: bash
+        run: npm run capabilities:verify
+
   quality-browser:
     runs-on: ubuntu-latest
     container:

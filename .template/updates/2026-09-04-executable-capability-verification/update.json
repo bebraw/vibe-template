@@ -1,0 +1,19 @@
+{
+  "id": "2026-09-04-executable-capability-verification",
+  "title": "Verify executable capability kits in disposable adopters",
+  "status": "implemented",
+  "risk": "medium",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-056-verify-executable-capability-kits.md"],
+  "touches": [
+    ".capabilities/",
+    ".github/workflows/ci.yml",
+    ".template/updates/",
+    "ARCHITECTURE.md",
+    "docs/",
+    "package.json",
+    "scripts/",
+    "specs/"
+  ],
+  "checks": ["npm run capabilities:verify", "npm run quality:gate", "npm run ci:local"]
+}

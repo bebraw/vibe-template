@@ -21,6 +21,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Treat `.architecture-check.json` limits as generous smoke alarms for architectural review. Do not split code mechanically to satisfy them; consolidate responsibilities or add an exact rationale-bearing exception.
 - Keep the quality gate green before considering a change ready.
 - Keep workflow writes explicit. New generated output, local state, cache, archive, or tool-artifact paths should be documented in the same change that introduces them.
+- Verify executable capability kits by materializing independent adopter Workers in disposable operating-system temporary directories; kit manifests own their fixture dependencies and the verifier must not write generated application files into the repository.
 - Keep deploy preflight read-only with respect to Cloudflare: authentication checks, generated binding inspection, and deploy bundling may write only to a disposable operating-system temporary directory, while existing configured build steps retain their documented write targets.
 - Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules before it is served to browsers.
 
@@ -45,6 +46,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Keep Stryker at 50% concurrency for responsive local work, while the isolated GitHub mutation job may use 100% of its runner's available parallelism.
 - The fast quality gate should fail when Worker/view runtime files contain inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs.
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.
+- The baseline quality gate and CI should type-check and test executable capability kits through `npm run capabilities:verify`, independently of the root Vitest source glob.
 - Local CI should validate the same baseline checks when changes cross workflow-sensitive boundaries or when full PR or release readiness is requested.
 - The canonical local CI command should emit Local CI's structured lifecycle event stream so agents can track run, job, step, pause, and completion state without relying on animated terminal output. Agent command wrappers must pass that stream through live instead of buffering it until process exit.
 - Targeted commands are useful while iterating, but `npm run quality:gate` remains the readiness baseline before proposing or landing non-documentation changes.

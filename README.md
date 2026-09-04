@@ -73,6 +73,7 @@ Each linked `SKILL.md` is the source of truth for boundaries and workflow detail
 
 - Run the fast local gate with `npm run quality:gate:fast` during normal iteration.
 - Run the baseline repo gate with `npm run quality:gate`.
+- Verify the executable Workers capability kits in isolated temporary adopters with `npm run capabilities:verify`.
 - Run `npm run preflight` before deployment to check the pinned runtime, Wrangler authentication, declared bindings, and a non-provisioning deploy dry run.
 - Run the deterministic source-shape smoke alarms directly with `npm run quality:structure`; threshold failures call for architecture review or an exact rationale-bearing exception, not mechanical file splitting.
 - Run the containerized local workflow with `npm run ci:local` when changing GitHub Actions, dependencies or installation behavior, build or container setup, browser CI setup, or when performing a full PR or release readiness check. It emits structured run, job, and step progress for agents, uses Local CI parallelism with warm-cache serialization, and pauses failed runners for retry.

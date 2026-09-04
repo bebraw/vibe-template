@@ -7,6 +7,7 @@ test("selects baseline and deep quality-gate phases", () => {
   assert.deepEqual(selectQualityGateSteps([]), [
     { label: "fast checks", script: "quality:gate:fast" },
     { label: "browser tests", script: "e2e" },
+    { label: "capability kit verification", script: "capabilities:verify" },
   ]);
   assert.equal(selectQualityGateSteps(["--deep"]), deepQualityGateSteps);
 });
@@ -30,9 +31,9 @@ test("runs every quality-gate phase with visible transitions", async () => {
   });
 
   assert.equal(exitCode, 0);
-  assert.deepEqual(scripts, ["quality:gate:fast", "e2e"]);
-  assert.match(logs[0], /1\/2 Starting fast checks/);
-  assert.match(logs.at(-1), /Completed all 2 phases/);
+  assert.deepEqual(scripts, ["quality:gate:fast", "e2e", "capabilities:verify"]);
+  assert.match(logs[0], /1\/3 Starting fast checks/);
+  assert.match(logs.at(-1), /Completed all 3 phases/);
 });
 
 test("adds incremental mutation to the deep quality gate", async () => {
@@ -49,7 +50,7 @@ test("adds incremental mutation to the deep quality gate", async () => {
   });
 
   assert.equal(exitCode, 0);
-  assert.deepEqual(scripts, ["quality:gate:fast", "e2e", "mutation:incremental"]);
+  assert.deepEqual(scripts, ["quality:gate:fast", "e2e", "capabilities:verify", "mutation:incremental"]);
 });
 
 test("stops after the first failing phase", async () => {

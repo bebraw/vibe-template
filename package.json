@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build:css": "mkdir -p ./.generated && tailwindcss -i ./src/tailwind-input.css -o ./.generated/styles.css --minify",
+    "capabilities:verify": "node ./scripts/verify-capability-kits.mjs",
     "ci:local": "local-ci run --quiet --json --pause-on-failure --workflow .github/workflows/ci.yml --prewarm-through .github/workflows/ci.yml:quality-fast:install",
     "ci:local:retry": "local-ci retry",
     "deploy": "wrangler deploy",
