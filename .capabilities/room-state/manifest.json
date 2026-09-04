@@ -1,0 +1,41 @@
+{
+  "name": "room-state",
+  "description": "Add one SQLite-backed Durable Object per room with predefined, replaceable anonymous voting.",
+  "dependencies": {
+    "dev": {
+      "@cloudflare/vitest-pool-workers": "0.22.0",
+      "vitest": "4.1.11"
+    }
+  },
+  "scripts": {
+    "types": "wrangler types",
+    "types:check": "wrangler types --check"
+  },
+  "files": [
+    { "source": "files/src/room-state.ts", "target": "src/room-state.ts", "mode": "copy-or-merge" },
+    { "source": "files/src/room-http.ts", "target": "src/room-http.ts", "mode": "copy-or-merge" },
+    { "source": "files/src/room-view.ts", "target": "src/room-view.ts", "mode": "copy-or-merge" },
+    { "source": "files/src/room-state.test.ts", "target": "src/room-state.test.ts", "mode": "copy-or-merge" },
+    { "source": "files/vitest.config.ts", "target": "vitest.config.ts", "mode": "copy-or-merge" }
+  ],
+  "generatedFiles": ["worker-configuration.d.ts"],
+  "optionalSteps": [
+    {
+      "name": "progressive-interaction",
+      "when": "The target wants background form submission and fragment replacement.",
+      "prompt": "Do you want to apply the separate progressive-interaction kit while preserving the conventional GET/POST path?",
+      "kit": "../progressive-interaction"
+    }
+  ],
+  "docs": [
+    "Document the room id as the Durable Object coordination key and SQLite as the vote authority.",
+    "Document the authorization boundary protecting reset and seed composition.",
+    "Keep event-specific choices and seed data outside the kit."
+  ],
+  "verify": ["npm run types", "npm test", "npm run typecheck", "npm run quality:gate"],
+  "notes": [
+    "Seed replaces the predefined choice set and clears votes; reset clears votes but preserves choices.",
+    "The first-party voter cookie is opaque and the Durable Object stores only a per-room SHA-256 key.",
+    "The default HTTP route accepts bounded application/x-www-form-urlencoded bodies and redirects with 303 after POST."
+  ]
+}
