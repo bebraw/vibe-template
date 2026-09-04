@@ -1,0 +1,20 @@
+{
+  "id": "2026-09-04-worker-readiness-fixes",
+  "title": "Close Worker runtime and capability readiness gaps",
+  "status": "implemented",
+  "risk": "medium",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-061-enable-starter-worker-observability.md"],
+  "touches": [
+    ".capabilities/",
+    ".template/updates/",
+    "ARCHITECTURE.md",
+    "docs/",
+    "package.json",
+    "scripts/",
+    "specs/",
+    "src/",
+    "wrangler.jsonc"
+  ],
+  "checks": ["npm run capabilities:verify", "npm run quality:gate", "npm run ci:local"]
+}

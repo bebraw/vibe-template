@@ -53,6 +53,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Browser runtime image:** `mcr.microsoft.com/playwright:v1.62.1-noble`
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
+- **Worker Node-import guard:** `scripts/assert-no-worker-node-imports.mjs`
 - **Codebase diagnostics config:** `.fallowrc.json`
 - **Mutation config:** `stryker.config.mjs`
 - **Local mutation concurrency:** 50% of available parallelism
@@ -132,6 +133,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The coverage gate must work in both the normal workspace and Local CI's warmed `node_modules` layout.
 - The Worker client-code guard must fail on inline `<script>` tags, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files.
 - The affected guardrail path must pass only affected Worker/view runtime files to the Worker client-code guard.
+- The Worker Node-import guard must fail on static, dynamic, or CommonJS imports of Node built-ins from production `src/` files while excluding tests, declarations, and test-support modules.
+- The affected guardrail path must pass only affected production source files to the Worker Node-import guard.
 - The affected guardrail path must pass only affected JavaScript and TypeScript files to Oxlint.
 - The affected guardrail path must run JavaScript syntax checks only for affected JavaScript files.
 - The affected guardrail path must run package audit only when package metadata or lockfiles change.
@@ -296,6 +299,12 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: a Worker-rendered view needs browser-side behavior
 - When: the contributor adds inline executable browser code to `src/worker.ts` or `src/views/**/*.ts`
 - Then: the fast quality gate fails and points them toward typed TypeScript modules instead
+
+**Scenario: Production code imports a Node built-in**
+
+- Given: the starter retains its Web-standards-only Worker runtime contract
+- When: production source statically or dynamically imports a Node built-in
+- Then: the fast and affected quality paths fail before Wrangler can bundle the unsupported import
 
 **Scenario: Contributor pushes with a broken fast gate**
 

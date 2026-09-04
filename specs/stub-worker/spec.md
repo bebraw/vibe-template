@@ -10,13 +10,14 @@ This template needs a concrete runnable starting point so developers can clone i
 
 - **Entry points:** `wrangler dev` via `src/worker.ts`
 - **Source layout:** `src/worker.ts` routes requests, `src/api/` holds API handlers, and `src/views/` holds HTML rendering modules.
-- **Styling pipeline:** `src/tailwind-input.css` compiles to `.generated/styles.css`, which the Worker serves at `/styles.css`.
+- **Styling pipeline:** `src/tailwind-input.css` compiles to `.generated/styles.css`, which the Worker serves at `/styles.css`; Node unit tests inject the stylesheet loader through `handleRequest` instead of adding filesystem probes to production code.
 - **Starter UI contract:** `src/views/home.ts` renders a narrow editorial page with a route index and a prominent health-probe entry point.
 - **Client code boundary:** Worker-rendered HTML must not embed executable browser code inline. Browser behavior belongs in typed TypeScript modules before being served to clients.
 - **Web response baseline:** HTML responses include a restrictive script-free CSP, a narrow Permissions Policy, a referrer policy, and MIME-sniffing protection. Rendered pages include baseline metadata and keyboard bypass navigation where repeated content exists.
 - **Data models:** None yet. The stub is stateless.
 - **Dependencies:** Wrangler provides the Worker runtime; Playwright and Vitest verify the behavior.
-- **Runtime compatibility:** Wrangler uses the reviewed `2026-09-04` compatibility date and explicitly disables both default Node.js compatibility modes. Local tooling remains Node-based, but the deployed starter contract is Web standards only.
+- **Runtime compatibility:** Wrangler uses the reviewed `2026-09-04` compatibility date and explicitly disables both default Node.js compatibility modes. Local tooling remains Node-based, but the deployed starter contract is Web standards only and the quality gate rejects production imports of Node built-ins.
+- **Observability:** Wrangler explicitly persists all Worker logs and invocation logs while sampling one percent of traces; downstream applications may tune those visible rates to their traffic and cost envelope.
 - **Module format:** The npm package is explicitly ESM so Vite loads TypeScript configuration without CommonJS ambiguity.
 
 ### Anti-Patterns
@@ -48,16 +49,18 @@ This template needs a concrete runnable starting point so developers can clone i
 - `GET /` must keep rendering the route index and a visible `/api/health` entry point.
 - `GET /styles.css` must keep returning the generated stylesheet.
 - Worker/view runtime files must remain free of inline executable browser code.
+- Production source under `src/` must remain free of Node built-in imports while the Web-standards-only compatibility contract is active.
 - `GET /api/health` must keep returning HTTP 200 JSON with `ok: true`.
 - Unknown routes must return HTTP 404.
 - The Worker compatibility date must remain deliberately reviewed, and a date at or after `2026-08-04` must retain both Node.js compatibility opt-out flags unless a later ADR adopts Node APIs.
+- Wrangler configuration must keep Workers Logs, invocation logs, and traces explicitly enabled with visible sampling rates.
 - HTML responses must keep `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, and the script-free Content Security Policy.
 - The home page must keep its description, colour-scheme declaration, and skip-to-main-content link.
 - Not-found pages must remain non-indexable.
 
 ### Verification
 
-- **Automated tests:** colocated Vitest files under `src/**/*.test.ts` for module behavior and colocated Playwright files under `src/**/*.e2e.ts` for the browser-visible flow.
+- **Automated tests:** colocated Vitest files under `src/**/*.test.ts` for module behavior, colocated Playwright files under `src/**/*.e2e.ts` for the browser-visible flow, and `npm run worker:node-import-guard` for the deployed runtime boundary.
 - **Coverage target:** Keep the `src/worker.ts`, `src/api/**`, and `src/views/**` branches, lines, functions, and statements above the repo coverage thresholds.
 
 ### Scenarios

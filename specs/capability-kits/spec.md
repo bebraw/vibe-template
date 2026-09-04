@@ -21,7 +21,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 - **Later maintenance sync:** template update packs under `.template/updates/` cover follow-up changes to projects that already adopted a kit.
 - **Executable verification owner:** `scripts/verify-capability-kits.mjs` materializes supported application kits into independent disposable Workers.
-- **Verification composition root:** each kit manifest supplies copyable files and exact test dependencies; the verifier supplies only the repository-pinned Wrangler, TypeScript, generated binding config, and minimal Worker entrypoint.
+- **Verification composition root:** each kit manifest supplies copyable files and exact test dependencies; isolated fixtures receive the repository-pinned Wrangler, TypeScript, generated binding config, and a minimal Worker entrypoint, while the Browser Static Assets kit also overlays the actual starter source in one composed fixture.
 - **Verification state authority:** manifests own kit dependency declarations; generated types, installed packages, and materialized source live only in operating-system temporary directories that are removed after each run.
 - **Verification public contract:** `npm run capabilities:verify` generates binding types, type-checks, and runs the materialized kit tests.
 - **Verification dependency direction:** the root verifier reads kit manifests and files; kit code does not depend on root application source or the root Vitest configuration.
@@ -31,7 +31,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Capability source root:** `.capabilities/workers-ai/`
 - **Target composition root:** the adopting Worker's request handler creates a runner from its generated `Env` binding and injects it into feature code
 - **State authority:** `wrangler.jsonc` owns `AI` and `AI_MODEL`; the committed generated environment declaration owns their compile-time shape; the adopting feature owns prompts, schemas, validators, and deterministic fallbacks
-- **Public contracts:** `WorkersAiRunner`, `runStructuredAi`, its discriminated model/fallback result, and the mock runner
+- **Public contracts:** `WorkersAiRunner`, `runStructuredAi`, a strictly raced positive finite timeout, its discriminated model/fallback result, and the mock runner
 - **Dependency direction:** feature code may depend on the small runner contract; only the Worker composition boundary depends on the generated Workers AI binding
 
 #### Room State Kit
@@ -53,9 +53,9 @@ The template is useful both as a starter repo and as a source of specific practi
 #### Browser Static Assets Kit
 
 - **Capability source root:** `.capabilities/browser-static-assets/`
-- **Target composition root:** the adopting Worker's document renderer references `public/assets/browser-entry.js`, while Wrangler runs the browser compiler and routes `/assets/*` through static assets
+- **Target composition root:** the adopting Worker's document renderer references `public/assets/browser-entry.js`, while the application-level `build` script composes existing build steps with the browser compiler and Wrangler routes `/assets/*` through static assets
 - **State authority:** typed source under `src/browser/` is authoritative; `public/assets/` is disposable generated output and `public/_headers` is authored static-response configuration
-- **Public contracts:** `build:browser`, `watch:browser`, the external module URL, `data-browser-module="ready"`, the Wrangler assets/build fragment, and static-response headers
+- **Public contracts:** the composed `build`, `build:browser`, `watch:browser`, the external module URL, `data-browser-module="ready"`, the Wrangler assets/build fragment, and static-response headers
 - **Dependency direction:** feature installers may be imported by the browser entrypoint; server-rendered core behavior must remain usable without the emitted module, and Worker routes must not depend on browser state
 
 #### Deployment Safety Kit
@@ -63,7 +63,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Capability source root:** `.capabilities/deployment-safety/`
 - **Target composition root:** package scripts call the copyable deployment wrapper, which invokes only the target's pinned Wrangler executable
 - **State authority:** Cloudflare owns uploaded versions and active deployment traffic; the review runbook owns the exact candidate, prior active version, approval result, and rollback target
-- **Public contracts:** `deploy`/`deploy:preview`, `deploy:status`, `deploy:promote -- <version-id>`, `deploy:rollback -- <version-id>`, `WORKER_PREVIEW_ALIAS`, and `DEPLOY_MESSAGE`
+- **Public contracts:** `deploy`/`deploy:preview`, `deploy:status`, `deploy:promote -- <version-id>`, `deploy:rollback -- <version-id>`, `WORKER_PREVIEW_ALIAS`, optional validated `WORKER_ENVIRONMENT`, and `DEPLOY_MESSAGE`
 - **Dependency direction:** deployment orchestration may depend on the pinned Wrangler CLI and preflight; application runtime and capability code must not depend on deployment wrapper state
 
 ### Anti-Patterns
@@ -110,7 +110,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs` and audit performance, accessibility, best practices, and SEO.
 - The website baseline kit must separate universal browser requirements from public-site and feature-dependent requirements, and must keep emerging agent-readiness conventions opt-in.
 - The engineering quality skills kit must keep its copyable `correctness-review`, `test-review`, and `debug` skills aligned with the project-local versions and preserve upstream MIT attribution.
-- The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, and contain no application prompts or schemas. It must emit redacted start/finish events without prompts, schemas, raw output, fallback values, or exception text.
+- The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, reject non-positive or non-finite timeouts, and enforce its deadline even when a runner ignores `AbortSignal`. It must contain no application prompts or schemas and emit redacted start/finish events without prompts, schemas, raw output, fallback values, or exception text.
 - The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep seed/reset behind an application-owned authorization check.
 - The Room State kit must bound buffered form bodies and store only a per-room digest of its opaque first-party voter cookie. It must not claim cryptographic ballot secrecy or authenticated identity.
 - The Room State kit must reject vote POSTs without a same-origin or explicitly allowlisted `Origin`, default new voter cookies to eight hours, and bound configured cookie lifetimes.
@@ -121,11 +121,13 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Progressive Interaction kit must remain independently selectable from Room State until a later explicit decision promotes it into the core template or another kit.
 - The Browser Static Assets kit must use native ES modules, keep stable unhashed module names on revalidated caching, keep Worker application routes authoritative, and document `public/assets/` as generated output.
 - The Browser Static Assets kit must not replace an established client pipeline or imply that `_headers` affects Worker-generated responses.
+- The Browser Static Assets kit must route Wrangler and Workers Builds through a composed application-level `build` script that preserves every existing build step and watch root.
 - Progressive Interaction must include JavaScript-enabled browser coverage for fragment replacement, URL, focus, and Back/Forward behavior in addition to its no-JavaScript scenario.
 - Deployment Safety must leave traffic unchanged during preview upload, require exact version IDs for non-interactive promotion and rollback, and emit structured operation logs without credentials or environment contents.
+- Deployment Safety must append `--env` consistently to preview, status, promotion, and rollback when `WORKER_ENVIRONMENT` contains a validated lowercase environment name.
 - Deployment Safety must document that preview URLs are public unless protected, preview logs are unavailable, preview requests may reach production bindings, and connected resources are not rolled back with code.
 - Reusable follow-up changes to a capability kit must add or update a `.template/updates/` pack in the same change set.
-- Executable verification must reject manifest paths outside the kit or fixture, reject toolchain version conflicts, remove temporary Workers after each run, and fail when generated bindings, type checking, or kit tests fail.
+- Executable verification must reject manifest paths outside the kit or fixture, reject toolchain version conflicts, remove temporary Workers after each run, and fail when generated bindings, type checking, kit tests, or composed starter/browser builds fail.
 - Each executable kit manifest must declare the exact development dependencies required by its copied tests; another kit or the root repository must not satisfy undeclared test dependencies accidentally.
 - A kit that commits `worker-configuration.d.ts` must include `npm run types:check` in its normal verification contract, and executable verification must prove the freshly generated declaration is stable.
 
@@ -256,13 +258,19 @@ The template is useful both as a starter repo and as a source of specific practi
 
 - Given: a server-rendered Worker has no client framework, browser compiler, or static-assets path
 - When: the agent applies `.capabilities/browser-static-assets/`
-- Then: TypeScript emits an external native module, Wrangler serves it through `/assets/*`, stable filenames revalidate, and the server-rendered page remains functional when JavaScript is unavailable
+- Then: the application-level build preserves existing outputs while TypeScript emits an external native module, Wrangler serves it through `/assets/*`, stable filenames revalidate, and the server-rendered page remains functional when JavaScript is unavailable
 
 **Scenario: Presenter reviews a candidate without changing stage**
 
 - Given: an active Worker supports preview URLs and stage is on a known-good version
 - When: `npm run deploy` uploads a candidate and the presenter reviews its returned preview URL
 - Then: active traffic remains unchanged until `deploy:promote` receives that exact reviewed version ID
+
+**Scenario: Operator targets a named environment**
+
+- Given: the application defines a lowercase named Wrangler environment
+- When: the operator sets `WORKER_ENVIRONMENT` for preview, status, promotion, or rollback
+- Then: the wrapper validates the name and passes the same explicit `--env` selection to Wrangler
 
 **Scenario: Worker uses Durable Objects**
 
