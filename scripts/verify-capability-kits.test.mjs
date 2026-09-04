@@ -10,6 +10,7 @@ import {
   composeCapabilityManifests,
   copyManifestFiles,
   selectFixtureCases,
+  writeFixtureFiles,
 } from "./verify-capability-kits.mjs";
 
 test("requires generated binding drift checks in a kit's normal verification contract", () => {
@@ -117,4 +118,31 @@ test("refuses manifest paths that escape the kit or fixture", async () => {
     copyManifestFiles("/tmp/kit", { files: [{ source: "../secret", target: "src/example.ts" }] }, "/tmp/fixture"),
     /must stay within/,
   );
+});
+
+test("writes a test-only Wrangler config without omitted remote bindings", async (context) => {
+  const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), "capability-wrangler-test-config-"));
+  context.after(async () => await rm(temporaryRoot, { force: true, recursive: true }));
+
+  await writeFixtureFiles({
+    definition: {
+      testWranglerOmit: ["ai"],
+      wrangler: {
+        ai: { binding: "AI" },
+        durable_objects: { bindings: [{ class_name: "RoomState", name: "ROOM_STATE" }] },
+        main: "src/worker.ts",
+      },
+    },
+    dependencies: {},
+    fixtureRoot: temporaryRoot,
+    manifest: { scripts: {}, wrangler: { vars: { AI_MODEL: "test-model" } } },
+    packageManager: "npm@11.19.1",
+    root: temporaryRoot,
+  });
+
+  assert.deepEqual(JSON.parse(await readFile(path.join(temporaryRoot, "wrangler.test.jsonc"), "utf8")), {
+    durable_objects: { bindings: [{ class_name: "RoomState", name: "ROOM_STATE" }] },
+    main: "src/worker.ts",
+    vars: { AI_MODEL: "test-model" },
+  });
 });

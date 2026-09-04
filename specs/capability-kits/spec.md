@@ -23,7 +23,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Executable verification owner:** `scripts/verify-capability-kits.mjs` materializes supported application kits into independent disposable Workers.
 - **Verification composition root:** each kit manifest supplies copyable files, exact test dependencies, and any replaced development dependencies; isolated fixtures receive the repository-pinned Wrangler, TypeScript, generated binding config, and a minimal Worker entrypoint, while one fully synthetic standard adopter composes Quality Gate, Room State, Browser Static Assets, Progressive Interaction, and mocked Workers AI without copying replaceable starter application files.
 - **Verification state authority:** manifests own kit dependency declarations; generated types, installed packages, and materialized source live only in operating-system temporary directories that are removed after each run.
-- **Verification public contract:** `npm run capabilities:verify` generates binding types, type-checks, and runs isolated kit tests plus the standard adopter's composed build, Istanbul unit coverage, Worker client guard, and deploy dry run with remote bindings disabled; `npm run capabilities:verify:browser` runs the shared standard adopter's Playwright checks from the browser gate.
+- **Verification public contract:** `npm run capabilities:verify` generates binding types, type-checks, and runs isolated kit tests plus the standard adopter's composed build, Istanbul unit coverage, Worker client guard, and deploy dry run. The standard adopter's Worker tests disable remote bindings and use a derived test-only Wrangler configuration that omits the mocked AI binding; `npm run capabilities:verify:browser` runs the shared standard adopter's Playwright checks from the browser gate.
 - **Verification dependency direction:** the root verifier reads kit manifests and files; kit code does not depend on root application source or the root Vitest configuration.
 
 #### Workers AI Kit
@@ -125,7 +125,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Browser Static Assets kit must route Wrangler and Workers Builds through a composed application-level `build` script that preserves every existing build step and watch root.
 - The Browser Static Assets kit must exclude `src/browser/**` from unit coverage only when Playwright remains mandatory in the full quality gate.
 - Progressive Interaction must include JavaScript-enabled browser coverage for fragment replacement, URL, focus, and Back/Forward behavior in addition to its no-JavaScript scenario.
-- Executable verification must keep the standard adopter synthetic, mock Workers AI without remote binding access, preserve quality-gate thresholds, and prove that build output, unit coverage, the client-script guard, browser behavior, and deploy packaging work together.
+- Executable verification must keep the standard adopter synthetic, mock Workers AI without remote binding access, omit the AI binding from its derived test-only Wrangler configuration, preserve quality-gate thresholds, and prove that build output, unit coverage, the client-script guard, browser behavior, and deploy packaging work together.
 - Deployment Safety must leave traffic unchanged during preview upload, require exact version IDs for non-interactive promotion and rollback, and emit structured operation logs without credentials or environment contents.
 - Deployment Safety must append `--env` consistently to preview, status, promotion, and rollback when `WORKER_ENVIRONMENT` contains a validated lowercase environment name.
 - Deployment Safety must document that preview URLs are public unless protected, preview logs are unavailable, preview requests may reach production bindings, and connected resources are not rolled back with code.
@@ -178,7 +178,7 @@ The template is useful both as a starter repo and as a source of specific practi
 
 - Given: a typical Worker combines the quality gate, room state, browser assets, progressive interaction, and mocked Workers AI
 - When: the fast and browser capability-verification commands materialize the synthetic standard adopter in their respective gates
-- Then: its build, generated types, TypeScript, Istanbul coverage, client-script guard, Playwright flow, and deploy dry run all pass without remote AI access or copied starter views
+- Then: its build, generated types, TypeScript, Istanbul coverage, client-script guard, Playwright flow, and deploy dry run all pass without remote AI access, remote-AI test warnings, or copied starter views
 
 **Scenario: Generated bindings drift in an adopter**
 

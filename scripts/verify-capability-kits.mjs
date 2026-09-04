@@ -203,13 +203,14 @@ describe("standard adopter Worker", () => {
     runClientGuard: true,
     runCoverage: true,
     runDeployDryRun: true,
+    testWranglerOmit: ["ai"],
     typecheckInclude: ["worker-configuration.d.ts", "src/**/*.ts"],
     typecheckLib: ["ES2022", "DOM", "ESNext.Disposable"],
     vitestConfig: `import { cloudflareTest } from "@cloudflare/vitest-plugin";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [cloudflareTest({ remoteBindings: false, wrangler: { configPath: "./wrangler.jsonc" } })],
+  plugins: [cloudflareTest({ remoteBindings: false, wrangler: { configPath: "./wrangler.test.jsonc" } })],
   test: {
     include: ["src/**/*.test.ts"],
     exclude: ["src/**/*.e2e.ts"],
@@ -411,7 +412,7 @@ async function verifyCapabilityKit({ capabilityNames, fixtureName, log, mode, pa
   }
 }
 
-async function writeFixtureFiles({ definition, dependencies, fixtureRoot, manifest, packageManager, root }) {
+export async function writeFixtureFiles({ definition, dependencies, fixtureRoot, manifest, packageManager, root }) {
   const fixturePackage = {
     name: "capability-verification-fixture",
     private: true,
@@ -452,10 +453,13 @@ async function writeFixtureFiles({ definition, dependencies, fixtureRoot, manife
   await mkdir(path.join(fixtureRoot, "src"), { recursive: true });
   await writeFile(path.join(fixtureRoot, "package.json"), `${JSON.stringify(fixturePackage, null, 2)}\n`);
   await writeFile(path.join(fixtureRoot, "tsconfig.json"), `${JSON.stringify(tsconfig, null, 2)}\n`);
-  await writeFile(
-    path.join(fixtureRoot, "wrangler.jsonc"),
-    `${JSON.stringify({ ...definition.wrangler, ...manifest.wrangler, ...definition.wranglerOverrides }, null, 2)}\n`,
-  );
+  const wranglerConfiguration = { ...definition.wrangler, ...manifest.wrangler, ...definition.wranglerOverrides };
+  await writeFile(path.join(fixtureRoot, "wrangler.jsonc"), `${JSON.stringify(wranglerConfiguration, null, 2)}\n`);
+  if (definition.testWranglerOmit) {
+    const omittedKeys = new Set(definition.testWranglerOmit);
+    const testWranglerConfiguration = Object.fromEntries(Object.entries(wranglerConfiguration).filter(([key]) => !omittedKeys.has(key)));
+    await writeFile(path.join(fixtureRoot, "wrangler.test.jsonc"), `${JSON.stringify(testWranglerConfiguration, null, 2)}\n`);
+  }
   if (definition.entrypoint) {
     await writeFile(path.join(fixtureRoot, "src", "worker.ts"), definition.entrypoint);
   }

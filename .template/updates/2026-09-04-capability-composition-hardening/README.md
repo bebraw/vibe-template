@@ -9,7 +9,7 @@ Use this update when a downstream project adopted the Room State or Browser Stat
 3. Replace `@vitest/coverage-v8` with matching-version `@vitest/coverage-istanbul` wherever tests run inside the Workers runtime. Preserve existing coverage thresholds and globs.
 4. Port the current Worker client-script guard and focused tests. Permit only empty same-origin `type="module"` tags below `/assets/`; retain rejections for inline, malformed, classic, remote, traversal, event-handler, and `javascript:` forms.
 5. When Browser Static Assets is installed, exclude `src/browser/**` from unit coverage and keep Playwright mandatory in the full quality gate.
-6. Port the synthetic standard-adopter verification if the target retains capability kits. Its Workers AI path must use the copied mock and disable remote test bindings.
+6. Port the synthetic standard-adopter verification if the target retains capability kits. Its Workers AI path must use the copied mock, disable remote test bindings, and point the Worker test plugin at a derived test-only Wrangler configuration that omits the AI binding.
 7. Remove `HOME=$PWD` from Wrangler development and browser-server scripts. Retain only environment variables that intentionally control the relevant tool.
 
 ## Fallback
