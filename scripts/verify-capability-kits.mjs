@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
@@ -8,7 +8,12 @@ import { fileURLToPath } from "node:url";
 
 const execFileAsync = promisify(execFile);
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
-const capabilityNames = ["workers-ai", "room-state", "browser-static-assets"];
+const fixtureCases = [
+  { capabilityName: "workers-ai", fixtureName: "workers-ai" },
+  { capabilityName: "room-state", fixtureName: "room-state" },
+  { capabilityName: "browser-static-assets", fixtureName: "browser-static-assets" },
+  { capabilityName: "browser-static-assets", fixtureName: "browser-static-assets-starter" },
+];
 const capabilityToolingTests = [".capabilities/deployment-safety/files/scripts/run-deployment-safety.test.mjs"];
 
 const fixtureDefinitions = {
@@ -76,6 +81,41 @@ export default {
       name: "capability-browser-static-assets-verification",
     },
   },
+  "browser-static-assets-starter": {
+    expectedGeneratedFiles: [".generated/styles.css", "public/assets/browser-entry.js"],
+    packageScripts: {
+      build: "npm run build:css && npm run build:browser",
+      "build:css": "mkdir -p ./.generated && tailwindcss -i ./src/tailwind-input.css -o ./.generated/styles.css --minify",
+    },
+    rootDependencies: ["@tailwindcss/cli"],
+    rootFiles: [
+      "src/api/health.ts",
+      "src/app-routes.ts",
+      "src/css.d.ts",
+      "src/tailwind-input.css",
+      "src/views/home.ts",
+      "src/views/not-found.ts",
+      "src/views/shared.ts",
+      "src/worker.ts",
+    ],
+    runDeployDryRun: true,
+    runVitest: false,
+    typecheckInclude: ["worker-configuration.d.ts", "src/**/*.ts"],
+    typecheckLib: ["ES2022", "DOM", "ESNext.Disposable"],
+    wrangler: {
+      compatibility_date: "2026-09-04",
+      compatibility_flags: ["no_nodejs_compat", "no_nodejs_compat_v2"],
+      main: "src/worker.ts",
+      name: "capability-browser-static-assets-starter-verification",
+      rules: [{ fallthrough: true, globs: ["**/*.css"], type: "Text" }],
+    },
+    wranglerOverrides: {
+      build: {
+        command: "npm run build",
+        watch_dir: ["src", "tsconfig.browser.json"],
+      },
+    },
+  },
 };
 
 export function collectFixtureDependencies(manifest, toolchain) {
@@ -121,28 +161,35 @@ export async function verifyCapabilityKits({ log = console.log, root = repositor
     await runFixtureCommand(process.execPath, ["--test", path.join(root, testPath)], root);
   }
 
-  for (const capabilityName of capabilityNames) {
-    await verifyCapabilityKit({ capabilityName, log, packageManager: packageJson.packageManager, root, toolchain });
+  for (const fixtureCase of fixtureCases) {
+    await verifyCapabilityKit({ ...fixtureCase, log, packageJson, root, toolchain });
   }
 }
 
-async function verifyCapabilityKit({ capabilityName, log, packageManager, root, toolchain }) {
-  const definition = fixtureDefinitions[capabilityName];
+async function verifyCapabilityKit({ capabilityName, fixtureName, log, packageJson, root, toolchain }) {
+  const definition = fixtureDefinitions[fixtureName];
   const kitRoot = path.join(root, ".capabilities", capabilityName);
   const manifest = JSON.parse(await readFile(path.join(kitRoot, "manifest.json"), "utf8"));
   assertGeneratedTypeDriftCoverage(manifest);
-  const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), `vibe-template-${capabilityName}-`));
+  const temporaryRoot = await mkdtemp(path.join(os.tmpdir(), `vibe-template-${fixtureName}-`));
 
-  log(`[capabilities:verify] ${capabilityName}: materializing disposable Worker`);
+  log(`[capabilities:verify] ${fixtureName}: materializing disposable Worker`);
 
   try {
     await copyManifestFiles(kitRoot, manifest, temporaryRoot);
+    const rootDependencies = Object.fromEntries(
+      (definition.rootDependencies ?? []).map((name) => [name, packageJson.devDependencies[name]]),
+    );
     await writeFixtureFiles({
       definition,
-      dependencies: collectFixtureDependencies(manifest, toolchain),
+      dependencies: collectFixtureDependencies(
+        { dependencies: { dev: { ...manifest.dependencies?.dev, ...rootDependencies } } },
+        toolchain,
+      ),
       fixtureRoot: temporaryRoot,
       manifest,
-      packageManager,
+      packageManager: packageJson.packageManager,
+      root,
     });
     await runFixtureCommand("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false"], temporaryRoot);
 
@@ -165,26 +212,29 @@ async function verifyCapabilityKit({ capabilityName, log, packageManager, root, 
         temporaryRoot,
       );
     }
+    for (const generatedFile of definition.expectedGeneratedFiles ?? []) {
+      await access(path.join(temporaryRoot, generatedFile));
+    }
 
-    log(`[capabilities:verify] ${capabilityName}: passed type and runtime checks`);
+    log(`[capabilities:verify] ${fixtureName}: passed type and runtime checks`);
   } finally {
     await rm(temporaryRoot, { force: true, recursive: true });
   }
 }
 
-async function writeFixtureFiles({ definition, dependencies, fixtureRoot, manifest, packageManager }) {
+async function writeFixtureFiles({ definition, dependencies, fixtureRoot, manifest, packageManager, root }) {
   const fixturePackage = {
     name: "capability-verification-fixture",
     private: true,
     type: "module",
     packageManager,
     devDependencies: dependencies,
-    scripts: manifest.scripts,
+    scripts: { ...manifest.scripts, ...definition.packageScripts },
   };
   const tsconfig = {
     compilerOptions: {
       exactOptionalPropertyTypes: true,
-      lib: ["ES2022", "ESNext.Disposable"],
+      lib: definition.typecheckLib ?? ["ES2022", "ESNext.Disposable"],
       module: "ESNext",
       moduleResolution: "Bundler",
       noEmit: true,
@@ -198,14 +248,22 @@ async function writeFixtureFiles({ definition, dependencies, fixtureRoot, manife
     include: definition.typecheckInclude ?? ["worker-configuration.d.ts", "src/**/*.ts", "vitest.config.ts"],
   };
 
+  for (const rootFile of definition.rootFiles ?? []) {
+    const target = path.join(fixtureRoot, rootFile);
+    await mkdir(path.dirname(target), { recursive: true });
+    await cp(path.join(root, rootFile), target);
+  }
+
   await mkdir(path.join(fixtureRoot, "src"), { recursive: true });
   await writeFile(path.join(fixtureRoot, "package.json"), `${JSON.stringify(fixturePackage, null, 2)}\n`);
   await writeFile(path.join(fixtureRoot, "tsconfig.json"), `${JSON.stringify(tsconfig, null, 2)}\n`);
   await writeFile(
     path.join(fixtureRoot, "wrangler.jsonc"),
-    `${JSON.stringify({ ...definition.wrangler, ...manifest.wrangler }, null, 2)}\n`,
+    `${JSON.stringify({ ...definition.wrangler, ...manifest.wrangler, ...definition.wranglerOverrides }, null, 2)}\n`,
   );
-  await writeFile(path.join(fixtureRoot, "src", "worker.ts"), definition.entrypoint);
+  if (definition.entrypoint) {
+    await writeFile(path.join(fixtureRoot, "src", "worker.ts"), definition.entrypoint);
+  }
   if (definition.vitestConfig) {
     await writeFile(path.join(fixtureRoot, "vitest.config.ts"), definition.vitestConfig);
   }

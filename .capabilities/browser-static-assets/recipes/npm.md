@@ -15,13 +15,24 @@ Merge these scripts into `package.json`:
 ```json
 {
   "scripts": {
+    "build": "npm run build:browser",
     "build:browser": "node ./node_modules/typescript-7/bin/tsc --project tsconfig.browser.json",
     "watch:browser": "node ./node_modules/typescript-7/bin/tsc --project tsconfig.browser.json --watch --preserveWatchOutput"
   }
 }
 ```
 
-`watch:browser` is available for standalone use. Wrangler's custom build uses the same one-shot compiler and watches `src/browser/` while `wrangler dev` is running.
+Treat `build` as the application-level composition point. If the target already has a build command, preserve it and add `build:browser` to that sequence. For example, the base `vibe-template` Worker composes its existing stylesheet build like this:
+
+```json
+{
+  "scripts": {
+    "build": "npm run build:css && npm run build:browser"
+  }
+}
+```
+
+Do not replace an existing CSS, server, or framework build with the browser-only command. `watch:browser` remains available for standalone use.
 
 ## Wrangler Configuration
 
@@ -36,7 +47,7 @@ Merge these fields into the existing `wrangler.jsonc`:
     "run_worker_first": ["/*", "!/assets/*"],
   },
   "build": {
-    "command": "npm run build:browser",
+    "command": "npm run build",
     "watch_dir": ["src/browser", "tsconfig.browser.json"],
   },
 }
@@ -44,7 +55,9 @@ Merge these fields into the existing `wrangler.jsonc`:
 
 The route pattern sends application requests through the Worker and lets `/assets/*` use the static-assets path. Adjust it if the target already serves other public files or requires Worker middleware for assets. Do not add an `ASSETS` binding unless Worker code needs to fetch assets directly.
 
-Wrangler runs the custom command for local development and direct CLI deployments. Workers Builds does not honor Wrangler custom builds, so configure `npm run build:browser` as the dashboard build command when that service owns deployments.
+Merge `watch_dir` with existing watch roots instead of replacing them. In the base template, use `["src", "tsconfig.browser.json"]` so stylesheet and Worker changes still trigger the composed build.
+
+Wrangler runs the custom command for local development and direct CLI deployments. Workers Builds does not honor Wrangler custom builds, so configure the same composed `npm run build` command in the dashboard when that service owns deployments.
 
 ## Files And HTML
 

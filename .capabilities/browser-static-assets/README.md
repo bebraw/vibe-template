@@ -7,7 +7,7 @@ Use this kit to add the smallest typed browser-module build and Cloudflare Worke
 - A TypeScript browser entrypoint that exposes a `data-browser-module="ready"` smoke-test hook.
 - A separate browser `tsconfig` that emits native ES modules to `public/assets/`.
 - One-shot and watch scripts using the target's pinned TypeScript compiler.
-- A Wrangler custom build and static-assets configuration with Worker routes remaining authoritative.
+- A composed application build, Wrangler custom build, and static-assets configuration with Worker routes remaining authoritative.
 - Static-response CSP and security headers plus revalidated caching for stable, unhashed module names.
 - A JavaScript-enabled browser smoke test that executes the real entry module.
 
@@ -26,7 +26,7 @@ Use this kit to add the smallest typed browser-module build and Cloudflare Worke
 ## Apply
 
 1. Inspect the target's package scripts, TypeScript configs, Wrangler config, HTML response helpers, CSP, cache policy, public directory, and browser tests.
-2. Follow `recipes/npm.md` and ask before adding or reconciling TypeScript or Playwright dependencies.
+2. Follow `recipes/npm.md`, preserve every existing build step and watch root in the application-level `build` script, and ask before adding or reconciling TypeScript or Playwright dependencies.
 3. Copy or merge the files declared by `manifest.json`.
 4. Add the external module tag to the server-rendered document and keep it out of the critical rendering path: `<script type="module" src="/assets/browser-entry.js"></script>`.
 5. Add feature installers to `src/browser/browser-entry.ts`. Use explicit `.js` suffixes for relative imports so emitted modules resolve in browsers.
