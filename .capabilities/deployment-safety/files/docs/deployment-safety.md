@@ -4,7 +4,7 @@ Use this runbook to keep the active stage on its last-known-good version until a
 
 ## Preconditions
 
-- Confirm the intended Cloudflare account, Worker name, and Wrangler environment.
+- Confirm the intended Cloudflare account and Worker name. Set `WORKER_ENVIRONMENT` when using a named Wrangler environment, and use the same value for status, upload, promotion, and rollback.
 - Confirm version preview URLs are supported. Stop for Workers with Durable Objects, Containers, or Sandbox.
 - Confirm preview access is appropriate; previews are public unless protected with Cloudflare Access.
 - Run `npm run preflight` and the repository readiness gate.
@@ -12,7 +12,7 @@ Use this runbook to keep the active stage on its last-known-good version until a
 
 ## Upload Without Traffic
 
-Optionally set `WORKER_PREVIEW_ALIAS` to a stable lowercase alias and `DEPLOY_MESSAGE` to the commit or change summary, then run:
+Optionally set `WORKER_PREVIEW_ALIAS` to a stable lowercase alias, `WORKER_ENVIRONMENT` to a lowercase named Wrangler environment, and `DEPLOY_MESSAGE` to the commit or change summary, then run:
 
 ```bash
 npm run deploy

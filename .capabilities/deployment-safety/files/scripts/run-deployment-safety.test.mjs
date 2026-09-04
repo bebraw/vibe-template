@@ -35,10 +35,25 @@ test("shows current deployment status without changing traffic", () => {
   });
 });
 
+test("passes a validated explicit Wrangler environment to every action", () => {
+  const cases = [
+    { action: "preview" },
+    { action: "status" },
+    { action: "promote", versionId: "12345678-abcd-4321-abcd-1234567890ab" },
+    { action: "rollback", versionId: "12345678-abcd-4321-abcd-1234567890ab" },
+  ];
+
+  for (const input of cases) {
+    const plan = buildDeploymentPlan({ ...input, environment: "staging" });
+    assert.deepEqual(plan.args.slice(-2), ["--env", "staging"]);
+  }
+});
+
 test("rejects ambiguous targets and unsafe preview aliases", () => {
   assert.throws(() => buildDeploymentPlan({ action: "promote" }), /explicit Worker version ID/);
   assert.throws(() => buildDeploymentPlan({ action: "rollback", versionId: "--latest" }), /explicit Worker version ID/);
   assert.throws(() => buildDeploymentPlan({ action: "preview", alias: "Invalid Alias" }), /lowercase DNS label/);
+  assert.throws(() => buildDeploymentPlan({ action: "status", environment: "--config=other.jsonc" }), /Wrangler environment/);
 });
 
 test("emits structured lifecycle logs around the exact Wrangler arguments", async () => {

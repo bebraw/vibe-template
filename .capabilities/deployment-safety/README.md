@@ -27,7 +27,7 @@ Use this kit to separate Worker version upload from traffic promotion so a prese
 
 1. Inspect Wrangler environments, bindings, Durable Objects, migrations, routes, domains, cron triggers, deployment automation, access controls, and current rollback practice.
 2. Stop if the Worker is in a poor-fit category; design a separate isolated preview Worker/environment rather than implying version previews are safe.
-3. Follow `recipes/npm.md`, copy the wrapper and runbook, and merge `preview_urls: true` into Wrangler configuration.
+3. Follow `recipes/npm.md`, copy the wrapper and runbook, and merge `preview_urls: true` into Wrangler configuration. Use `WORKER_ENVIRONMENT` when the lifecycle targets a named Wrangler environment.
 4. Protect preview URLs with Cloudflare Access when public access is inappropriate.
 5. Adapt the runbook's review checklist to the application's health, data, and interaction contracts.
 6. Run `checks.md`. Do not test the mutating commands against a real Worker unless the user explicitly authorizes that account operation.

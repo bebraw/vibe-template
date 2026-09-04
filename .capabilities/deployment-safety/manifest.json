@@ -25,7 +25,8 @@
   "wrangler": { "preview_urls": true },
   "config": [
     "Enable preview_urls explicitly only after reviewing public accessibility.",
-    "Do not apply this version-preview workflow to Workers that implement Durable Objects, Containers, or Sandbox."
+    "Do not apply this version-preview workflow to Workers that implement Durable Objects, Containers, or Sandbox.",
+    "Set WORKER_ENVIRONMENT when all lifecycle commands should target a named Wrangler environment."
   ],
   "docs": [
     "Record the candidate version ID, preview URL, active version before promotion, review result, and rollback target.",

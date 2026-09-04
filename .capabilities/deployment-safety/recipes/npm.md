@@ -40,6 +40,13 @@ Preview URLs are public unless protected with Cloudflare Access. Do not enable t
 
 `WORKER_PREVIEW_ALIAS` defaults to `stage-candidate` and must be a lowercase DNS label. `DEPLOY_MESSAGE` is optional and is passed as the Wrangler version/deployment message without being interpreted by a shell.
 
+Set optional `WORKER_ENVIRONMENT` to the lowercase named Wrangler environment that all lifecycle commands should target. The wrapper validates it and appends `--env` without shell interpretation:
+
+```bash
+WORKER_ENVIRONMENT=staging npm run deploy:status
+WORKER_ENVIRONMENT=staging npm run deploy:preview
+```
+
 Promotion and rollback require the version ID after `--`:
 
 ```bash

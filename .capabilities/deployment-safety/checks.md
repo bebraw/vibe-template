@@ -28,5 +28,6 @@ Confirm the preview command prints both a version ID and preview URL while `depl
 - Promotion and rollback reject missing or flag-shaped version IDs.
 - Promotion targets one explicit version at 100% and never selects a version interactively.
 - Rollback targets one explicit previously deployed version and records an optional reason from `DEPLOY_MESSAGE`.
+- A valid `WORKER_ENVIRONMENT` adds the same explicit Wrangler `--env` argument to every lifecycle command; unsafe or flag-shaped values are rejected.
 - Lifecycle logs state the operation and whether it mutates traffic without logging credentials or environment contents.
 - The runbook warns about public previews, missing preview logs, binding drift, Durable Object limitations, and rollback compatibility.

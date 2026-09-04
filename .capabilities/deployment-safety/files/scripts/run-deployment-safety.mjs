@@ -5,13 +5,13 @@ import process from "node:process";
 const previewAliasPattern = /^[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 const versionIdPattern = /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{6,126}[a-zA-Z0-9])?$/;
 
-export function buildDeploymentPlan({ action, alias = "stage-candidate", message, versionId }) {
+export function buildDeploymentPlan({ action, alias = "stage-candidate", environment, message, versionId }) {
   if (action === "preview") {
     if (!previewAliasPattern.test(alias)) {
       throw new TypeError("The preview alias must be a lowercase DNS label.");
     }
     return {
-      args: withMessage(["versions", "upload", "--preview-alias", alias, "--strict"], message, "--message"),
+      args: withEnvironment(withMessage(["versions", "upload", "--preview-alias", alias, "--strict"], message, "--message"), environment),
       event: "deployment.preview",
       mutatesTraffic: false,
     };
@@ -20,7 +20,7 @@ export function buildDeploymentPlan({ action, alias = "stage-candidate", message
   if (action === "promote") {
     assertVersionId(versionId);
     return {
-      args: withMessage(["versions", "deploy", `${versionId}@100%`, "--yes"], message, "--message"),
+      args: withEnvironment(withMessage(["versions", "deploy", `${versionId}@100%`, "--yes"], message, "--message"), environment),
       event: "deployment.promote",
       mutatesTraffic: true,
     };
@@ -29,14 +29,18 @@ export function buildDeploymentPlan({ action, alias = "stage-candidate", message
   if (action === "rollback") {
     assertVersionId(versionId);
     return {
-      args: withMessage(["rollback", versionId, "--yes"], message, "--message"),
+      args: withEnvironment(withMessage(["rollback", versionId, "--yes"], message, "--message"), environment),
       event: "deployment.rollback",
       mutatesTraffic: true,
     };
   }
 
   if (action === "status") {
-    return { args: ["deployments", "status", "--json"], event: "deployment.status", mutatesTraffic: false };
+    return {
+      args: withEnvironment(["deployments", "status", "--json"], environment),
+      event: "deployment.status",
+      mutatesTraffic: false,
+    };
   }
 
   throw new TypeError("Expected deployment action: preview, status, promote, or rollback.");
@@ -61,6 +65,14 @@ function withMessage(args, message, flag) {
   return [...args, flag, message];
 }
 
+function withEnvironment(args, environment) {
+  if (environment === undefined || environment === "") return args;
+  if (!previewAliasPattern.test(environment)) {
+    throw new TypeError("The Wrangler environment must be a lowercase DNS label.");
+  }
+  return [...args, "--env", environment];
+}
+
 function spawnWrangler(args, root) {
   return new Promise((resolve) => {
     const executable = path.join(root, "node_modules", ".bin", process.platform === "win32" ? "wrangler.cmd" : "wrangler");
@@ -78,6 +90,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const plan = buildDeploymentPlan({
       action: process.argv[2],
       alias: process.env.WORKER_PREVIEW_ALIAS,
+      environment: process.env.WORKER_ENVIRONMENT,
       message: process.env.DEPLOY_MESSAGE,
       versionId: process.argv[3],
     });
