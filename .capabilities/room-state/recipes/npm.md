@@ -49,10 +49,22 @@ Merge `files/vitest.config.ts` into the target's current Vitest config. The curr
 
 Call `handleRoomRequest(request, env)` from the existing Worker router and return its response when defined. Use the existing response and layout helpers if the target already has stronger conventions.
 
-Keep seed and reset behind application-owned authorization:
+Keep seed, reset, and status changes behind application-owned authorization:
 
 ```ts
 await seedRoom(request, env, roomId, choices, authorizeRoomAdministration);
+await setRoomStatus(request, env, roomId, "locked", authorizeRoomAdministration);
 ```
 
 Do not derive authorization from knowledge of a room id. Use an authenticated session, protected internal route, or another explicit target-project control.
+
+Pass application-owned HTTP options at the routing boundary:
+
+```ts
+await handleRoomRequest(request, env, {
+  allowedOrigins: ["https://presenter.example"],
+  voterCookieMaxAgeSeconds: 4 * 60 * 60,
+});
+```
+
+The request URL's own origin is always accepted. Additional origins must be exact origins, not URL prefixes or wildcard strings. Browsers must send an accepted `Origin` on vote POSTs; missing and opaque origins are rejected. Keep the default eight-hour cookie lifetime or choose a bounded duration that matches the event rather than restoring the old one-year default.

@@ -1,0 +1,9 @@
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 0000000..0000000 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -1,3 +1,4 @@
+ # Architecture
+ 
+ This file stores cross-cutting rules that apply to the whole repo and to projects cloned from it.
++Anonymous room voting must validate POST origins, minimize voter-cookie retention, and expose lockable monotonic revisions without claiming cookie-based identity.

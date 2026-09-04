@@ -1,0 +1,10 @@
+{
+  "id": "2026-09-04-room-state-hardening",
+  "title": "Harden anonymous room voting and add lockable revisions",
+  "status": "implemented",
+  "risk": "medium",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-059-harden-anonymous-room-state.md"],
+  "touches": [".capabilities/room-state/", ".template/updates/", "docs/", "specs/"],
+  "checks": ["npm run capabilities:verify", "npm run quality:gate"]
+}

@@ -7,9 +7,12 @@ Use this kit to add one Durable Object per room for small, strongly consistent v
 - Deterministic `ROOM_STATE.getByName(roomId)` routing.
 - SQLite-backed predefined choices and aggregate counts.
 - One replaceable vote per opaque anonymous voter key.
-- Seed and reset RPC operations.
+- Participant-specific current selection in room snapshots and rendered forms.
+- Monotonic room revisions plus authorized open/locked status changes.
+- Seed, reset, and status RPC operations.
 - Conventional `GET /rooms/:roomId` and bounded form `POST /rooms/:roomId` behavior with a `303` redirect.
-- Worker-runtime tests for replacement, validation, isolation, and reset behavior.
+- Same-origin or explicitly allowlisted vote origins and a configurable voter-cookie lifetime that defaults to eight hours.
+- Worker-runtime tests for replacement, validation, isolation, reset, origin, cookie, selection, revision, and lock behavior.
 
 ## Good Fit
 
@@ -32,7 +35,11 @@ Use this kit to add one Durable Object per room for small, strongly consistent v
 4. Export `RoomState` from the Worker entrypoint and compose `handleRoomRequest` into the existing router.
 5. Define event-specific choices in the adopting project. The kit intentionally includes none.
 6. Put `seedRoom` and `resetRoom` behind an explicit authorization callback. Do not add an open administration endpoint.
-7. Apply `progressive-interaction` only if separately approved.
-8. Run `checks.md` and the target repo's normal readiness gate.
+7. Use the same authorization boundary for `setRoomStatus`. Lock the room before consuming a specific revision in model or presentation work.
+8. Configure `handleRoomRequest` with the target's allowed origins and cookie lifetime. The strict default accepts only an `Origin` matching the request URL.
+9. Apply `progressive-interaction` only if separately approved.
+10. Run `checks.md` and the target repo's normal readiness gate.
 
 The included document renderer is deliberately plain. Merge the fragment contract into the target project's existing layout rather than adopting it as a visual system.
+
+The anonymous cookie deters casual duplicate voting in one browser; it does not provide authenticated identity or prevent deliberate ballot stuffing across clients.

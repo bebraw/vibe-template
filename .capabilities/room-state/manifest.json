@@ -16,6 +16,7 @@
     { "source": "files/src/room-http.ts", "target": "src/room-http.ts", "mode": "copy-or-merge" },
     { "source": "files/src/room-view.ts", "target": "src/room-view.ts", "mode": "copy-or-merge" },
     { "source": "files/src/room-state.test.ts", "target": "src/room-state.test.ts", "mode": "copy-or-merge" },
+    { "source": "files/src/room-http.test.ts", "target": "src/room-http.test.ts", "mode": "copy-or-merge" },
     { "source": "files/vitest.config.ts", "target": "vitest.config.ts", "mode": "copy-or-merge" }
   ],
   "generatedFiles": ["worker-configuration.d.ts"],
@@ -29,13 +30,16 @@
   ],
   "docs": [
     "Document the room id as the Durable Object coordination key and SQLite as the vote authority.",
-    "Document the authorization boundary protecting reset and seed composition.",
+    "Document the authorization boundary protecting reset, seed, and room-status composition.",
+    "Document accepted vote origins, voter-cookie lifetime, and the anonymous-cookie ballot-stuffing limitation.",
+    "Document which locked room revision is handed to model or presentation workflows.",
     "Keep event-specific choices and seed data outside the kit."
   ],
   "verify": ["npm run types", "npm test", "npm run typecheck", "npm run quality:gate"],
   "notes": [
-    "Seed replaces the predefined choice set and clears votes; reset clears votes but preserves choices.",
+    "Seed replaces the predefined choice set, clears votes, opens the room by default, and advances its revision; reset clears votes but preserves choices and status.",
     "The first-party voter cookie is opaque and the Durable Object stores only a per-room SHA-256 key.",
-    "The default HTTP route accepts bounded application/x-www-form-urlencoded bodies and redirects with 303 after POST."
+    "The default HTTP route requires a same-origin vote Origin, accepts bounded application/x-www-form-urlencoded bodies, and redirects with 303 after POST.",
+    "New voter cookies default to an eight-hour lifetime configurable at the HTTP composition boundary."
   ]
 }

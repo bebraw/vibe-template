@@ -38,8 +38,8 @@ The template is useful both as a starter repo and as a source of specific practi
 
 - **Capability source root:** `.capabilities/room-state/`
 - **Target composition root:** the adopting Worker exports `RoomState`, routes `/rooms/:roomId` through `handleRoomRequest`, and places application authorization before seed/reset calls
-- **State authority:** one SQLite-backed Durable Object selected by `ROOM_STATE.getByName(roomId)` owns predefined choices and pseudonymous replaceable votes; aggregate counts are derived from that database
-- **Public contracts:** room choice/snapshot/vote result types, `RoomState` RPC methods, conventional HTML GET/POST semantics, and authorized seed/reset helpers
+- **State authority:** one SQLite-backed Durable Object selected by `ROOM_STATE.getByName(roomId)` owns predefined choices, pseudonymous replaceable votes, open/locked status, and the monotonic revision; aggregate counts and participant selection are derived from that database
+- **Public contracts:** room choice/status/snapshot/vote result types, participant-aware `RoomState` RPC methods, conventional HTML GET/POST semantics, strict vote-origin validation, configurable voter-cookie lifetime, and authorized seed/reset/status helpers
 - **Dependency direction:** Worker routing and administration composition depend on the room RPC contract; room state does not depend on browser enhancement or application-specific choices
 
 #### Progressive Interaction Kit
@@ -113,6 +113,8 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, and contain no application prompts or schemas.
 - The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep seed/reset behind an application-owned authorization check.
 - The Room State kit must bound buffered form bodies and store only a per-room digest of its opaque first-party voter cookie. It must not claim cryptographic ballot secrecy or authenticated identity.
+- The Room State kit must reject vote POSTs without a same-origin or explicitly allowlisted `Origin`, default new voter cookies to eight hours, and bound configured cookie lifetimes.
+- Room snapshots must include open/locked status, a monotonic revision, and only the requesting participant's current selection. Locked rooms must reject votes without advancing their revision.
 - The Progressive Interaction kit must leave unmarked, cross-origin, unsupported-method, text/plain, and GET-with-file forms on the native path; enhancement failure must return to native submission.
 - The Progressive Interaction kit must keep conventional forms functional without JavaScript and include a JavaScript-disabled browser scenario. URL, history, and focus must remain coherent on the enhanced path.
 - The Progressive Interaction kit must remain independently selectable from Room State until a later explicit decision promotes it into the core template or another kit.
@@ -217,6 +219,18 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: a target project exposes seed or reset through an application route
 - When: the route composes the Room State helpers
 - Then: an application-owned authorization callback succeeds before the Durable Object operation is invoked
+
+**Scenario: Presenter freezes an audience result**
+
+- Given: a room has accepted votes at a known revision
+- When: an authorized presenter locks the room
+- Then: the revision advances once, later votes are rejected, and participant snapshots retain their current selection against the frozen aggregate
+
+**Scenario: Foreign site submits a vote**
+
+- Given: a browser sends a room vote POST with a missing or untrusted `Origin`
+- When: the room HTTP handler receives it
+- Then: the request returns `403` before a voter cookie is created or room state changes
 
 **Scenario: Form enhancement is unavailable**
 

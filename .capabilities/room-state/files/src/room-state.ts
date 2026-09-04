@@ -9,18 +9,37 @@ export interface RoomChoiceCount extends RoomChoice {
   votes: number;
 }
 
+export type RoomStatus = "locked" | "open";
+
 export interface RoomSnapshot {
   choices: RoomChoiceCount[];
+  currentSelection: string | null;
+  revision: number;
+  status: RoomStatus;
   totalVotes: number;
 }
 
-export type RoomVoteResult = { ok: true; snapshot: RoomSnapshot } | { ok: false; code: "invalid-voter-key" | "unknown-choice" };
+export type RoomVoteResult =
+  { ok: true; snapshot: RoomSnapshot } | { ok: false; code: "invalid-voter-key" | "room-locked" | "unknown-choice" };
 
 interface ChoiceRow extends Record<string, SqlStorageValue> {
   id: string;
   label: string;
   position: number;
   vote_count: number;
+}
+
+interface MetadataRow extends Record<string, SqlStorageValue> {
+  revision: number;
+  status: RoomStatus;
+}
+
+interface VoteCountRow extends Record<string, SqlStorageValue> {
+  vote_count: number;
+}
+
+interface VoteRow extends Record<string, SqlStorageValue> {
+  choice_id: string;
 }
 
 const maximumChoices = 20;
@@ -42,38 +61,59 @@ export class RoomState extends DurableObject<Env> {
           choice_id TEXT NOT NULL
         );
         CREATE INDEX IF NOT EXISTS votes_choice_id ON votes(choice_id);
+        CREATE TABLE IF NOT EXISTS room_metadata (
+          singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+          status TEXT NOT NULL CHECK (status IN ('open', 'locked')),
+          revision INTEGER NOT NULL
+        );
+        INSERT INTO room_metadata (singleton, status, revision)
+        VALUES (1, 'open', 0)
+        ON CONFLICT(singleton) DO NOTHING;
       `);
     });
   }
 
-  async getSnapshot(): Promise<RoomSnapshot> {
-    return this.readSnapshot();
+  async getSnapshot(voterKey?: string): Promise<RoomSnapshot> {
+    return this.readSnapshot(voterKey);
   }
 
   async castVote(voterKey: string, choiceId: string): Promise<RoomVoteResult> {
     if (!isIdentifier(voterKey)) return { ok: false, code: "invalid-voter-key" };
+    if (this.readMetadata().status === "locked") return { ok: false, code: "room-locked" };
 
     const choice = this.ctx.storage.sql.exec<{ id: string }>("SELECT id FROM choices WHERE id = ?", choiceId).toArray()[0];
     if (!choice) return { ok: false, code: "unknown-choice" };
 
-    this.ctx.storage.sql.exec(
-      `INSERT INTO votes (voter_key, choice_id)
-       VALUES (?, ?)
-       ON CONFLICT(voter_key) DO UPDATE SET choice_id = excluded.choice_id`,
-      voterKey,
-      choiceId,
-    );
+    if (this.readSelection(voterKey) !== choiceId) {
+      this.ctx.storage.transactionSync(() => {
+        this.ctx.storage.sql.exec(
+          `INSERT INTO votes (voter_key, choice_id)
+           VALUES (?, ?)
+           ON CONFLICT(voter_key) DO UPDATE SET choice_id = excluded.choice_id`,
+          voterKey,
+          choiceId,
+        );
+        this.incrementRevision();
+      });
+    }
 
-    return { ok: true, snapshot: this.readSnapshot() };
+    return { ok: true, snapshot: this.readSnapshot(voterKey) };
   }
 
   async resetVotes(): Promise<RoomSnapshot> {
-    this.ctx.storage.sql.exec("DELETE FROM votes");
+    const voteCount = this.ctx.storage.sql.exec<VoteCountRow>("SELECT COUNT(*) AS vote_count FROM votes").one().vote_count;
+    if (voteCount > 0) {
+      this.ctx.storage.transactionSync(() => {
+        this.ctx.storage.sql.exec("DELETE FROM votes");
+        this.incrementRevision();
+      });
+    }
     return this.readSnapshot();
   }
 
-  async seedChoices(choices: RoomChoice[]): Promise<RoomSnapshot> {
+  async seedChoices(choices: RoomChoice[], status: RoomStatus = "open"): Promise<RoomSnapshot> {
     validateChoices(choices);
+    validateStatus(status);
 
     this.ctx.storage.transactionSync(() => {
       this.ctx.storage.sql.exec("DELETE FROM votes");
@@ -82,12 +122,34 @@ export class RoomState extends DurableObject<Env> {
       for (const [position, choice] of choices.entries()) {
         this.ctx.storage.sql.exec("INSERT INTO choices (id, label, position) VALUES (?, ?, ?)", choice.id, choice.label, position);
       }
+      this.ctx.storage.sql.exec("UPDATE room_metadata SET status = ?, revision = revision + 1 WHERE singleton = 1", status);
     });
 
     return this.readSnapshot();
   }
 
-  private readSnapshot(): RoomSnapshot {
+  async setStatus(status: RoomStatus): Promise<RoomSnapshot> {
+    validateStatus(status);
+    if (this.readMetadata().status !== status) {
+      this.ctx.storage.sql.exec("UPDATE room_metadata SET status = ?, revision = revision + 1 WHERE singleton = 1", status);
+    }
+    return this.readSnapshot();
+  }
+
+  private incrementRevision(): void {
+    this.ctx.storage.sql.exec("UPDATE room_metadata SET revision = revision + 1 WHERE singleton = 1");
+  }
+
+  private readMetadata(): MetadataRow {
+    return this.ctx.storage.sql.exec<MetadataRow>("SELECT status, revision FROM room_metadata WHERE singleton = 1").one();
+  }
+
+  private readSelection(voterKey?: string): string | null {
+    if (!voterKey || !isIdentifier(voterKey)) return null;
+    return this.ctx.storage.sql.exec<VoteRow>("SELECT choice_id FROM votes WHERE voter_key = ?", voterKey).toArray()[0]?.choice_id ?? null;
+  }
+
+  private readSnapshot(voterKey?: string): RoomSnapshot {
     const rows = this.ctx.storage.sql
       .exec<ChoiceRow>(
         `SELECT choices.id, choices.label, choices.position, COUNT(votes.voter_key) AS vote_count
@@ -98,12 +160,20 @@ export class RoomState extends DurableObject<Env> {
       )
       .toArray();
     const choices = rows.map(({ id, label, vote_count: votes }) => ({ id, label, votes }));
+    const metadata = this.readMetadata();
 
     return {
       choices,
+      currentSelection: this.readSelection(voterKey),
+      revision: metadata.revision,
+      status: metadata.status,
       totalVotes: choices.reduce((total, choice) => total + choice.votes, 0),
     };
   }
+}
+
+function validateStatus(status: RoomStatus): void {
+  if (status !== "open" && status !== "locked") throw new TypeError('Room status must be "open" or "locked".');
 }
 
 function validateChoices(choices: RoomChoice[]): void {

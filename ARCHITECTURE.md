@@ -65,6 +65,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Keep the native browser-module/static-assets path optional and generated-output-aware; projects with an established client pipeline should retain it rather than adopting a second build system.
 - Keep progressive interaction separate from room state until repeated project use justifies making it a core browser opinion. Conventional HTML GET/POST behavior remains authoritative when the enhancement is absent or fails.
 - Keep deployment preview, traffic promotion, and rollback as distinct authorized operations. Version-preview workflows must reject unsupported Durable Object applications rather than claiming their preview is isolated or available.
+- Anonymous room voting must validate POST origins, minimize voter-cookie retention, and expose participant selection plus lockable monotonic revisions without claiming cookie-based identity.
 - Vendor third-party agent skills at a reviewed source revision, retain their license and source metadata, and adapt only where template compatibility requires it.
 
 ## Template Updates
