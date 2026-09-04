@@ -1,0 +1,51 @@
+{
+  "name": "progressive-interaction",
+  "description": "Enhance conventional HTML forms with background submission and declared fragment replacement.",
+  "dependencies": {
+    "dev": {
+      "@playwright/test": "1.62.1"
+    }
+  },
+  "files": [
+    {
+      "source": "files/src/browser/progressive-form.ts",
+      "target": "src/browser/progressive-form.ts",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/src/browser/progressive-form-entry.ts",
+      "target": "src/browser/progressive-form-entry.ts",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/src/progressive-form.e2e.ts",
+      "target": "src/progressive-form.e2e.ts",
+      "mode": "copy-or-merge"
+    }
+  ],
+  "markup": [
+    "Mark enhanced forms with data-progressive-form and data-progressive-target.",
+    "Mark the matching response element with data-progressive-fragment and a stable id.",
+    "Keep action, method, named controls, validation, and a submit button valid without JavaScript.",
+    "Use data-progressive-focus when the replacement should focus a specific descendant."
+  ],
+  "optionalSteps": [
+    {
+      "name": "client-build",
+      "when": "The target has no existing typed browser-code build and serving path.",
+      "prompt": "This repo has no client bundle path. Which existing build convention should serve the progressive-form entry module?",
+      "recipe": "recipes/npm.md"
+    }
+  ],
+  "docs": [
+    "Document the declared fragment and focus target contract.",
+    "Document that history traversal reloads the corresponding server-rendered URL.",
+    "Keep the JavaScript-disabled Playwright scenario in the target's browser gate."
+  ],
+  "verify": ["npm run typecheck", "npm run e2e", "npm run quality:gate"],
+  "notes": [
+    "Cross-origin, unsupported-method, text/plain, and GET-with-file forms keep native submission.",
+    "Failed enhancement retries the same form through requestSubmit instead of trapping the user.",
+    "The module uses event delegation so replacement fragments do not need listener rebinding."
+  ]
+}
