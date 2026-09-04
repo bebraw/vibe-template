@@ -16,7 +16,9 @@ Cold npm, browser, disposable-kit, Docker-image, and Local CI setup is too slow 
 
 ## Decision
 
-Update the base Worker to compatibility date `2026-09-04` and set both `no_nodejs_compat` and `no_nodejs_compat_v2`. A future project may adopt Node.js runtime APIs only by removing those flags through a documented architecture decision. Keep the Room State verification fixture on `2026-08-22`, the newest date accepted by the runtime bundled with its pinned test pool; refresh it when that dependency is deliberately upgraded.
+Update the base Worker to compatibility date `2026-09-04` and set both `no_nodejs_compat` and `no_nodejs_compat_v2`. A future project may adopt Node.js runtime APIs only by removing those flags through a documented architecture decision. Keep Room State verification on the same date through the current Workers Vitest plugin.
+
+Let `dev` and `e2e:server` inherit the user's normal home directory. `HOME` is not a Wrangler control variable, and replacing it with the project directory can confuse Wrangler and its subprocesses. Retain the narrower Chokidar polling variables on the browser-test server for the documented macOS watcher workaround.
 
 Declare the npm package as ESM with `"type": "module"`.
 

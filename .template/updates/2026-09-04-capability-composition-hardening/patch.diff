@@ -1,0 +1,7 @@
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 0000000..0000000 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -21,1 +21,1 @@
+-Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules before it is served to browsers.
++Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules, use empty same-origin module tags under `/assets/*.js`, stay outside unit coverage, and remain covered by a mandatory browser gate.

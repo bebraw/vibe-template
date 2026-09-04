@@ -4,7 +4,13 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { assertGeneratedTypeDriftCoverage, collectFixtureDependencies, copyManifestFiles } from "./verify-capability-kits.mjs";
+import {
+  assertGeneratedTypeDriftCoverage,
+  collectFixtureDependencies,
+  composeCapabilityManifests,
+  copyManifestFiles,
+  selectFixtureCases,
+} from "./verify-capability-kits.mjs";
 
 test("requires generated binding drift checks in a kit's normal verification contract", () => {
   assert.doesNotThrow(() =>
@@ -35,6 +41,56 @@ test("rejects a kit dependency that conflicts with the verification toolchain", 
   assert.throws(
     () => collectFixtureDependencies({ dependencies: { dev: { wrangler: "4.126.0" } } }, { wrangler: "4.127.1" }),
     /conflicts with the repository toolchain/,
+  );
+});
+
+test("composes kit dependencies, scripts, configuration, and replacement declarations", () => {
+  assert.deepEqual(
+    composeCapabilityManifests([
+      {
+        dependencies: {
+          dev: { "@vitest/coverage-istanbul": "4.1.11", vitest: "4.1.11" },
+          removeDev: ["@vitest/coverage-v8"],
+        },
+        scripts: { types: "wrangler types" },
+        wrangler: { durable_objects: { bindings: [{ class_name: "RoomState", name: "ROOM_STATE" }] } },
+      },
+      {
+        dependencies: { dev: { "@vitest/coverage-v8": "4.1.11", vitest: "4.1.11" } },
+        scripts: { test: "vitest run" },
+        wrangler: { assets: { directory: "./public" } },
+      },
+    ]),
+    {
+      dependencies: {
+        dev: { "@vitest/coverage-istanbul": "4.1.11", vitest: "4.1.11" },
+      },
+      generatedFiles: [],
+      scripts: { test: "vitest run", types: "wrangler types" },
+      verify: [],
+      wrangler: {
+        assets: { directory: "./public" },
+        durable_objects: { bindings: [{ class_name: "RoomState", name: "ROOM_STATE" }] },
+      },
+    },
+  );
+});
+
+test("rejects conflicting scripts while composing kits", () => {
+  assert.throws(
+    () => composeCapabilityManifests([{ scripts: { build: "first" } }, { scripts: { build: "second" } }]),
+    /script build conflicts/,
+  );
+});
+
+test("keeps browser-only composition checks out of the fast capability lane", () => {
+  assert.deepEqual(
+    selectFixtureCases("browser").map(({ fixtureName }) => fixtureName),
+    ["standard-adopter"],
+  );
+  assert.deepEqual(
+    selectFixtureCases("fast").map(({ fixtureName }) => fixtureName),
+    ["workers-ai", "room-state", "browser-static-assets", "standard-adopter"],
   );
 });
 

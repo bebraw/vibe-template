@@ -21,9 +21,9 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 - **Later maintenance sync:** template update packs under `.template/updates/` cover follow-up changes to projects that already adopted a kit.
 - **Executable verification owner:** `scripts/verify-capability-kits.mjs` materializes supported application kits into independent disposable Workers.
-- **Verification composition root:** each kit manifest supplies copyable files and exact test dependencies; isolated fixtures receive the repository-pinned Wrangler, TypeScript, generated binding config, and a minimal Worker entrypoint, while the Browser Static Assets kit also overlays the actual starter source in one composed fixture.
+- **Verification composition root:** each kit manifest supplies copyable files, exact test dependencies, and any replaced development dependencies; isolated fixtures receive the repository-pinned Wrangler, TypeScript, generated binding config, and a minimal Worker entrypoint, while one fully synthetic standard adopter composes Quality Gate, Room State, Browser Static Assets, Progressive Interaction, and mocked Workers AI without copying replaceable starter application files.
 - **Verification state authority:** manifests own kit dependency declarations; generated types, installed packages, and materialized source live only in operating-system temporary directories that are removed after each run.
-- **Verification public contract:** `npm run capabilities:verify` generates binding types, type-checks, and runs the materialized kit tests.
+- **Verification public contract:** `npm run capabilities:verify` generates binding types, type-checks, and runs isolated kit tests plus the standard adopter's composed build, Istanbul unit coverage, Worker client guard, and deploy dry run with remote bindings disabled; `npm run capabilities:verify:browser` runs the shared standard adopter's Playwright checks from the browser gate.
 - **Verification dependency direction:** the root verifier reads kit manifests and files; kit code does not depend on root application source or the root Vitest configuration.
 
 #### Workers AI Kit
@@ -114,6 +114,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep seed/reset behind an application-owned authorization check.
 - The Room State kit must bound buffered form bodies and store only a per-room digest of its opaque first-party voter cookie. It must not claim cryptographic ballot secrecy or authenticated identity.
 - The Room State kit must reject vote POSTs without a same-origin or explicitly allowlisted `Origin`, default new voter cookies to eight hours, and bound configured cookie lifetimes.
+- The Room State kit must use `@cloudflare/vitest-plugin` and Istanbul for Worker-runtime coverage, replacing the retired pool package and native V8 provider when they are present in an adopter.
 - Room snapshots must include open/locked status, a monotonic revision, and only the requesting participant's current selection. Locked rooms must reject votes without advancing their revision.
 - Room resets must emit a structured changed/unchanged event with removed count and resulting revision, without room or voter identifiers.
 - The Progressive Interaction kit must leave unmarked, cross-origin, unsupported-method, text/plain, and GET-with-file forms on the native path; enhancement failure must return to native submission.
@@ -122,7 +123,9 @@ The template is useful both as a starter repo and as a source of specific practi
 - The Browser Static Assets kit must use native ES modules, keep stable unhashed module names on revalidated caching, keep Worker application routes authoritative, and document `public/assets/` as generated output.
 - The Browser Static Assets kit must not replace an established client pipeline or imply that `_headers` affects Worker-generated responses.
 - The Browser Static Assets kit must route Wrangler and Workers Builds through a composed application-level `build` script that preserves every existing build step and watch root.
+- The Browser Static Assets kit must exclude `src/browser/**` from unit coverage only when Playwright remains mandatory in the full quality gate.
 - Progressive Interaction must include JavaScript-enabled browser coverage for fragment replacement, URL, focus, and Back/Forward behavior in addition to its no-JavaScript scenario.
+- Executable verification must keep the standard adopter synthetic, mock Workers AI without remote binding access, preserve quality-gate thresholds, and prove that build output, unit coverage, the client-script guard, browser behavior, and deploy packaging work together.
 - Deployment Safety must leave traffic unchanged during preview upload, require exact version IDs for non-interactive promotion and rollback, and emit structured operation logs without credentials or environment contents.
 - Deployment Safety must append `--env` consistently to preview, status, promotion, and rollback when `WORKER_ENVIRONMENT` contains a validated lowercase environment name.
 - Deployment Safety must document that preview URLs are public unless protected, preview logs are unavailable, preview requests may reach production bindings, and connected resources are not rolled back with code.
@@ -134,7 +137,8 @@ The template is useful both as a starter repo and as a source of specific practi
 ### Verification
 
 - **Repo check:** `npm run quality:gate`; add `npm run ci:local` only when a kit change crosses a workflow-sensitive boundary
-- **Executable kits:** `npm run capabilities:verify`
+- **Executable kits, fast lane:** `npm run capabilities:verify`
+- **Synthetic standard adopter, browser lane:** `npm run capabilities:verify:browser`
 - **Manifest parse:** `node -e "JSON.parse(require('node:fs').readFileSync('.capabilities/local-ci/manifest.json', 'utf8'))"`
 - **Docs check:** `rg "capability kits|\\.capabilities|Local CI Capability Kit"`
 
@@ -169,6 +173,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: a kit omits a test dependency, its generated binding shape drifts, or its copied application no longer type-checks
 - When: `npm run capabilities:verify` materializes that kit into a disposable Worker
 - Then: verification fails without depending on root application source or leaving generated files in the repository
+
+**Scenario: Standard adopter capabilities conflict**
+
+- Given: a typical Worker combines the quality gate, room state, browser assets, progressive interaction, and mocked Workers AI
+- When: the fast and browser capability-verification commands materialize the synthetic standard adopter in their respective gates
+- Then: its build, generated types, TypeScript, Istanbul coverage, client-script guard, Playwright flow, and deploy dry run all pass without remote AI access or copied starter views
 
 **Scenario: Generated bindings drift in an adopter**
 
@@ -259,6 +269,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: a server-rendered Worker has no client framework, browser compiler, or static-assets path
 - When: the agent applies `.capabilities/browser-static-assets/`
 - Then: the application-level build preserves existing outputs while TypeScript emits an external native module, Wrangler serves it through `/assets/*`, stable filenames revalidate, and the server-rendered page remains functional when JavaScript is unavailable
+
+**Scenario: Worker renders its external browser module**
+
+- Given: Worker-rendered HTML contains an empty `type="module"` tag whose root-relative source stays under `/assets/` and ends in `.js`
+- When: the Worker client-code guard scans the rendering source
+- Then: the tag passes regardless of harmless attribute ordering, while inline, remote, classic, traversal, event-handler, and `javascript:` forms still fail at their source location
 
 **Scenario: Presenter reviews a candidate without changing stage**
 

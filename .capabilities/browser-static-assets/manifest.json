@@ -47,13 +47,15 @@
   "docs": [
     "Document public/assets as generated output and public/_headers as authored deployment configuration.",
     "Document that Worker-generated HTML owns its own CSP and security headers.",
-    "Document the server-rendered no-JavaScript path for every installed browser behavior."
+    "Document the server-rendered no-JavaScript path for every installed browser behavior.",
+    "Document browser coverage ownership: exclude src/browser/** from unit coverage and keep npm run e2e mandatory."
   ],
   "verify": ["npm run build", "npm run typecheck", "npm run e2e", "npm run quality:gate"],
   "notes": [
     "Native module scripts are deferred by default and require explicit .js suffixes for relative emitted imports.",
     "Stable, unhashed module names use revalidation rather than immutable caching.",
     "Worker application routes run first while /assets/* uses the static-assets path.",
-    "The application-level build script must preserve existing build outputs before running build:browser."
+    "The application-level build script must preserve existing build outputs before running build:browser.",
+    "Browser modules are owned by mandatory Playwright coverage rather than the unit coverage threshold."
   ]
 }

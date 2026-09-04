@@ -24,5 +24,6 @@ During local development, run `npm run dev` and confirm that changing a file und
 - Stable, unhashed JavaScript names revalidate rather than receiving an immutable cache lifetime.
 - Worker routes remain authoritative and unmatched routes do not become an accidental single-page application fallback.
 - `public/assets/` is treated as generated output and is not committed.
+- Unit coverage excludes `src/browser/**`, while `npm run e2e` remains a required full-gate check.
 
 If the target uses Workers Builds, configure the same composed `npm run build` command because Workers Builds does not run Wrangler custom builds.

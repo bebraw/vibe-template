@@ -7,10 +7,11 @@ Apply this recipe to an npm-based Cloudflare Worker after the user approves the 
 Install exact versions compatible with the kit snapshot:
 
 ```bash
-npm install --save-dev --save-exact @cloudflare/vitest-pool-workers@0.22.0 vitest@4.1.11
+npm uninstall @cloudflare/vitest-pool-workers @vitest/coverage-v8
+npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.1.4 @vitest/coverage-istanbul@4.1.11 vitest@4.1.11
 ```
 
-If the target already uses Vitest, reconcile its pinned version with the pool's peer dependency instead of installing a second test stack.
+If the target already uses Vitest, reconcile its pinned version with the plugin's peer dependency instead of installing a second test stack. When the target collects Worker-runtime coverage, set `test.coverage.provider` to `"istanbul"`; native V8 coverage is not supported in the Workers runtime. Preserve its existing include, exclude, reporter, and threshold settings.
 
 ## Wrangler Configuration
 
@@ -45,7 +46,7 @@ Prefix the target project's existing normal quality-gate command with `npm run t
 
 ## Test Configuration
 
-Merge `files/vitest.config.ts` into the target's current Vitest config. The current Workers pool uses the `cloudflareTest()` Vite plugin; do not restore the removed `@cloudflare/vitest-pool-workers/config` entrypoint or discard existing include, coverage, or alias settings.
+Merge `files/vitest.config.ts` into the target's current Vitest config and include `"@cloudflare/vitest-plugin/types"` in the test TypeScript configuration's `compilerOptions.types`. The Workers plugin uses the `cloudflareTest()` Vite plugin; do not restore `@cloudflare/vitest-pool-workers`, use native V8 coverage, or discard existing include, coverage, or alias settings.
 
 ## Composition
 

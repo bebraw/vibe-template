@@ -32,5 +32,6 @@ npm run quality:gate
 - Seed, reset, and status changes cannot be reached without an explicit application-owned authorization check.
 - Event-specific room ids, choices, URLs, and seed data remain outside the kit.
 - The target's normal quality gate runs `npm run types:check` so committed binding declarations cannot drift silently.
+- Worker-runtime tests use `@cloudflare/vitest-plugin` and Istanbul coverage rather than the retired pool package or native V8 coverage.
 
 If `progressive-interaction` is also applied, run its JavaScript-disabled Playwright scenario as a separate guardrail.

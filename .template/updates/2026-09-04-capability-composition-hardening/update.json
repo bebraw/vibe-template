@@ -1,0 +1,15 @@
+{
+  "id": "2026-09-04-capability-composition-hardening",
+  "title": "Harden Worker capability composition and browser coverage ownership",
+  "status": "implemented",
+  "risk": "medium",
+  "supersedes": [],
+  "adrs": [
+    "docs/adrs/implemented/ADR-024-disallow-inline-client-code-in-worker-views.md",
+    "docs/adrs/implemented/ADR-056-verify-executable-capability-kits.md",
+    "docs/adrs/implemented/ADR-057-add-browser-static-assets-kit.md",
+    "docs/adrs/implemented/ADR-060-refresh-worker-operational-contracts.md"
+  ],
+  "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "package.json", "scripts/", "specs/"],
+  "checks": ["npm run capabilities:verify", "npm run capabilities:verify:browser", "npm run quality:gate", "npm run ci:local"]
+}

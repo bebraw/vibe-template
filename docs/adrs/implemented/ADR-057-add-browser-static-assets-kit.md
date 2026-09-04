@@ -20,6 +20,8 @@ Use authored `public/_headers` for static-response CSP and security headers. Kee
 
 Keep this build kit separate from Progressive Interaction. An adopter may select it alone, and the progressive kit may offer it only when no client pipeline exists. Add a JavaScript-enabled progressive regression scenario for fragment replacement, URL, focus, and history, while retaining the no-JavaScript scenario.
 
+When the kit is present, exclude `src/browser/**` from the unit coverage threshold and require Playwright in the full quality gate. Browser modules are owned by browser execution coverage; the exclusion must never turn the browser gate into an optional check.
+
 ## Consequences
 
 **Positive:**
@@ -27,6 +29,7 @@ Keep this build kit separate from Progressive Interaction. An adopter may select
 - A server-rendered Worker can gain typed browser code without choosing a framework or bundler.
 - Local Wrangler development rebuilds browser source and deploy dry runs prove asset inclusion.
 - Progressive enhancement now has executable JavaScript-on and JavaScript-off browser coverage.
+- Unit and browser coverage have non-overlapping, explicit ownership.
 
 **Negative:**
 

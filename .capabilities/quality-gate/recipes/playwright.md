@@ -27,3 +27,5 @@ Before committing, adapt the config to the target repo:
 - update `baseURL` and `webServer.url`
 - update `webServer.command` to start the target app
 - remove `webServer` if the target tests manage their own server
+
+When browser code lives under `src/browser/**`, exclude that directory from unit coverage and keep `npm run e2e` mandatory in the full `quality:gate`. The browser exclusion and browser gate are one policy; do not apply only the exclusion.

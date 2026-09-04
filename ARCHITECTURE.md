@@ -21,9 +21,9 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Treat `.architecture-check.json` limits as generous smoke alarms for architectural review. Do not split code mechanically to satisfy them; consolidate responsibilities or add an exact rationale-bearing exception.
 - Keep the quality gate green before considering a change ready.
 - Keep workflow writes explicit. New generated output, local state, cache, archive, or tool-artifact paths should be documented in the same change that introduces them.
-- Verify executable capability kits by materializing independent adopter Workers in disposable operating-system temporary directories; kit manifests own their fixture dependencies and the verifier must not write generated application files into the repository.
+- Verify executable capability kits through independent adopter Workers plus one synthetic standard composition in disposable operating-system temporary directories; kit manifests own their fixture dependencies and replacements, and the verifier must not write generated application files into the repository.
 - Keep deploy preflight read-only with respect to Cloudflare: authentication checks, generated binding inspection, and deploy bundling may write only to a disposable operating-system temporary directory, while existing configured build steps retain their documented write targets.
-- Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules before it is served to browsers.
+- Do not place executable browser code inline in Worker-rendered HTML. Client behavior should live in typed TypeScript modules and be referenced only through empty same-origin module tags under `/assets/*.js`.
 
 ## Tooling Baseline
 
@@ -47,9 +47,9 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Affected-file guardrails should scope checks to changed files when the underlying tool supports it and fall back to project-level checks only when needed.
 - Remote browser and mutation jobs should skip dependency installation and execution when every changed file is in a documented non-runtime area. Unknown paths and unavailable change ranges must run the expensive gates.
 - Keep Stryker at 50% concurrency for responsive local work, while the isolated GitHub mutation job may use 100% of its runner's available parallelism.
-- The fast quality gate should fail when Worker/view runtime files contain inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs.
+- The fast quality gate should reject inline, malformed, classic, remote, and non-asset scripts, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files while allowing empty same-origin asset module tags.
 - Unit coverage for `src/` code should stay high enough that the coverage gate remains green.
-- The baseline quality gate and CI should type-check and test executable capability kits through `npm run capabilities:verify`, independently of the root Vitest source glob.
+- The baseline quality gate and CI fast job should type-check and test executable capability kits through `npm run capabilities:verify`, independently of the root Vitest source glob. The browser gate should run the synthetic standard-adopter Playwright flow through `npm run capabilities:verify:browser`.
 - Capability kits that commit generated Worker binding declarations must put `wrangler types --check` in the adopting project's normal quality gate, not only in deploy preparation.
 - Local CI should validate the same baseline checks when changes cross workflow-sensitive boundaries or when full PR or release readiness is requested.
 - The canonical local CI command should emit Local CI's structured lifecycle event stream so agents can track run, job, step, pause, and completion state without relying on animated terminal output. Agent command wrappers must pass that stream through live instead of buffering it until process exit.
@@ -66,7 +66,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Each capability kit should include a README, a machine-readable manifest, any copyable files, package-manager recipes, and validation notes.
 - Capability kits should preserve target-project conventions unless the kit explicitly documents a required constraint.
 - Keep application capabilities such as Workers AI, room-scoped Durable Objects, and progressive form enhancement out of the default runtime; expose them as independently selectable kits.
-- Keep the native browser-module/static-assets path optional and generated-output-aware; projects with an established client pipeline should retain it rather than adopting a second build system. Adopters must compose the browser compiler with every existing application build instead of replacing Wrangler's single custom-build command.
+- Keep the native browser-module/static-assets path optional and generated-output-aware; projects with an established client pipeline should retain it rather than adopting a second build system. Adopters must compose the browser compiler with every existing application build instead of replacing Wrangler's single custom-build command, exclude `src/browser/**` from unit coverage, and keep Playwright mandatory in the full gate.
 - Keep progressive interaction separate from room state until repeated project use justifies making it a core browser opinion. Conventional HTML GET/POST behavior remains authoritative when the enhancement is absent or fails.
 - Keep deployment preview, traffic promotion, and rollback as distinct authorized operations. Version-preview workflows must reject unsupported Durable Object applications rather than claiming their preview is isolated or available, and every wrapper command must accept the same validated explicit Wrangler environment.
 - Keep capability lifecycle logs structured and redacted: inference events identify model/fallback outcomes, room resets identify mutation outcome and revision, and deployment events identify operation and traffic impact without carrying prompts, output, voter identifiers, credentials, or environment contents.

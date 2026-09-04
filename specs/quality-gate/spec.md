@@ -18,7 +18,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Formatting cache:** content-based Prettier cache at ignored `.cache/prettier`
 - **Correctness lint:** `npm run lint`
 - **Affected guardrails:** `npm run quality:affected`
-- **Browser gate:** `npm run e2e`
+- **Browser gate:** `npm run e2e`, covering both the root Playwright baseline and the synthetic standard-adopter Playwright flow
 - **Affected test gate:** `npm run test:affected`
 - **Source-shape gate:** `npm run quality:structure`
 - **Source-shape config:** `.architecture-check.json`
@@ -87,7 +87,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - [ ] The advisory codebase diagnostics report changed-code readability risk, whole-repo health, hotspots, duplication, exact-symbol evidence, public-signature type coupling, and cleanup evidence without becoming part of the hard quality gate.
 - [ ] The interactive codebase map writes a self-contained HTML report under ignored `.fallow/` state without opening a browser automatically.
 - [ ] The source-shape gate rejects extreme production file and flat-directory growth while allowing exact rationale-bearing exceptions.
-- [ ] The browser gate covers the Playwright baseline.
+- [ ] The browser gate covers the root Playwright baseline and the synthetic standard-adopter Playwright flow.
 - [ ] The full mutation gate covers runtime `src/**/*.ts` files with Stryker, Vitest, and TypeScript checking.
 - [ ] The incremental mutation gate reuses prior Stryker results for explicit deep local runs while preserving a complete mutation report.
 - [ ] The full gate runs the fast and browser gates in order without unconditionally running mutation testing.
@@ -131,7 +131,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The browser CI job must use a container image whose version exactly matches the pinned `@playwright/test` version instead of reinstalling Chromium at runtime.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and Local CI's warmed `node_modules` layout.
-- The Worker client-code guard must fail on inline `<script>` tags, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files.
+- The Worker client-code guard must allow only empty same-origin `/assets/*.js` module tags independent of attribute order, and must fail on inline, malformed, classic, remote, or non-asset scripts, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files while preserving source locations.
 - The affected guardrail path must pass only affected Worker/view runtime files to the Worker client-code guard.
 - The Worker Node-import guard must fail on static, dynamic, or CommonJS imports of Node built-ins from production `src/` files while excluding tests, declarations, and test-support modules.
 - The affected guardrail path must pass only affected production source files to the Worker Node-import guard.

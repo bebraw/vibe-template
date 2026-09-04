@@ -77,3 +77,7 @@ Add this external module to the Worker-rendered document. A module script is def
 ```
 
 Do not add inline fallback code. The server-rendered page remains the core path when the module is unavailable.
+
+## Coverage Ownership
+
+Add `src/browser/**` to the unit coverage exclusions and keep Playwright mandatory in the full quality gate. Browser modules execute against DOM and navigation contracts that the browser suite owns; do not let excluding them from unit coverage make browser tests optional.

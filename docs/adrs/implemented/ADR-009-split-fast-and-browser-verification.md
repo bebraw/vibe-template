@@ -6,6 +6,8 @@
 
 **Amended by:** [ADR-023](./ADR-023-pin-github-actions-to-commit-shas.md)
 
+**Amended by:** [ADR-056](./ADR-056-verify-executable-capability-kits.md)
+
 **Date:** 2026-03-28
 
 ## Context
@@ -21,7 +23,7 @@ The repo now has enough stable tooling to separate fast checks from browser chec
 We will split verification into:
 
 - a fast gate for formatting, type checking, runtime dependency audit, and unit coverage
-- a browser gate for Playwright end-to-end checks
+- a browser gate for root Playwright end-to-end checks plus the synthetic standard-adopter Playwright flow
 - a full quality gate that runs the fast gate first and then the browser gate
 
 The GitHub Actions workflow will:

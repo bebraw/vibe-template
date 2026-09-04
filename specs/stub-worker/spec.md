@@ -12,7 +12,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - **Source layout:** `src/worker.ts` routes requests, `src/api/` holds API handlers, and `src/views/` holds HTML rendering modules.
 - **Styling pipeline:** `src/tailwind-input.css` compiles to `.generated/styles.css`, which the Worker serves at `/styles.css`; Node unit tests inject the stylesheet loader through `handleRequest` instead of adding filesystem probes to production code.
 - **Starter UI contract:** `src/views/home.ts` renders a narrow editorial page with a route index and a prominent health-probe entry point.
-- **Client code boundary:** Worker-rendered HTML must not embed executable browser code inline. Browser behavior belongs in typed TypeScript modules before being served to clients.
+- **Client code boundary:** Worker-rendered HTML must not embed executable browser code inline. It may reference empty same-origin `type="module"` scripts below `/assets/`; browser behavior belongs in typed TypeScript modules before being served to clients.
 - **Web response baseline:** HTML responses include a restrictive script-free CSP, a narrow Permissions Policy, a referrer policy, and MIME-sniffing protection. Rendered pages include baseline metadata and keyboard bypass navigation where repeated content exists.
 - **Data models:** None yet. The stub is stateless.
 - **Dependencies:** Wrangler provides the Worker runtime; Playwright and Vitest verify the behavior.
@@ -27,7 +27,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - Do not add feature-specific persistence or auth behavior to the stub without updating this spec and the relevant ADRs.
 - Do not collapse API handling and rendered views back into one file as the starter evolves.
 - Do not move starter styles back into large inline `<style>` blocks.
-- Do not add inline `<script>` tags, inline event-handler attributes, or `javascript:` URLs to Worker-rendered HTML.
+- Do not add inline, classic, remote, or non-asset `<script>` tags, inline event-handler attributes, or `javascript:` URLs to Worker-rendered HTML.
 - Do not loosen the shared CSP implicitly when adding scripts, external assets, frames, or cross-origin form actions; update the policy and this spec deliberately.
 
 ## Contract
@@ -48,7 +48,7 @@ This template needs a concrete runnable starting point so developers can clone i
 - `GET /` must keep returning HTML with a recognizable starter heading.
 - `GET /` must keep rendering the route index and a visible `/api/health` entry point.
 - `GET /styles.css` must keep returning the generated stylesheet.
-- Worker/view runtime files must remain free of inline executable browser code.
+- Worker/view runtime files must remain free of inline executable browser code; the only allowed script tags are empty same-origin asset modules under `/assets/*.js`.
 - Production source under `src/` must remain free of Node built-in imports while the Web-standards-only compatibility contract is active.
 - `GET /api/health` must keep returning HTTP 200 JSON with `ok: true`.
 - Unknown routes must return HTTP 404.

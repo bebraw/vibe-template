@@ -3,9 +3,11 @@
   "description": "Add one SQLite-backed Durable Object per room with predefined, replaceable anonymous voting.",
   "dependencies": {
     "dev": {
-      "@cloudflare/vitest-pool-workers": "0.22.0",
+      "@cloudflare/vitest-plugin": "1.1.4",
+      "@vitest/coverage-istanbul": "4.1.11",
       "vitest": "4.1.11"
-    }
+    },
+    "removeDev": ["@cloudflare/vitest-pool-workers", "@vitest/coverage-v8"]
   },
   "scripts": {
     "types": "wrangler types",
@@ -42,6 +44,7 @@
     "The first-party voter cookie is opaque and the Durable Object stores only a per-room SHA-256 key.",
     "The default HTTP route requires a same-origin vote Origin, accepts bounded application/x-www-form-urlencoded bodies, and redirects with 303 after POST.",
     "New voter cookies default to an eight-hour lifetime configurable at the HTTP composition boundary.",
-    "Reset logs include only mutation outcome, removed count, and resulting revision."
+    "Reset logs include only mutation outcome, removed count, and resulting revision.",
+    "Worker-runtime coverage uses Istanbul because native V8 coverage is unsupported by the Cloudflare Vitest runtime."
   ]
 }

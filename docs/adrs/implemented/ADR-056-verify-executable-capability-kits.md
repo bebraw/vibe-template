@@ -10,28 +10,31 @@
 
 The Workers AI and Room State kits include tests, but the root Vitest configuration intentionally discovers only `src/**/*.test.ts`. Root tests therefore do not prove that either kit can be copied into an adopter with complete dependencies, generated binding types, compatible configuration, and runnable tests.
 
-Pointing root Vitest at `.capabilities/` would mix Node and Workers test environments and would let root dependencies mask incomplete kit manifests. The verification seam needs to exercise the adopter shape rather than the storage location of the recipes.
+Pointing root Vitest at `.capabilities/` would mix Node and Workers test environments and would let root dependencies mask incomplete kit manifests. Isolated kit checks also miss conflicts that appear only after common capabilities share one build, test runner, coverage policy, guard, and browser path. The verification seam needs to exercise adopter shapes rather than the storage location of the recipes.
 
 ## Decision
 
 Add `npm run capabilities:verify`. For each supported executable kit, materialize an independent example Worker under an operating-system temporary directory, install the exact development dependencies declared by that kit plus the repository-pinned Wrangler and TypeScript verification toolchain, generate binding types, type-check the copied application, and run its tests.
 
-Run this command from the baseline quality gate and the CI fast job. Keep fixture entrypoints and Wrangler configuration minimal and generic. Reject manifest paths that escape the kit or fixture and reject a kit dependency that conflicts with the pinned verification toolchain. Remove every temporary Worker after success or failure.
+Also materialize one synthetic standard adopter that composes Quality Gate, Room State, Browser Static Assets, Progressive Interaction, and mocked Workers AI. Do not copy replaceable starter application files into it. Merge manifest dependencies, scripts, generated-file contracts, and Wrangler fragments; honor explicit development-dependency replacements; then run its composed build, generated-type check, TypeScript check, Worker client guard, Istanbul unit coverage, Playwright browser tests, and deploy dry run. Disable remote bindings in the Worker test plugin so mocked Workers AI verification is network-free and cannot incur inference usage.
 
-Declare Vitest explicitly in the Workers AI manifest because its copied test imports Vitest. Do not add the Workers test pool to the root application dependency set; Room State declares and installs it only inside its disposable adopter.
+Keep the composition fixture shared while preserving the repository's fast/browser split: `npm run capabilities:verify` owns generated types, type checking, the guard, Istanbul coverage, and deploy packaging; `npm run capabilities:verify:browser` owns its Playwright flow and is composed into `npm run e2e`. Run the fast command from the baseline quality gate and CI fast job, and run the browser command from the browser gate and CI browser job. Keep fixture entrypoints and Wrangler configuration minimal and generic. Reject manifest paths that escape the kit or fixture and reject a kit dependency that conflicts with the pinned verification toolchain. Remove every temporary Worker after success or failure.
+
+Declare Vitest explicitly in the Workers AI manifest because its copied test imports Vitest. Do not add the Workers test plugin to the root application dependency set; Room State declares and installs `@cloudflare/vitest-plugin` plus the Istanbul coverage provider only inside its disposable adopter. Native V8 coverage remains valid for the root Node-oriented test suite but is replaced when Worker-runtime tests are composed.
 
 ## Consequences
 
 **Positive:**
 
 - Kit tests, generated binding types, configuration, and dependency declarations are exercised together.
+- The standard adopter catches cross-kit build, guard, coverage, browser, and test-runtime regressions.
 - Independent fixtures expose undeclared dependencies that the root repository could otherwise satisfy accidentally.
 - The root application remains free of optional Durable Object test infrastructure.
 
 **Negative:**
 
-- Baseline and CI verification require npm registry access and perform two temporary installs.
-- The verifier maintains small composition fixtures for each supported executable kit.
+- Baseline and CI verification require npm registry access and perform several temporary installs across the fast and browser lanes.
+- The verifier maintains small isolated fixtures plus one synthetic composition fixture.
 
 **Neutral:**
 
