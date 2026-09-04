@@ -1,0 +1,42 @@
+{
+  "name": "workers-ai",
+  "description": "Add a typed Workers AI binding boundary with validated structured output and deterministic fallback behavior.",
+  "dependencies": {},
+  "scripts": {
+    "types": "wrangler types",
+    "types:check": "wrangler types --check"
+  },
+  "files": [
+    {
+      "source": "files/src/lib/workers-ai.ts",
+      "target": "src/lib/workers-ai.ts",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/src/test-support/mock-workers-ai.ts",
+      "target": "src/test-support/mock-workers-ai.ts",
+      "mode": "copy-or-merge"
+    },
+    {
+      "source": "files/src/lib/workers-ai.test.ts",
+      "target": "src/lib/workers-ai.test.ts",
+      "mode": "copy-or-merge"
+    }
+  ],
+  "generatedFiles": ["worker-configuration.d.ts"],
+  "config": [
+    "Add an AI binding named AI to wrangler.jsonc.",
+    "Add a non-secret AI_MODEL variable containing a currently supported structured-output model.",
+    "Regenerate worker-configuration.d.ts after changing bindings or variables."
+  ],
+  "docs": [
+    "Document the selected model, timeout, schema owner, validator, and deterministic fallback.",
+    "Keep application prompts and domain schemas in the adopting feature rather than in this kit."
+  ],
+  "verify": ["npm run types:check", "npm test", "npm run typecheck", "npm run quality:gate"],
+  "notes": [
+    "The generated Env type is the source of truth for AI and AI_MODEL.",
+    "JSON mode can still return invalid output, so the runtime validator is mandatory.",
+    "The mock implements the local runner seam instead of casting a partial object to the full generated binding type."
+  ]
+}
