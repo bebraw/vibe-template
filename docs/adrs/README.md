@@ -93,6 +93,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-058](./implemented/ADR-058-add-preview-promotion-deployment-safety-kit.md)        | Implemented | Add guarded preview upload, explicit promotion, and rollback tooling.                             |
 | [ADR-059](./implemented/ADR-059-harden-anonymous-room-state.md)                        | Implemented | Harden anonymous room voting with origin checks, bounded cookies, and lockable revisions.         |
 | [ADR-060](./implemented/ADR-060-refresh-worker-operational-contracts.md)               | Implemented | Refresh runtime, module, binding-drift, logging, and warm-up contracts.                           |
+| [ADR-061](./implemented/ADR-061-enable-starter-worker-observability.md)                | Implemented | Persist starter Worker logs and invocation logs while sampling traces explicitly.                 |
 
 ## Creating A New ADR
 
