@@ -68,6 +68,17 @@ export async function handleRoomRequest(
   return new Response(null, { status: 303, headers });
 }
 
+export async function initializeRoom(
+  request: Request,
+  env: RoomEnvironment,
+  roomId: string,
+  choices: RoomChoice[],
+  authorize: AuthorizeRoomAdministration,
+): Promise<RoomSnapshot> {
+  if (!(await authorize(request))) throw new RoomAdministrationUnauthorizedError();
+  return await env.ROOM_STATE.getByName(roomId).initializeChoices(choices);
+}
+
 export async function seedRoom(
   request: Request,
   env: RoomEnvironment,

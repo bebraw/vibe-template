@@ -52,9 +52,12 @@ Merge `files/vitest.config.ts` into the target's current Vitest config and inclu
 
 Call `handleRoomRequest(request, env)` from the existing Worker router and return its response when defined. Use the existing response and layout helpers if the target already has stronger conventions.
 
-Keep seed, reset, and status changes behind application-owned authorization:
+Keep initialization, seed, reset, and status changes behind application-owned authorization:
 
 ```ts
+// Routine setup or retry: preserve an existing session.
+await initializeRoom(request, env, roomId, choices, authorizeRoomAdministration);
+// Deliberate reseeding: replace choices and clear votes.
 await seedRoom(request, env, roomId, choices, authorizeRoomAdministration);
 await setRoomStatus(request, env, roomId, "locked", authorizeRoomAdministration);
 ```

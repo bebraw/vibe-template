@@ -95,6 +95,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-060](./implemented/ADR-060-refresh-worker-operational-contracts.md)               | Implemented | Refresh runtime, module, binding-drift, logging, and warm-up contracts.                           |
 | [ADR-061](./implemented/ADR-061-enable-starter-worker-observability.md)                | Implemented | Persist starter Worker logs and invocation logs while sampling traces explicitly.                 |
 | [ADR-062](./implemented/ADR-062-retain-durable-implementation-context.md)              | Implemented | Retain relevant initialization context in existing documents with explicit increment boundaries.  |
+| [ADR-063](./implemented/ADR-063-add-non-destructive-room-initialization.md)            | Implemented | Initialize room choices atomically without disturbing existing sessions.                          |
 
 ## Creating A New ADR
 

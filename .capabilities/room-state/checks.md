@@ -22,14 +22,16 @@ npm run quality:gate
 - A repeated voter key moves one vote rather than increasing the total.
 - A participant snapshot and rendered form expose that voter's current selection without exposing another voter identifier.
 - Two room ids remain isolated.
-- Reset preserves choices and clears votes; seed replaces both choices and votes.
+- Initialization seeds an empty room once; invalid initial choices leave its entire snapshot unchanged.
+- Repeated and concurrent initialization preserve choices, votes, participant selection, status, and revision, even with different supplied choices.
+- Reset preserves choices and status while clearing votes; explicit seed replaces choices, clears votes, opens by default, and advances revision.
 - Every reset emits a structured changed/unchanged event without room or voter identifiers.
 - Revisions increase only when seeded choices, status, or votes change; a repeated identical vote leaves the revision stable.
 - Locked rooms retain their frozen counts and selection while rejecting new or changed votes.
 - The HTML form works through a normal POST and `303` redirect without JavaScript.
 - Vote POSTs reject missing or untrusted `Origin` headers before changing state.
 - New voter cookies default to eight hours and use the configured bounded `Max-Age` when the application supplies one.
-- Seed, reset, and status changes cannot be reached without an explicit application-owned authorization check.
+- Initialization, seed, reset, and status changes cannot be reached without an explicit application-owned authorization check.
 - Event-specific room ids, choices, URLs, and seed data remain outside the kit.
 - The target's normal quality gate runs `npm run types:check` so committed binding declarations cannot drift silently.
 - Worker-runtime tests use `@cloudflare/vitest-plugin` and Istanbul coverage rather than the retired pool package or native V8 coverage.

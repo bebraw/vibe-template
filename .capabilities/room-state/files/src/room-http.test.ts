@@ -1,6 +1,6 @@
 import { env } from "cloudflare:workers";
 import { describe, it } from "vitest";
-import { handleRoomRequest, resetRoom, RoomAdministrationUnauthorizedError, seedRoom, setRoomStatus } from "./room-http";
+import { handleRoomRequest, initializeRoom, resetRoom, RoomAdministrationUnauthorizedError, seedRoom, setRoomStatus } from "./room-http";
 
 describe("handleRoomRequest", () => {
   it("accepts a same-origin vote with a configurable cookie lifetime and renders the participant selection", async ({ expect }) => {
@@ -126,6 +126,23 @@ describe("handleRoomRequest", () => {
         voterCookieMaxAgeSeconds: 1,
       }),
     ).rejects.toThrow(/integer from 60/);
+  });
+
+  it("requires application authorization for initialization and retries", async ({ expect }) => {
+    const request = new Request("https://example.com/rooms/initialize-admin");
+    const roomId = "initialize-admin";
+    const room = env.ROOM_STATE.getByName(roomId);
+    const empty = await room.getSnapshot();
+    const choices = [{ id: "first", label: "First" }];
+    await expect(initializeRoom(request, env, roomId, choices, () => false)).rejects.toBeInstanceOf(RoomAdministrationUnauthorizedError);
+    await expect(room.getSnapshot()).resolves.toEqual(empty);
+    await expect(initializeRoom(request, env, roomId, choices, async () => true)).resolves.toMatchObject({ revision: 1 });
+    await room.castVote("voter", "first");
+    await room.setStatus("locked");
+    const snapshot = await room.getSnapshot();
+    await expect(initializeRoom(request, env, roomId, [], async () => false)).rejects.toBeInstanceOf(RoomAdministrationUnauthorizedError);
+    await expect(initializeRoom(request, env, roomId, [], () => true)).resolves.toEqual(snapshot);
+    await expect(room.getSnapshot()).resolves.toEqual(snapshot);
   });
 
   it("keeps room administration behind explicit authorization", async ({ expect }) => {

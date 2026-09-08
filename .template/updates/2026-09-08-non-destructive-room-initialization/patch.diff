@@ -1,0 +1,311 @@
+diff --git a/.capabilities/room-state/README.md b/.capabilities/room-state/README.md
+index 76f746e..5e26cac 100644
+--- a/.capabilities/room-state/README.md
++++ b/.capabilities/room-state/README.md
+@@ -9,7 +9,7 @@ Use this kit to add one Durable Object per room for small, strongly consistent v
+ - One replaceable vote per opaque anonymous voter key.
+ - Participant-specific current selection in room snapshots and rendered forms.
+ - Monotonic room revisions plus authorized open/locked status changes.
+-- Seed, reset, and status RPC operations.
++- Non-destructive initialization, explicit destructive seed, vote reset, and status RPC operations.
+ - Conventional `GET /rooms/:roomId` and bounded form `POST /rooms/:roomId` behavior with a `303` redirect.
+ - Same-origin or explicitly allowlisted vote origins and a configurable voter-cookie lifetime that defaults to eight hours.
+ - Worker-runtime tests for replacement, validation, isolation, reset, origin, cookie, selection, revision, and lock behavior, with Istanbul coverage when coverage is enabled.
+@@ -35,7 +35,7 @@ Use this kit to add one Durable Object per room for small, strongly consistent v
+ 3. Copy or merge files under `files/` into the target's established layout.
+ 4. Export `RoomState` from the Worker entrypoint and compose `handleRoomRequest` into the existing router.
+ 5. Define event-specific choices in the adopting project. The kit intentionally includes none.
+-6. Put `seedRoom` and `resetRoom` behind an explicit authorization callback. Do not add an open administration endpoint.
++6. Put `initializeRoom`, `seedRoom`, and `resetRoom` behind an explicit authorization callback. Do not add an open administration endpoint.
+ 7. Use the same authorization boundary for `setRoomStatus`. Lock the room before consuming a specific revision in model or presentation work.
+ 8. Configure `handleRoomRequest` with the target's allowed origins and cookie lifetime. The strict default accepts only an `Origin` matching the request URL.
+ 9. Apply `progressive-interaction` only if separately approved.
+@@ -44,3 +44,19 @@ Use this kit to add one Durable Object per room for small, strongly consistent v
+ The included document renderer is deliberately plain. Merge the fragment contract into the target project's existing layout rather than adopting it as a visual system.
+ 
+ The anonymous cookie deters casual duplicate voting in one browser; it does not provide authenticated identity or prevent deliberate ballot stuffing across clients.
++
++## Initialization And Administration
++
++Use `initializeRoom` for routine setup and retries. Its `initializeChoices(choices)` RPC validates and seeds only when the room has no choices, opens it, and advances its revision once. Existing choices mean the room is initialized, including rooms originally populated by `seedChoices` or emptied of votes by `resetVotes`.
++
++For an initialized room, initialization returns the current aggregate snapshot (`currentSelection: null`) without validating the unused input or changing choices, votes, status, or revision. Different or invalid replacement choices are ignored. Invalid choices on an empty room reject before any mutation.
++
++The check and seed execute synchronously in the Durable Object, with no `await` between them; seed writes use a synchronous SQLite transaction. Keep that sequence intact so concurrent initialization cannot reseed a room or erase a vote.
++
++| Operation                                       | Choices                          | Votes                         | Status and revision                                                           |
++| ----------------------------------------------- | -------------------------------- | ----------------------------- | ----------------------------------------------------------------------------- |
++| `initializeChoices(choices)` / `initializeRoom` | Seeds only when no choices exist | Preserves an existing session | First initialization opens and advances once; retries preserve both           |
++| `seedChoices(choices, status?)` / `seedRoom`    | Replaces choices deliberately    | Clears all votes              | Opens by default and always advances once; the RPC accepts an explicit status |
++| `resetVotes()` / `resetRoom`                    | Preserves choices                | Clears votes                  | Preserves status; advances only when votes were removed                       |
++
++All administration, including initialization of an existing room, requires application-owned authorization. The RPC binding is a trusted server boundary; use the authorized helpers when composing application routes. Knowing a room id grants no administrative access, and the participant GET/POST handler does not initialize rooms.
+diff --git a/.capabilities/room-state/checks.md b/.capabilities/room-state/checks.md
+index d2b54f8..4b5f1c8 100644
+--- a/.capabilities/room-state/checks.md
++++ b/.capabilities/room-state/checks.md
+@@ -22,14 +22,16 @@ npm run quality:gate
+ - A repeated voter key moves one vote rather than increasing the total.
+ - A participant snapshot and rendered form expose that voter's current selection without exposing another voter identifier.
+ - Two room ids remain isolated.
+-- Reset preserves choices and clears votes; seed replaces both choices and votes.
++- Initialization seeds an empty room once; invalid initial choices leave its entire snapshot unchanged.
++- Repeated and concurrent initialization preserve choices, votes, participant selection, status, and revision, even with different supplied choices.
++- Reset preserves choices and status while clearing votes; explicit seed replaces choices, clears votes, opens by default, and advances revision.
+ - Every reset emits a structured changed/unchanged event without room or voter identifiers.
+ - Revisions increase only when seeded choices, status, or votes change; a repeated identical vote leaves the revision stable.
+ - Locked rooms retain their frozen counts and selection while rejecting new or changed votes.
+ - The HTML form works through a normal POST and `303` redirect without JavaScript.
+ - Vote POSTs reject missing or untrusted `Origin` headers before changing state.
+ - New voter cookies default to eight hours and use the configured bounded `Max-Age` when the application supplies one.
+-- Seed, reset, and status changes cannot be reached without an explicit application-owned authorization check.
++- Initialization, seed, reset, and status changes cannot be reached without an explicit application-owned authorization check.
+ - Event-specific room ids, choices, URLs, and seed data remain outside the kit.
+ - The target's normal quality gate runs `npm run types:check` so committed binding declarations cannot drift silently.
+ - Worker-runtime tests use `@cloudflare/vitest-plugin` and Istanbul coverage rather than the retired pool package or native V8 coverage.
+diff --git a/.capabilities/room-state/files/src/room-http.test.ts b/.capabilities/room-state/files/src/room-http.test.ts
+index 87948eb..c9616b4 100644
+--- a/.capabilities/room-state/files/src/room-http.test.ts
++++ b/.capabilities/room-state/files/src/room-http.test.ts
+@@ -1,6 +1,6 @@
+ import { env } from "cloudflare:workers";
+ import { describe, it } from "vitest";
+-import { handleRoomRequest, resetRoom, RoomAdministrationUnauthorizedError, seedRoom, setRoomStatus } from "./room-http";
++import { handleRoomRequest, initializeRoom, resetRoom, RoomAdministrationUnauthorizedError, seedRoom, setRoomStatus } from "./room-http";
+ 
+ describe("handleRoomRequest", () => {
+   it("accepts a same-origin vote with a configurable cookie lifetime and renders the participant selection", async ({ expect }) => {
+@@ -128,6 +128,23 @@ describe("handleRoomRequest", () => {
+     ).rejects.toThrow(/integer from 60/);
+   });
+ 
++  it("requires application authorization for initialization and retries", async ({ expect }) => {
++    const request = new Request("https://example.com/rooms/initialize-admin");
++    const roomId = "initialize-admin";
++    const room = env.ROOM_STATE.getByName(roomId);
++    const empty = await room.getSnapshot();
++    const choices = [{ id: "first", label: "First" }];
++    await expect(initializeRoom(request, env, roomId, choices, () => false)).rejects.toBeInstanceOf(RoomAdministrationUnauthorizedError);
++    await expect(room.getSnapshot()).resolves.toEqual(empty);
++    await expect(initializeRoom(request, env, roomId, choices, async () => true)).resolves.toMatchObject({ revision: 1 });
++    await room.castVote("voter", "first");
++    await room.setStatus("locked");
++    const snapshot = await room.getSnapshot();
++    await expect(initializeRoom(request, env, roomId, [], async () => false)).rejects.toBeInstanceOf(RoomAdministrationUnauthorizedError);
++    await expect(initializeRoom(request, env, roomId, [], () => true)).resolves.toEqual(snapshot);
++    await expect(room.getSnapshot()).resolves.toEqual(snapshot);
++  });
++
+   it("keeps room administration behind explicit authorization", async ({ expect }) => {
+     const request = new Request("https://example.com/internal/room");
+     const roomId = "admin-http";
+diff --git a/.capabilities/room-state/files/src/room-http.ts b/.capabilities/room-state/files/src/room-http.ts
+index 052465a..127a26a 100644
+--- a/.capabilities/room-state/files/src/room-http.ts
++++ b/.capabilities/room-state/files/src/room-http.ts
+@@ -68,6 +68,17 @@ export async function handleRoomRequest(
+   return new Response(null, { status: 303, headers });
+ }
+ 
++export async function initializeRoom(
++  request: Request,
++  env: RoomEnvironment,
++  roomId: string,
++  choices: RoomChoice[],
++  authorize: AuthorizeRoomAdministration,
++): Promise<RoomSnapshot> {
++  if (!(await authorize(request))) throw new RoomAdministrationUnauthorizedError();
++  return await env.ROOM_STATE.getByName(roomId).initializeChoices(choices);
++}
++
+ export async function seedRoom(
+   request: Request,
+   env: RoomEnvironment,
+diff --git a/.capabilities/room-state/files/src/room-state.test.ts b/.capabilities/room-state/files/src/room-state.test.ts
+index ce9a428..a00608a 100644
+--- a/.capabilities/room-state/files/src/room-state.test.ts
++++ b/.capabilities/room-state/files/src/room-state.test.ts
+@@ -1,7 +1,125 @@
+ import { env } from "cloudflare:workers";
+-import { describe, it, vi } from "vitest";
++import { runInDurableObject } from "cloudflare:test";
++import { describe, expect, it, vi } from "vitest";
+ 
+ describe("RoomState", () => {
++  it("initializes an empty room with the supplied choices", async ({ expect }) => {
++    const room = env.ROOM_STATE.getByName("initialize-empty");
++
++    await expect(room.initializeChoices([{ id: "first", label: "First" }])).resolves.toEqual({
++      choices: [{ id: "first", label: "First", votes: 0 }],
++      currentSelection: null,
++      revision: 1,
++      status: "open",
++      totalVotes: 0,
++    });
++  });
++
++  it.each(["open", "locked"] as const)("preserves an initialized %s room even with different or invalid input", async (status) => {
++    const room = env.ROOM_STATE.getByName(`initialize-repeat-${status}`);
++    const choices = [
++      { id: "first", label: "First" },
++      { id: "second", label: "Second" },
++    ];
++    await room.seedChoices(choices);
++    await room.castVote("voter", "second");
++    await room.setStatus(status);
++    const snapshot = await room.getSnapshot();
++    const participant = await room.getSnapshot("voter");
++
++    for (const supplied of [choices, [{ id: "different", label: "Different" }], []]) {
++      await expect(room.initializeChoices(supplied)).resolves.toEqual(snapshot);
++      await expect(room.getSnapshot("voter")).resolves.toEqual(participant);
++    }
++    await room.resetVotes();
++    const reset = await room.getSnapshot();
++    await expect(room.initializeChoices([{ id: "different", label: "Different" }])).resolves.toEqual(reset);
++  });
++
++  it("initializes only once when different setup requests overlap", async ({ expect }) => {
++    const room = env.ROOM_STATE.getByName("initialize-concurrent");
++    const results = await Promise.all([
++      room.initializeChoices([{ id: "first", label: "First" }]),
++      room.initializeChoices([{ id: "second", label: "Second" }]),
++    ]);
++    expect(results[0]).toEqual(results[1]);
++    expect(results[0]).toMatchObject({ revision: 1, status: "open", totalVotes: 0 });
++    expect([[{ id: "first", label: "First", votes: 0 }], [{ id: "second", label: "Second", votes: 0 }]]).toContainEqual(
++      results[0]?.choices,
++    );
++    await expect(room.getSnapshot()).resolves.toEqual(results[0]);
++  });
++
++  it("preserves a vote between overlapping setup requests", async ({ expect }) => {
++    const room = env.ROOM_STATE.getByName("initialize-intervening-vote");
++    const choices = [{ id: "first", label: "First" }];
++    const results = await Promise.all([
++      room.initializeChoices(choices),
++      room.castVote("voter", "first"),
++      room.initializeChoices([{ id: "different", label: "Different" }]),
++    ]);
++    expect(results[1]).toMatchObject({ ok: true, snapshot: { revision: 2, totalVotes: 1 } });
++    await expect(room.getSnapshot("voter")).resolves.toEqual({
++      choices: [{ id: "first", label: "First", votes: 1 }],
++      currentSelection: "first",
++      revision: 2,
++      status: "open",
++      totalVotes: 1,
++    });
++  });
++
++  it("rejects invalid initial choices without changing an empty room", async ({ expect }) => {
++    const room = env.ROOM_STATE.getByName("initialize-invalid");
++    await room.setStatus("locked");
++    const empty = await room.getSnapshot();
++    const invalidChoices = [
++      [],
++      Array.from({ length: 21 }, (_, index) => ({ id: String(index), label: "Choice" })),
++      [{ id: " ", label: "Choice" }],
++      [{ id: "x".repeat(129), label: "Choice" }],
++      [{ id: "first", label: " " }],
++      [{ id: "first", label: "x".repeat(201) }],
++      [
++        { id: "first", label: "First" },
++        { id: "first", label: "Duplicate" },
++      ],
++    ];
++    // Catch expected validation errors inside the object to avoid the RPC test
++    // harness also reporting them as unhandled remote rejections.
++    await runInDurableObject(room, async (instance) => {
++      for (const choices of invalidChoices) {
++        await expect(instance.initializeChoices(choices)).rejects.toThrow();
++        await expect(instance.getSnapshot()).resolves.toEqual(empty);
++      }
++    });
++    await expect(room.initializeChoices([{ id: "valid", label: "Valid" }])).resolves.toMatchObject({
++      choices: [{ id: "valid", label: "Valid", votes: 0 }],
++      revision: 2,
++      status: "open",
++      totalVotes: 0,
++    });
++  });
++
++  it("still allows explicit destructive reseeding after initialization", async ({ expect }) => {
++    const room = env.ROOM_STATE.getByName("initialize-reseed");
++    await room.initializeChoices([{ id: "first", label: "First" }]);
++    await room.castVote("voter", "first");
++    await room.setStatus("locked");
++    await expect(room.seedChoices([{ id: "second", label: "Second" }])).resolves.toEqual({
++      choices: [{ id: "second", label: "Second", votes: 0 }],
++      currentSelection: null,
++      revision: 4,
++      status: "open",
++      totalVotes: 0,
++    });
++    await expect(room.getSnapshot("voter")).resolves.toMatchObject({ currentSelection: null });
++    await expect(room.seedChoices([{ id: "second", label: "Second" }], "locked")).resolves.toMatchObject({
++      revision: 5,
++      status: "locked",
++      totalVotes: 0,
++    });
++  });
++
+   it("counts predefined choices and replaces an anonymous vote", async ({ expect }) => {
+     const room = env.ROOM_STATE.getByName("replaceable-vote");
+     await expect(
+diff --git a/.capabilities/room-state/files/src/room-state.ts b/.capabilities/room-state/files/src/room-state.ts
+index 6ad4fd9..2467106 100644
+--- a/.capabilities/room-state/files/src/room-state.ts
++++ b/.capabilities/room-state/files/src/room-state.ts
+@@ -120,6 +120,13 @@ export class RoomState extends DurableObject<Env> {
+     return snapshot;
+   }
+ 
++  async initializeChoices(choices: RoomChoice[]): Promise<RoomSnapshot> {
++    // No await between checking and seeding: concurrent setup cannot clear a vote.
++    const snapshot = this.readSnapshot();
++    if (snapshot.choices.length > 0) return snapshot;
++    return this.seedChoices(choices);
++  }
++
+   async seedChoices(choices: RoomChoice[], status: RoomStatus = "open"): Promise<RoomSnapshot> {
+     validateChoices(choices);
+     validateStatus(status);
+diff --git a/.capabilities/room-state/manifest.json b/.capabilities/room-state/manifest.json
+index 0761bd5..914d8ca 100644
+--- a/.capabilities/room-state/manifest.json
++++ b/.capabilities/room-state/manifest.json
+@@ -32,7 +32,7 @@
+   ],
+   "docs": [
+     "Document the room id as the Durable Object coordination key and SQLite as the vote authority.",
+-    "Document the authorization boundary protecting reset, seed, and room-status composition.",
++    "Document the authorization boundary protecting initialization, reset, seed, and room-status composition.",
+     "Document accepted vote origins, voter-cookie lifetime, and the anonymous-cookie ballot-stuffing limitation.",
+     "Document the redacted room.reset event and the application's log destination.",
+     "Document which locked room revision is handed to model or presentation workflows.",
+@@ -40,6 +40,7 @@
+   ],
+   "verify": ["npm run types:check", "npm test", "npm run typecheck", "npm run quality:gate"],
+   "notes": [
++    "Initialization validates and seeds only a room with no choices; retries preserve choices, votes, status, and revision, ignoring unused input. The check and seed must not yield between storage operations.",
+     "Seed replaces the predefined choice set, clears votes, opens the room by default, and advances its revision; reset clears votes but preserves choices and status.",
+     "The first-party voter cookie is opaque and the Durable Object stores only a per-room SHA-256 key.",
+     "The default HTTP route requires a same-origin vote Origin, accepts bounded application/x-www-form-urlencoded bodies, and redirects with 303 after POST.",
+diff --git a/.capabilities/room-state/recipes/npm.md b/.capabilities/room-state/recipes/npm.md
+index 535ed85..7fda472 100644
+--- a/.capabilities/room-state/recipes/npm.md
++++ b/.capabilities/room-state/recipes/npm.md
+@@ -52,9 +52,12 @@ Merge `files/vitest.config.ts` into the target's current Vitest config and inclu
+ 
+ Call `handleRoomRequest(request, env)` from the existing Worker router and return its response when defined. Use the existing response and layout helpers if the target already has stronger conventions.
+ 
+-Keep seed, reset, and status changes behind application-owned authorization:
++Keep initialization, seed, reset, and status changes behind application-owned authorization:
+ 
+ ```ts
++// Routine setup or retry: preserve an existing session.
++await initializeRoom(request, env, roomId, choices, authorizeRoomAdministration);
++// Deliberate reseeding: replace choices and clear votes.
+ await seedRoom(request, env, roomId, choices, authorizeRoomAdministration);
+ await setRoomStatus(request, env, roomId, "locked", authorizeRoomAdministration);
+ ```

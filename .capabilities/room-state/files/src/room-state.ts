@@ -120,6 +120,13 @@ export class RoomState extends DurableObject<Env> {
     return snapshot;
   }
 
+  async initializeChoices(choices: RoomChoice[]): Promise<RoomSnapshot> {
+    // No await between checking and seeding: concurrent setup cannot clear a vote.
+    const snapshot = this.readSnapshot();
+    if (snapshot.choices.length > 0) return snapshot;
+    return this.seedChoices(choices);
+  }
+
   async seedChoices(choices: RoomChoice[], status: RoomStatus = "open"): Promise<RoomSnapshot> {
     validateChoices(choices);
     validateStatus(status);

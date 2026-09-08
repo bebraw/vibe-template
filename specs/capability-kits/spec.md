@@ -37,10 +37,12 @@ The template is useful both as a starter repo and as a source of specific practi
 #### Room State Kit
 
 - **Capability source root:** `.capabilities/room-state/`
-- **Target composition root:** the adopting Worker exports `RoomState`, routes `/rooms/:roomId` through `handleRoomRequest`, and places application authorization before seed/reset calls
+- **Target composition root:** the adopting Worker exports `RoomState`, routes `/rooms/:roomId` through `handleRoomRequest`, and places application authorization before initialize/seed/reset/status calls
 - **State authority:** one SQLite-backed Durable Object selected by `ROOM_STATE.getByName(roomId)` owns predefined choices, pseudonymous replaceable votes, open/locked status, and the monotonic revision; aggregate counts and participant selection are derived from that database
-- **Public contracts:** room choice/status/snapshot/vote result types, participant-aware `RoomState` RPC methods, conventional HTML GET/POST semantics, strict vote-origin validation, configurable voter-cookie lifetime, and authorized seed/reset/status helpers
+- **Public contracts:** room choice/status/snapshot/vote result types, participant-aware `RoomState` RPC methods, conventional HTML GET/POST semantics, strict vote-origin validation, configurable voter-cookie lifetime, and authorized initialize/seed/reset/status helpers
 - **Dependency direction:** Worker routing and administration composition depend on the room RPC contract; room state does not depend on browser enhancement or application-specific choices
+
+- **Initialization contract:** `initializeChoices(choices)` seeds only when no choices exist, opens the room, and advances revision once. Existing rooms return their current aggregate snapshot without validating unused input or changing choices, votes, status, or revision. Invalid initial choices leave an empty room unchanged. The check and seed must not yield, preserving atomicity against concurrent setup and voting. `seedChoices` remains destructive; `resetVotes` preserves choices and status. See [ADR-063](../../docs/adrs/implemented/ADR-063-add-non-destructive-room-initialization.md).
 
 #### Progressive Interaction Kit
 
@@ -111,7 +113,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The website baseline kit must separate universal browser requirements from public-site and feature-dependent requirements, and must keep emerging agent-readiness conventions opt-in.
 - The engineering quality skills kit must keep its copyable `correctness-review`, `test-review`, and `debug` skills aligned with the project-local versions and preserve upstream MIT attribution.
 - The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, reject non-positive or non-finite timeouts, and enforce its deadline even when a runner ignores `AbortSignal`. It must contain no application prompts or schemas and emit redacted start/finish events without prompts, schemas, raw output, fallback values, or exception text.
-- The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep seed/reset behind an application-owned authorization check.
+- The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep initialize/seed/reset/status behind an application-owned authorization check.
 - The Room State kit must bound buffered form bodies and store only a per-room digest of its opaque first-party voter cookie. It must not claim cryptographic ballot secrecy or authenticated identity.
 - The Room State kit must reject vote POSTs without a same-origin or explicitly allowlisted `Origin`, default new voter cookies to eight hours, and bound configured cookie lifetimes.
 - The Room State kit must use `@cloudflare/vitest-plugin` and Istanbul for Worker-runtime coverage, replacing the retired pool package and native V8 provider when they are present in an adopter.
@@ -234,9 +236,21 @@ The template is useful both as a starter repo and as a source of specific practi
 - When: an anonymous browser submits a choice and later submits a different choice
 - Then: the room's Durable Object stores one pseudonymous voter key, moves that vote, and derives aggregates whose total remains one
 
+**Scenario: Setup is retried during a session**
+
+- Given: an authorized setup has initialized a room and participants have voted
+- When: initialization is repeated or overlaps other initialization and vote requests, with the same or different choices
+- Then: only the first initialization seeds; later calls preserve choices, recorded votes, status, and revision
+
+**Scenario: Initial choices are invalid**
+
+- Given: a room has no choices
+- When: authorized initialization supplies invalid choices
+- Then: it rejects and leaves the entire empty-room snapshot unchanged
+
 **Scenario: Room administration is composed**
 
-- Given: a target project exposes seed or reset through an application route
+- Given: a target project exposes initialization, seed, reset, or status changes through an application route
 - When: the route composes the Room State helpers
 - Then: an application-owned authorization callback succeeds before the Durable Object operation is invoked
 

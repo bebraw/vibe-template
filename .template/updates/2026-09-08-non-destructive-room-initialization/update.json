@@ -1,0 +1,10 @@
+{
+  "id": "2026-09-08-non-destructive-room-initialization",
+  "title": "Add non-destructive room initialization",
+  "status": "implemented",
+  "risk": "low",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-063-add-non-destructive-room-initialization.md"],
+  "touches": [".capabilities/room-state/", "ARCHITECTURE.md", "docs/adrs/", "specs/capability-kits/spec.md"],
+  "checks": ["npm run capabilities:verify", "npm run quality:gate"]
+}
