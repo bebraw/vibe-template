@@ -24,7 +24,7 @@ Skip a spec for small fixes, trivial copy changes, or narrow tactical edits.
 - Capability-kit contracts belong in `specs/capability-kits/spec.md`.
 - Deployment-readiness preflight contracts belong in `specs/deploy-preflight/spec.md`.
 - Agent-skill baseline contracts belong in `specs/agent-skills/spec.md`.
-- Project initialization and pruning contracts belong in `specs/project-start/spec.md`.
+- Project initialization, durable context ownership, and pruning contracts belong in [`specs/project-start/spec.md`](project-start/spec.md). An initialized project's current increment and authoritative input references belong in its relevant feature spec, linked from README and agent routing.
 - Template update-pack contracts belong in `specs/template-updates/spec.md`.
 
 ## Starting Point

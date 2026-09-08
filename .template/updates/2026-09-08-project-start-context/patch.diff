@@ -1,0 +1,316 @@
+diff --git a/.codex/skills/start-project/SKILL.md b/.codex/skills/start-project/SKILL.md
+index a3681ba..af9766f 100644
+--- a/.codex/skills/start-project/SKILL.md
++++ b/.codex/skills/start-project/SKILL.md
+@@ -21,25 +21,27 @@ Read those durable surfaces, package metadata, Git remotes, and tracked files. C
+ 
+ ## Phase 1: Plan
+ 
+-Establish the project name, purpose, first closed product loop, deferred scope, and retained runtime/deployment target. Inventory references, scripts, dependencies, workflows, skills and copies, specs, ADRs, and update records.
++Establish the project name, purpose, first closed product loop, and retained runtime/deployment target. Infer implementation context from supplied material and existing docs; ask only for missing information that materially affects the current implementation. Leave unspecified, reversible implementation and visual choices to agent judgment. Inventory references, scripts, dependencies, workflows, skills and copies, specs, ADRs, and update records.
+ 
+ Classify each inherited surface as `Keep`, `Replace later`, `Remove after approval`, or `Decision required`. Trace every proposed removal through coupled files. Preserve either local update history or a durable record of template source, starting revision, applied update IDs, and retained sync entrypoint.
+ 
+ Present a `Project Start Plan` with these sections:
+ 
+-1. Product focus
++1. Product focus: describe the current increment's observable behavior and stopping condition. When relevant, include audience and usage context; authoritative reviewed content, assets, data sources, and references with their locations; persistent requirements that must survive presentation or implementation changes; and later capabilities explicitly marked deferred, not authorized work. Omit irrelevant fields instead of requiring a questionnaire or empty sections.
+ 2. Keep
+ 3. Replace later
+ 4. Remove after approval
+ 5. Decisions required
+ 6. Template update path
+-7. Documentation changes
++7. Documentation changes: name exact paths, the facts each will own, and links from discovery surfaces. Keep each fact in one authoritative location, linking elsewhere. Use `README.md` for purpose, audience, and context links; `AGENTS.md` for concise routing and project-wide agent behavior; `specs/{feature-domain}/spec.md` for current behavior, authoritative input references, acceptance criteria, the stopping condition, and relevant deferred direction; `ARCHITECTURE.md` and ADRs for lasting architectural constraints and rationale; and existing operational docs, such as a runbook, for session workflow and demonstration context. Put persistent requirements with the behavior or architecture they constrain. Update only relevant surfaces; do not introduce a mandatory brief, configuration format, skill, or private state store.
+ 8. Verification
+ 
+ List exact paths and reasons. Ask for explicit approval; approval covers only listed targets and coupled edits. Stop at decisions required when the product loop or lasting architecture remains unclear.
+ 
+ ## Phase 2: Apply
+ 
+-Recheck `git status` and stop if overlapping changes stale the plan. Update durable project context before removals, replace references before targets, and delete only approved paths. Remove starter runtime only after replacement behavior and verification exist. Run targeted and repository-required checks, then compare the final diff with the plan.
++Recheck `git status` and stop if overlapping changes stale the plan. Update durable project context before removals, replace references before targets, and delete only approved paths. Ensure README and agent routing lead a fresh agent to the relevant specs, inputs, constraints, and operational docs without needing the original conversation or this skill. In `AGENTS.md`, retain concise instructions to complete the requested increment and stop at its boundary, treat deferred direction as context rather than authorization, preserve documented working behavior when adding capabilities, and apply later explicit user instructions over earlier guidance while updating the authoritative docs when a durable requirement changes. Leave unspecified, reversible implementation and visual choices open.
+ 
+-Finish when project purpose and loop are durable, deferred scope is explicit, removed paths were approved and are unreferenced, retained tooling has an owner, update provenance remains discoverable, docs match the result, and checks pass. Offer removal of this skill only as a separate final item.
++Remove starter runtime only after replacement behavior and verification exist. Run targeted and repository-required checks, then compare the final diff with the plan. Check discovery from README and agent routing using a brief follow-up request: it should recover relevant context and stay within the current increment.
++
++Finish when relevant implementation context and the current increment's boundary are discoverable, deferred scope is explicit where relevant, removed paths were approved and are unreferenced, retained tooling has an owner, update provenance remains discoverable, docs match the result, and checks pass. Initialization approval does not authorize product implementation or deferred capabilities. Offer removal of this skill only as a separate final item.
+diff --git a/AGENTS.md b/AGENTS.md
+index 76d000e..c296abe 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -88,10 +88,17 @@
+ - Use the project-local [`brainstorming`](./.codex/skills/brainstorming/SKILL.md) skill when the user is exploring options, shaping a feature, or comparing approaches before implementation.
+ - Treat the skill as guidance for producing concrete, lightweight options that can turn cleanly into specs, ADRs, or code.
+ 
++## Implementation Context
++
++- Before implementation, read `README.md` and follow its context links to the relevant feature spec, authoritative inputs, architecture decisions, and operational docs. Use their owned facts instead of asking the user to repeat documented context.
++- Complete the requested increment and stop at its documented boundary. Deferred capabilities provide context, not authorization to implement them.
++- Preserve documented working behavior and persistent content requirements when adding capabilities or changing presentation. Later explicit user instructions take precedence over earlier project guidance; update the authoritative documentation when they change a durable requirement.
++- Leave unspecified, reversible implementation and visual choices to agent judgment.
++
+ ## Project Start
+ 
+ - Use the project-local [`start-project`](./.codex/skills/start-project/SKILL.md) skill only when the user explicitly asks to initialize, personalize, or prune a project cloned from this template.
+-- Require a read-only Project Start Plan that defines the current closed product loop and lists exact keep, replace-later, removal, decision, documentation, update-path, and verification items.
++- Require a read-only Project Start Plan that defines the current increment and relevant implementation context, with exact keep, replace-later, removal, decision, documentation, update-path, and verification items. Follow the [Project Start contract](./specs/project-start/spec.md) for context ownership; omit irrelevant fields.
+ - Do not edit or delete files until the user approves that plan; preserve the template source and baseline before pruning local update history.
+ 
+ ## Wayfinding
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 7182e7a..2562175 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -8,6 +8,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
+ 
+ - Keep the template lightweight, reusable, easy to clone, and easy to prune.
+ - Initialize a downstream clone through an approval-gated project-start pass: define one current closed product loop, classify inherited surfaces, preserve working seams, and record update provenance before pruning.
++- Keep durable implementation context in existing repository surfaces, with one authoritative location per fact and links for discovery. Do not require a separate brief, configuration format, skill, or private state store. The [Project Start ownership contract](specs/project-start/spec.md#documentation-ownership) defines routing; [ADR-062](docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md) records the decision.
+ - Treat repo documentation as living context that should evolve with the code.
+ - Treat architectural decisions as explicit records, not implicit tribal knowledge.
+ - Treat specs and ADRs as the durable source of truth for expected behavior and architectural intent. Code, including AI-generated code, is only acceptable when it matches those documents or updates them intentionally in the same change set.
+diff --git a/README.md b/README.md
+index f61c367..f9ef60c 100644
+--- a/README.md
++++ b/README.md
+@@ -15,6 +15,7 @@ Local development in this repo targets macOS. Other platforms may need script an
+ - Feature and architecture specs: `specs/README.md`
+ - Agent behavior and project rules: `AGENTS.md`
+ - Project-local agent capabilities: `.codex/skills/`
++- Project initialization and durable context ownership: [`specs/project-start/spec.md`](specs/project-start/spec.md)
+ - Partial-upgrade capability kits: `.capabilities/`
+ - Template maintenance update packs: `.template/updates/`
+ 
+@@ -26,7 +27,7 @@ The repository includes compact instructions under `.codex/skills/` that help ca
+ 
+ ### From Idea to Implementation
+ 
+-- [`$start-project`](.codex/skills/start-project/SKILL.md) — define a fresh clone's first closed product loop, audit inherited template material, and present an approval-gated pruning plan before changing files. Explicit invocation required.
++- [`$start-project`](.codex/skills/start-project/SKILL.md) — define a fresh clone's current increment, route relevant audience, inputs, constraints, and deferred direction into existing docs, and present an approval-gated initialization and pruning plan before changing files. Explicit invocation required.
+ - [`$brainstorming`](.codex/skills/brainstorming/SKILL.md) — compare lightweight approaches and clarify trade-offs before committing to a design.
+ - [`$wayfinder`](.codex/skills/wayfinder/SKILL.md) — map a large, uncertain, multi-session initiative in `docs/wayfinding/` when it is not ready for a responsible spec. Explicit invocation required.
+ - [`$to-spec`](.codex/skills/to-spec/SKILL.md) — turn settled discussion or wayfinding results into the repository's living `specs/<feature-domain>/spec.md`. Explicit invocation required.
+diff --git a/docs/adrs/README.md b/docs/adrs/README.md
+index ae73179..57e3aa6 100644
+--- a/docs/adrs/README.md
++++ b/docs/adrs/README.md
+@@ -94,6 +94,7 @@ No accepted-only ADRs are currently pending implementation.
+ | [ADR-059](./implemented/ADR-059-harden-anonymous-room-state.md)                        | Implemented | Harden anonymous room voting with origin checks, bounded cookies, and lockable revisions.         |
+ | [ADR-060](./implemented/ADR-060-refresh-worker-operational-contracts.md)               | Implemented | Refresh runtime, module, binding-drift, logging, and warm-up contracts.                           |
+ | [ADR-061](./implemented/ADR-061-enable-starter-worker-observability.md)                | Implemented | Persist starter Worker logs and invocation logs while sampling traces explicitly.                 |
++| [ADR-062](./implemented/ADR-062-retain-durable-implementation-context.md)              | Implemented | Retain relevant initialization context in existing documents with explicit increment boundaries.  |
+ 
+ ## Creating A New ADR
+ 
+diff --git a/specs/README.md b/specs/README.md
+index a794a04..397dbd2 100644
+--- a/specs/README.md
++++ b/specs/README.md
+@@ -24,7 +24,7 @@ Skip a spec for small fixes, trivial copy changes, or narrow tactical edits.
+ - Capability-kit contracts belong in `specs/capability-kits/spec.md`.
+ - Deployment-readiness preflight contracts belong in `specs/deploy-preflight/spec.md`.
+ - Agent-skill baseline contracts belong in `specs/agent-skills/spec.md`.
+-- Project initialization and pruning contracts belong in `specs/project-start/spec.md`.
++- Project initialization, durable context ownership, and pruning contracts belong in [`specs/project-start/spec.md`](project-start/spec.md). An initialized project's current increment and authoritative input references belong in its relevant feature spec, linked from README and agent routing.
+ - Template update-pack contracts belong in `specs/template-updates/spec.md`.
+ 
+ ## Starting Point
+diff --git a/specs/project-start/spec.md b/specs/project-start/spec.md
+index e5710ba..dcfa4e3 100644
+--- a/specs/project-start/spec.md
++++ b/specs/project-start/spec.md
+@@ -6,7 +6,7 @@
+ 
+ A fresh clone contains useful quality, architecture, documentation, and agent guardrails, but it also contains distribution kits, historical migrations, a replaceable starter application, and workflows that may not fit the new product. Removing these by intuition can break the working baseline or erase the route to later template maintenance. Keeping everything indefinitely makes product ownership harder to see.
+ 
+-The project needs a lightweight one-time workflow that establishes the first closed product loop, audits inherited material, and lets the user approve exact pruning before the repository changes.
++The project needs a lightweight one-time workflow that establishes the first closed product loop, audits inherited material, and lets the user approve exact pruning before the repository changes. Brief or improvised later prompts should not require the user to repeat essential audience, input, or constraint context, nor accidentally authorize later capabilities.
+ 
+ ### Architecture
+ 
+@@ -17,6 +17,7 @@ The project needs a lightweight one-time workflow that establishes the first clo
+ - **Public contracts:** the read-only Project Start Plan, the approved target list, and the resulting project docs/specs/ADRs
+ - **Dependency direction:** the skill reads template and project surfaces; those surfaces do not depend on the skill after initialization
+ - **Update provenance:** template source, baseline Git revision, and applied update IDs in existing package metadata or durable docs when local update history is pruned
++- **Decision:** [ADR-062](../../docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md) extends [ADR-051](../../docs/adrs/implemented/ADR-051-add-approval-gated-project-start.md) without changing its initialization or pruning approval boundaries
+ 
+ ### Out of Scope
+ 
+@@ -33,17 +34,57 @@ The project needs a lightweight one-time workflow that establishes the first clo
+ - Do not remove a skill, tool, or workflow without tracing its routing, copies, packages, scripts, docs, specs, and checks.
+ - Do not prune historical update packs without recording an upstream source and baseline.
+ - Do not create a second project-state file when README, architecture docs, specs, ADRs, or package metadata already own the information.
++- Do not turn context capture into a mandatory questionnaire, require empty sections, or impose a domain-specific convention on every project.
++- Do not interpret reviewed inputs, deferred direction, or initialization approval as authorization to implement additional capabilities.
+ 
+ ## Contract
+ 
++### Product Focus
++
++Extend the existing Project Start Plan's **Product focus** section with the current increment's observable behavior and stopping condition. Capture the following only when relevant:
++
++- **Audience and usage context:** who uses the product and where or how they use it.
++- **Authoritative inputs:** reviewed content, assets, data sources, and references, including their actual repository paths or external locations. Distinguish authoritative inputs from unreviewed suggestions; do not claim an unavailable reference has been reviewed.
++- **Persistent constraints:** requirements that must survive presentation or implementation changes.
++- **Deferred direction:** possible later capabilities, explicitly distinguished from the current authorized increment.
++
++Infer these from supplied context and existing documentation. Ask only about missing information that materially affects the current implementation. Unspecified, reversible implementation and visual choices remain open to agent judgment; they are not blockers to initialization. Retain the existing eight plan sections without adding a compulsory brief or context form.
++
++### Documentation Ownership
++
++Extend the plan's **Documentation changes** section with exact paths, the facts each will own, and the links that make those facts discoverable. Keep each fact in one authoritative location and link to it elsewhere. References point to reviewed inputs rather than copying their content into multiple documents.
++
++| Surface                                      | Owns                                                                                                                                                  |
++| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `README.md`                                  | Purpose, audience, and links to relevant implementation context                                                                                       |
++| `AGENTS.md`                                  | Concise context routing and project-wide agent behavior                                                                                               |
++| `specs/{feature-domain}/spec.md`             | Observable behavior, authoritative input references, acceptance criteria, the current increment's stopping condition, and relevant deferred direction |
++| `ARCHITECTURE.md` and ADRs                   | Lasting architectural constraints and their decision rationale, respectively                                                                          |
++| Existing operational docs, such as a runbook | Session-specific workflow and demonstration context                                                                                                   |
++
++Place persistent requirements with the behavior or architecture they constrain, and usage context with its relevant purpose, behavior, or operational owner. Update only surfaces whose owned facts change; create a feature spec or ADR when its contract requires one. Do not create empty sections, an extra context file, mandatory configuration, another skill, or a private state store. A simple project needs no special audience, assets, or staged-delivery sections.
++
++### Context After Initialization
++
++README and agent routing must lead a fresh agent to the relevant feature spec, authoritative inputs, architectural constraints, and any operational context without the original conversation or the Start Project skill. Retain concise project-wide instructions in `AGENTS.md` to:
++
++- Discover and apply relevant documented context before implementing a brief follow-up.
++- Complete the requested increment and stop at its stated boundary; treat deferred capabilities as context, not authorization.
++- Preserve documented working behavior and persistent content requirements when adding capabilities or changing presentation.
++- Apply later explicit user instructions over earlier project guidance, updating the authoritative documents when a durable requirement changes, including the relevant ADR process for architectural changes.
++- Leave unspecified, reversible implementation and visual choices open to judgment.
++
+ ### Definition of Done
+ 
+ - [ ] The template includes an explicitly invoked `start-project` skill and user-facing catalog entry.
+-- [ ] The planning phase is read-only and defines purpose, one current closed loop, and deferred capabilities.
++- [ ] The planning phase is read-only and defines purpose, one current closed loop, and any deferred capabilities.
++- [ ] Product focus captures relevant supplied context and the current increment's observable stopping condition without requiring every field or repeating answered questions.
++- [ ] Documentation changes name exact ownership and discovery targets, with one authoritative location per fact.
+ - [ ] The plan classifies exact paths as keep, replace later, remove after approval, or decision required.
+ - [ ] Proposed removals list coupled edits, update-path impact, and verification.
+ - [ ] No edit or deletion occurs until the user approves the exact plan.
+ - [ ] Approved execution updates README, agent rules, architecture, specs, and ADRs where their owned contracts change.
++- [ ] A fresh agent can discover relevant implementation context through README and agent routing without the original conversation or the initialization skill.
+ - [ ] Pruning local update history preserves template source, baseline, applied updates, and a discoverable sync path.
+ - [ ] Final verification matches the repository's retained tooling and workflow-sensitive boundaries.
+ 
+@@ -51,6 +92,7 @@ The project needs a lightweight one-time workflow that establishes the first clo
+ 
+ - Start Project must remain explicitly invoked.
+ - Plan approval must be scoped to listed targets and coupled edits, not treated as blanket cleanup authority.
++- Initialization approval does not authorize product implementation or deferred capabilities.
+ - New overlapping worktree changes must invalidate or narrow a previously approved plan before execution continues.
+ - Implemented ADRs and living specs remain retained by default; consolidation requires proof that active constraints and behavior remain represented.
+ - Canonical skills and compatibility copies must be changed together intentionally.
+@@ -58,11 +100,11 @@ The project needs a lightweight one-time workflow that establishes the first clo
+ 
+ ### Verification
+ 
+-- **Skill metadata:** run the skill-creator validator against `.codex/skills/start-project/`
++- **Skill metadata:** run the skill-creator validator against `.codex/skills/start-project/` and any maintained compatibility copies
+ - **Documentation:** `npm run format:check`
+ - **Catalog coverage:** confirm README and `AGENTS.md` identify Start Project as explicit-only
+ - **Update path:** confirm `.template/updates/AGENT_SYNC.md` can discover `source`, `baseline`, and `updates` from existing metadata
+-- **Forward test:** ask a fresh agent to use the skill on a representative clone and confirm it returns a plan without changing the worktree
++- **Forward test:** in a disposable representative clone, supply audience, reviewed input locations, a persistent requirement, one current increment, two deferred capabilities, and existing operational context. Ask an independent agent to use the skill; compare file contents and Git status before and after planning to confirm it remains read-only, and inspect the plan's exact documentation targets. Explicitly approve a scoped initialization in the disposable clone, then give a fresh agent only a brief enhancement request and the initialized repository. Confirm it discovers and applies the context, stays within the current increment, and introduces no duplicate context store or domain-specific convention. Also exercise a presentation change, an explicit durable constraint change, and a minimal project. Keep evaluation artifacts outside the working tree.
+ 
+ ### Scenarios
+ 
+@@ -95,3 +137,33 @@ The project needs a lightweight one-time workflow that establishes the first clo
+ - Given: alternative first loops would create materially different project architecture
+ - When: Start Project reaches the decision
+ - Then: it stops in the Decisions required section and routes the user to brainstorming or wayfinding instead of inventing a project structure
++
++**Scenario: Brief follow-up prompt**
++
++- Given: an initialized project documents audience, trusted input locations, persistent constraints, and the current increment in their owning surfaces
++- When: a fresh agent receives a small enhancement request without the original conversation
++- Then: it discovers and applies that context through README and agent routing without asking the user to repeat it
++
++**Scenario: Deferred capability**
++
++- Given: three possible increments are described but only the first is authorized
++- When: initialization records product focus and a later request implements the first increment
++- Then: the other two remain explicitly deferred in the relevant spec, and implementation stops at the first increment's acceptance boundary
++
++**Scenario: Improvised change**
++
++- Given: behavior and content requirements are documented but visual treatment is unspecified
++- When: the user requests a new visual treatment
++- Then: the agent can change presentation while preserving documented working behavior and authoritative content requirements
++
++**Scenario: Explicit change of direction**
++
++- Given: a durable requirement is documented in its owning spec or architecture surface
++- When: the user explicitly changes that requirement
++- Then: the agent follows the new instruction and updates its authoritative documentation, using the ADR process when the architectural decision changes rather than maintaining conflicting copies
++
++**Scenario: Minimal project**
++
++- Given: a simple project has no special audience, assets, or staged delivery
++- When: the user invokes Start Project
++- Then: initialization records only useful purpose, current behavior, stopping condition, and routing in the relevant existing surfaces, without a questionnaire, empty context sections, or additional context files
+diff --git a/docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md b/docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md
+new file mode 100644
+index 0000000..8e48bc3
+--- /dev/null
++++ b/docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md
+@@ -0,0 +1,56 @@
++# ADR-062: Retain Durable Implementation Context
++
++**Status:** Implemented
++
++**Date:** 2026-09-08
++
++## Context
++
++Project Start establishes a closed product loop and safe pruning boundaries, but later prompts may omit the audience, reviewed inputs, or persistent requirements supplied during initialization. An agent can then lose useful context, change working behavior while restyling, or mistake possible future capabilities for authorized work.
++
++The repository already gives README, agent rules, feature specs, architecture records, and operational documents distinct responsibilities. Another project brief or private state store would create competing authority and additional maintenance in a template intended to remain easy to prune.
++
++## Decision
++
++Extend the existing Project Start Plan's Product focus and Documentation changes sections to capture relevant implementation context and route each fact to one authoritative existing surface. The [Project Start contract](../../../specs/project-start/spec.md#documentation-ownership) defines ownership and acceptance behavior. Discovery links and concise agent instructions must remain useful after the initialization skill is removed.
++
++Infer context from supplied material, ask only about missing information that materially affects the current implementation, and omit irrelevant fields. Record the current increment's observable stopping condition and distinguish deferred direction from authorization. Later explicit user instructions can change durable requirements; update the owning documents when they do. Leave unspecified, reversible implementation and visual choices to agent judgment.
++
++This extends [ADR-051](ADR-051-add-approval-gated-project-start.md). Its read-only planning phase, exact-target initialization and pruning approval, working-seam protection, and template-update provenance requirements remain in force. No mandatory brief, configuration format, skill, or private context store is introduced.
++
++## Trigger
++
++The user requested durable implementation context for brief follow-ups, deferred capabilities, improvised presentation changes, explicit changes of direction, and minimal projects.
++
++## Consequences
++
++**Positive:**
++
++- Fresh agents can discover relevant context without replaying the original conversation.
++- Increment boundaries and preserved behavior remain visible when presentation or implementation changes.
++- Existing documentation ownership supports both simple projects and projects with reviewed inputs or staged delivery.
++
++**Negative:**
++
++- Initialization must identify exact documentation owners and keep discovery links useful.
++- Durable changes require updating the owning document; stale links or requirements still need maintenance.
++
++**Neutral:**
++
++- Context capture adds no runtime dependencies or automatic product implementation.
++- Operational session details remain in existing operational documents when relevant.
++- The workflow does not require every context category for every project.
++
++## Alternatives Considered
++
++### Require A Project Brief Or Manifest
++
++A fixed file would be easy to find but would duplicate facts already owned by specs and architecture records, and force simple projects into unnecessary fields.
++
++### Keep Context In Conversation Or Agent-Private State
++
++This avoids repository edits but cannot reliably inform a fresh agent and makes requirements difficult for users or other agents to review.
++
++### Put All Context In AGENTS.md
++
++Agent routing is discoverable, but storing product content, session details, and acceptance criteria there would crowd its concise project-wide instructions and compete with living feature specs.

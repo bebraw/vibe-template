@@ -88,10 +88,17 @@
 - Use the project-local [`brainstorming`](./.codex/skills/brainstorming/SKILL.md) skill when the user is exploring options, shaping a feature, or comparing approaches before implementation.
 - Treat the skill as guidance for producing concrete, lightweight options that can turn cleanly into specs, ADRs, or code.
 
+## Implementation Context
+
+- Before implementation, read `README.md` and follow its context links to the relevant feature spec, authoritative inputs, architecture decisions, and operational docs. Use their owned facts instead of asking the user to repeat documented context.
+- Complete the requested increment and stop at its documented boundary. Deferred capabilities provide context, not authorization to implement them.
+- Preserve documented working behavior and persistent content requirements when adding capabilities or changing presentation. Later explicit user instructions take precedence over earlier project guidance; update the authoritative documentation when they change a durable requirement.
+- Leave unspecified, reversible implementation and visual choices to agent judgment.
+
 ## Project Start
 
 - Use the project-local [`start-project`](./.codex/skills/start-project/SKILL.md) skill only when the user explicitly asks to initialize, personalize, or prune a project cloned from this template.
-- Require a read-only Project Start Plan that defines the current closed product loop and lists exact keep, replace-later, removal, decision, documentation, update-path, and verification items.
+- Require a read-only Project Start Plan that defines the current increment and relevant implementation context, with exact keep, replace-later, removal, decision, documentation, update-path, and verification items. Follow the [Project Start contract](./specs/project-start/spec.md) for context ownership; omit irrelevant fields.
 - Do not edit or delete files until the user approves that plan; preserve the template source and baseline before pruning local update history.
 
 ## Wayfinding

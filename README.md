@@ -15,6 +15,7 @@ Local development in this repo targets macOS. Other platforms may need script an
 - Feature and architecture specs: `specs/README.md`
 - Agent behavior and project rules: `AGENTS.md`
 - Project-local agent capabilities: `.codex/skills/`
+- Project initialization and durable context ownership: [`specs/project-start/spec.md`](specs/project-start/spec.md)
 - Partial-upgrade capability kits: `.capabilities/`
 - Template maintenance update packs: `.template/updates/`
 
@@ -26,7 +27,7 @@ The repository includes compact instructions under `.codex/skills/` that help ca
 
 ### From Idea to Implementation
 
-- [`$start-project`](.codex/skills/start-project/SKILL.md) — define a fresh clone's first closed product loop, audit inherited template material, and present an approval-gated pruning plan before changing files. Explicit invocation required.
+- [`$start-project`](.codex/skills/start-project/SKILL.md) — define a fresh clone's current increment, route relevant audience, inputs, constraints, and deferred direction into existing docs, and present an approval-gated initialization and pruning plan before changing files. Explicit invocation required.
 - [`$brainstorming`](.codex/skills/brainstorming/SKILL.md) — compare lightweight approaches and clarify trade-offs before committing to a design.
 - [`$wayfinder`](.codex/skills/wayfinder/SKILL.md) — map a large, uncertain, multi-session initiative in `docs/wayfinding/` when it is not ready for a responsible spec. Explicit invocation required.
 - [`$to-spec`](.codex/skills/to-spec/SKILL.md) — turn settled discussion or wayfinding results into the repository's living `specs/<feature-domain>/spec.md`. Explicit invocation required.

@@ -8,6 +8,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 
 - Keep the template lightweight, reusable, easy to clone, and easy to prune.
 - Initialize a downstream clone through an approval-gated project-start pass: define one current closed product loop, classify inherited surfaces, preserve working seams, and record update provenance before pruning.
+- Keep durable implementation context in existing repository surfaces, with one authoritative location per fact and links for discovery. Do not require a separate brief, configuration format, skill, or private state store. The [Project Start ownership contract](specs/project-start/spec.md#documentation-ownership) defines routing; [ADR-062](docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md) records the decision.
 - Treat repo documentation as living context that should evolve with the code.
 - Treat architectural decisions as explicit records, not implicit tribal knowledge.
 - Treat specs and ADRs as the durable source of truth for expected behavior and architectural intent. Code, including AI-generated code, is only acceptable when it matches those documents or updates them intentionally in the same change set.

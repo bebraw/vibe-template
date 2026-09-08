@@ -56,6 +56,7 @@ copying unrelated starter structure.
   - `2026-09-04-deployment-safety-kit`
   - `2026-09-04-room-state-hardening`
   - `2026-09-04-worker-operational-cleanup`
+  - `2026-09-08-project-start-context`
 
 ### Anti-Patterns
 

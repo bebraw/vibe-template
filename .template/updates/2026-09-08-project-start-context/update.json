@@ -1,0 +1,18 @@
+{
+  "id": "2026-09-08-project-start-context",
+  "title": "Retain Project Start implementation context",
+  "status": "implemented",
+  "risk": "low",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md"],
+  "touches": [
+    ".codex/skills/start-project/SKILL.md",
+    "AGENTS.md",
+    "ARCHITECTURE.md",
+    "README.md",
+    "docs/adrs/",
+    "specs/project-start/spec.md",
+    "specs/README.md"
+  ],
+  "checks": ["npm run format:check", "node --test scripts/template-update-patches.test.mjs", "npm run quality:gate"]
+}
