@@ -1,0 +1,14 @@
+{
+  "id": "2026-09-15-optional-modern-web-types",
+  "title": "Document optional modern browser types",
+  "status": "implemented",
+  "risk": "low",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md"],
+  "touches": [
+    ".codex/skills/modern-web-guidance/SKILL.md",
+    "specs/agent-skills/spec.md",
+    "docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md"
+  ],
+  "checks": ["npm run format:check", "node --test scripts/template-update-patches.test.mjs"]
+}

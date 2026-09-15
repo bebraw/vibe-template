@@ -97,6 +97,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - [ ] The template includes a narrowly routed `modern-web-guidance` skill with reviewed provenance, an adjacent Apache-2.0 license, valid UI metadata, a pinned CLI version, and telemetry-disabled commands.
 - [ ] The browser-support target and the Chromium-only verification boundary are explicit in durable architecture and agent guidance.
 - [ ] Modern Web Guidance adds no application dependency, vendored guide corpus, automatic update path, or CI gate.
+- [ ] Missing browser declarations may prompt an opt-in `modern-web-types` recommendation, with dependency approval, version pinning, active-toolchain verification, and unchanged browser-support requirements; Cloudflare runtime types remain outside this recommendation.
 
 ### Regression Guardrails
 

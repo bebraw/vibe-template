@@ -24,6 +24,12 @@ Target Baseline Widely available for core browser behavior. Use newer features o
 
 Do not vendor the upstream guide corpus or Chrome Extensions pack, add an application dependency, create an automatic updater, or add a CI gate for the guidance tool.
 
+### Missing Browser Types (2026-09-15)
+
+Document `modern-web-types` as an optional response when a justified browser API lacks declarations. Evaluate generated declarations as an alternative to handwritten types or suppression, while retaining dependency approval, version pinning, active TypeScript toolchain verification, and the existing browser-support policy. This recommendation concerns browser typing, not replacement of Cloudflare runtime types.
+
+Keep it out of the default dependency graph: the starter has no demonstrated missing-browser-type requirement. This preserves a lightweight baseline while giving browser-capability adopters a concrete option. See [Philip Walton’s rationale](https://philipwalton.com/articles/modern-web-types/); consult current package installation documentation when adopting.
+
 ## Trigger
 
 The user reviewed the fit analysis and approved the controlled integration after a pinned, telemetry-disabled pilot returned useful guidance for dialog behavior, container queries, and LCP image priority.

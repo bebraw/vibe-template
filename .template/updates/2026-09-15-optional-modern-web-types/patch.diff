@@ -1,0 +1,44 @@
+diff --git a/.codex/skills/modern-web-guidance/SKILL.md b/.codex/skills/modern-web-guidance/SKILL.md
+index 24bc10d..baca114 100644
+--- a/.codex/skills/modern-web-guidance/SKILL.md
++++ b/.codex/skills/modern-web-guidance/SKILL.md
+@@ -23,6 +23,10 @@ DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.180 retrieve "<id>"
+ 
+ Multiple IDs are appropriate only when the task crosses distinct concerns. If the pinned package is unavailable, use current primary web-platform documentation and state the fallback; never substitute a moving version or enable telemetry.
+ 
++## Missing Browser Types
++
++When a justified browser API lacks TypeScript declarations, consider [modern-web-types](https://philipwalton.com/articles/modern-web-types/) as an opt-in alternative to handwritten declarations or type suppression. It is not a default template dependency. Before adoption, read its current installation documentation, obtain dependency approval, pin the reviewed version, and verify library replacement with the project’s active TypeScript toolchains. Keep adoption scoped to browser typing; do not replace Cloudflare runtime types. Available declarations do not establish browser support: preserve feature detection and the usable fallback required below.
++
+ ## Apply
+ 
+ - Use Baseline Widely available features for core behavior unless the project records a narrower target.
+diff --git a/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md b/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md
+index a49a57f..27128ba 100644
+--- a/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md
++++ b/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md
+@@ -24,6 +24,12 @@ Target Baseline Widely available for core browser behavior. Use newer features o
+ 
+ Do not vendor the upstream guide corpus or Chrome Extensions pack, add an application dependency, create an automatic updater, or add a CI gate for the guidance tool.
+ 
++### Missing Browser Types (2026-09-15)
++
++Document `modern-web-types` as an optional response when a justified browser API lacks declarations. Evaluate generated declarations as an alternative to handwritten types or suppression, while retaining dependency approval, version pinning, active TypeScript toolchain verification, and the existing browser-support policy. This recommendation concerns browser typing, not replacement of Cloudflare runtime types.
++
++Keep it out of the default dependency graph: the starter has no demonstrated missing-browser-type requirement. This preserves a lightweight baseline while giving browser-capability adopters a concrete option. See [Philip Walton’s rationale](https://philipwalton.com/articles/modern-web-types/); consult current package installation documentation when adopting.
++
+ ## Trigger
+ 
+ The user reviewed the fit analysis and approved the controlled integration after a pinned, telemetry-disabled pilot returned useful guidance for dialog behavior, container queries, and LCP image priority.
+diff --git a/specs/agent-skills/spec.md b/specs/agent-skills/spec.md
+index 3f69c4e..e44b620 100644
+--- a/specs/agent-skills/spec.md
++++ b/specs/agent-skills/spec.md
+@@ -97,6 +97,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ - [ ] The template includes a narrowly routed `modern-web-guidance` skill with reviewed provenance, an adjacent Apache-2.0 license, valid UI metadata, a pinned CLI version, and telemetry-disabled commands.
+ - [ ] The browser-support target and the Chromium-only verification boundary are explicit in durable architecture and agent guidance.
+ - [ ] Modern Web Guidance adds no application dependency, vendored guide corpus, automatic update path, or CI gate.
++- [ ] Missing browser declarations may prompt an opt-in `modern-web-types` recommendation, with dependency approval, version pinning, active-toolchain verification, and unchanged browser-support requirements; Cloudflare runtime types remain outside this recommendation.
+ 
+ ### Regression Guardrails
+ 
