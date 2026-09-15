@@ -42,6 +42,7 @@
     "quality:gate:fast": "npm run format:check && npm run lint && npm run typecheck && npm run quality:structure && npm run worker:client-guard && npm run worker:node-import-guard && npm run test:tooling && npm run security:audit && npm run test:coverage",
     "quality:structure": "node ./scripts/check-source-shape.mjs",
     "security:audit": "npm audit --omit=dev --audit-level high",
+    "skill:validate": "node ./scripts/validate-skill.mjs",
     "test": "vitest run --passWithNoTests",
     "test:affected": "node ./scripts/run-affected-tests.mjs",
     "test:coverage": "node ./scripts/run-coverage-gate.mjs",
@@ -68,6 +69,7 @@
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
     "vitest": "4.1.11",
-    "wrangler": "4.127.1"
+    "wrangler": "4.127.1",
+    "yaml": "2.9.0"
   }
 }

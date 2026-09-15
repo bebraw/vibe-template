@@ -1,0 +1,21 @@
+{
+  "id": "2026-09-15-node-skill-validation",
+  "title": "Replace Python skill validation with repository-owned Node tooling",
+  "status": "implemented",
+  "risk": "low",
+  "supersedes": [],
+  "adrs": ["docs/adrs/implemented/ADR-064-use-node-skill-validation.md"],
+  "touches": [
+    "AGENTS.md",
+    "ARCHITECTURE.md",
+    "package.json",
+    "package-lock.json",
+    "scripts/validate-skill.mjs",
+    "scripts/validate-skill.test.mjs",
+    "specs/agent-skills/spec.md",
+    "docs/development.md",
+    "docs/adrs/README.md",
+    "docs/adrs/implemented/ADR-064-use-node-skill-validation.md"
+  ],
+  "checks": ["npm run skill:validate -- .codex/skills/modern-web-guidance", "npm run quality:gate", "npm run ci:local"]
+}

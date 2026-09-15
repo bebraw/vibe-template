@@ -28,6 +28,8 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 
 ## Tooling Baseline
 
+- Repository skill validation uses the pinned Node toolchain and a direct `yaml` development dependency through `npm run skill:validate -- <skill-directory>`, avoiding a Python environment requirement; see [ADR-064](docs/adrs/implemented/ADR-064-use-node-skill-validation.md).
+
 - Local development and local CI target macOS as the supported host platform baseline.
 - Browser-facing core behavior targets Baseline Widely available. Features outside that target require a usable core path or an explicitly documented narrower browser policy; Chromium-only browser checks do not establish cross-browser compatibility.
 - Use the scoped `modern-web-guidance` skill as pinned, telemetry-disabled implementation input for substantive web-platform decisions. Repository architecture, specs, source conventions, and verification remain authoritative, and upstream upgrades require deliberate review.

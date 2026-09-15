@@ -123,7 +123,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Pruned bundles:** confirm unused Cloudflare product skills, `sandbox-sdk`, and communication-style suites are absent from repository skill roots
 - **Instruction size:** inspect `wc -w $(rg --files .codex/skills -g SKILL.md)` and review any entrypoint whose growth is not justified by a fragile workflow or safety boundary
 - **Documentation check:** `npm run format:check`
-- **Wayfinder structure:** confirm the skill has valid `name` and `description` frontmatter plus valid `agents/openai.yaml`; use the skill-creator validator when its Python dependencies are available
+- **Wayfinder structure:** confirm the skill has valid `name` and `description` frontmatter plus valid `agents/openai.yaml`; run `npm run skill:validate -- .codex/skills/wayfinder` for `SKILL.md` and review UI metadata separately
 - **Specification and TDD structure:** apply the same metadata validation to `.codex/skills/to-spec/` and `.codex/skills/tdd/`
 - **Architecture review structure:** validate `.codex/skills/architecture-review/` metadata and confirm its workflow routes lasting outcomes into architecture docs, ADRs, or specs
 - **Project start structure:** validate `.codex/skills/start-project/` metadata and confirm its workflow is read-only until the exact pruning plan is approved
@@ -239,3 +239,11 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - Given: a change only adjusts copy or applies established styling or behavior patterns without choosing a platform feature, interpreting compatibility, or designing a fallback
 - When: the agent routes the task
 - Then: it skips Modern Web Guidance and follows the smaller relevant workflow
+
+### Repository-Owned Skill Validation
+
+Use `npm run skill:validate -- <skill-directory>` after creating or updating a skill. The CLI reads only that directory’s `SKILL.md`, prints success and exits 0 for valid input, or reports an error and exits 1 for invalid input, read errors, or incorrect arguments. It writes no files. Its CLI regression tests run through the existing `test:tooling` glob; this adds no automatic skill-discovery gate.
+
+The validator uses directly pinned `yaml` with YAML 1.1 scalar resolution to retain the Python validator’s conventions. It requires mapping frontmatter with string `name` and `description`, permits only `name`, `description`, `license`, `allowed-tools`, and `metadata`, checks trimmed nonempty names for hyphen-case and a 64-character limit, and checks descriptions for a 1024-character limit, angle brackets, and leading TODO scaffolds. For compatibility, blank strings retain the installed validator’s permissive behavior. Standalone body TODO placeholders fail outside fenced examples; inline explanatory mentions remain valid.
+
+Unlike the installed validator, duplicate YAML keys and parser warnings (including unsupported tags) are errors. LF and CRLF delimiters and a closing delimiter at EOF are supported. UI metadata, semantic skill quality, and invocation policy still require separate review. The installed system skill is not modified. Rationale: [ADR-064](../../docs/adrs/implemented/ADR-064-use-node-skill-validation.md).

@@ -156,3 +156,13 @@ Use this expectation for routine changes:
 - The repo-managed `pre-push` hook runs `npm run quality:affected` automatically after `npm install`, so pushes stop locally when affected guardrails are already red.
 
 The baseline quality gate runs the fast gate, Playwright browser tests, and executable capability-kit verification. The capability phase copies each supported kit into its own operating-system temporary Worker, installs only its manifest-declared test dependencies plus the repository-pinned verification toolchain, generates binding types, type-checks, runs the kit tests, and removes the fixture. It therefore requires npm registry access, but writes no generated application files into the repository. The explicit `quality:gate:deep` command adds incremental mutation testing for local assertion-strength feedback. Both commands print named phase transitions and an elapsed-time heartbeat every 30 seconds while a phase is still running, while preserving each child command's live output. GitHub Actions runs separate fast, browser, and full mutation jobs, with repository-shape validation and capability verification included in the fast job. Local CI runs should go through `npm run ci:local`, which prewarms through one stable install step before independent jobs run concurrently with isolated writable dependency views. The command emits structured lifecycle progress and pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.
+
+## Skill Validation
+
+After creating or updating a skill, run:
+
+```bash
+npm run skill:validate -- .codex/skills/modern-web-guidance
+```
+
+The repository-owned validator uses the existing Node setup and pinned `yaml` dev dependency; PyYAML is unnecessary. It checks `SKILL.md` frontmatter and unfinished placeholders. Review `agents/openai.yaml` and behavioral quality separately. Tests use disposable OS temporary directories and remove them afterward; the validator creates no artifacts. Run its CLI regression tests with `node --test scripts/validate-skill.test.mjs` (also included in `npm run test:tooling`).

@@ -1,0 +1,310 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index c296abe..af05ec8 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -150,3 +150,7 @@
+ 
+ - Use the project-local [`simplify`](./.codex/skills/simplify/SKILL.md) skill after implementation when the user wants code simplified without changing behavior.
+ - Treat the skill as guidance for reducing naming, state, and conceptual overhead inside the requested scope.
++
++## Skill Validation
++
++- Validate created or updated skills with `npm run skill:validate -- <skill-directory>`. Use this repository-owned Node validator instead of the installed system skill’s Python validator. It checks `SKILL.md`, not `agents/openai.yaml` or behavioral quality; review those separately when relevant.
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 77a32e2..920d930 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -28,6 +28,8 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
+ 
+ ## Tooling Baseline
+ 
++- Repository skill validation uses the pinned Node toolchain and a direct `yaml` development dependency through `npm run skill:validate -- <skill-directory>`, avoiding a Python environment requirement; see [ADR-064](docs/adrs/implemented/ADR-064-use-node-skill-validation.md).
++
+ - Local development and local CI target macOS as the supported host platform baseline.
+ - Browser-facing core behavior targets Baseline Widely available. Features outside that target require a usable core path or an explicitly documented narrower browser policy; Chromium-only browser checks do not establish cross-browser compatibility.
+ - Use the scoped `modern-web-guidance` skill as pinned, telemetry-disabled implementation input for substantive web-platform decisions. Repository architecture, specs, source conventions, and verification remain authoritative, and upstream upgrades require deliberate review.
+diff --git a/docs/adrs/README.md b/docs/adrs/README.md
+index 8a3fbc6..19d158a 100644
+--- a/docs/adrs/README.md
++++ b/docs/adrs/README.md
+@@ -96,6 +96,7 @@ No accepted-only ADRs are currently pending implementation.
+ | [ADR-061](./implemented/ADR-061-enable-starter-worker-observability.md)                | Implemented | Persist starter Worker logs and invocation logs while sampling traces explicitly.                 |
+ | [ADR-062](./implemented/ADR-062-retain-durable-implementation-context.md)              | Implemented | Retain relevant initialization context in existing documents with explicit increment boundaries.  |
+ | [ADR-063](./implemented/ADR-063-add-non-destructive-room-initialization.md)            | Implemented | Initialize room choices atomically without disturbing existing sessions.                          |
++| [ADR-064](./implemented/ADR-064-use-node-skill-validation.md)                          | Implemented | Validate skill structure through repository-owned Node tooling without PyYAML.                    |
+ 
+ ## Creating A New ADR
+ 
+diff --git a/docs/development.md b/docs/development.md
+index 5ca9a1a..745278b 100644
+--- a/docs/development.md
++++ b/docs/development.md
+@@ -156,3 +156,13 @@ Use this expectation for routine changes:
+ - The repo-managed `pre-push` hook runs `npm run quality:affected` automatically after `npm install`, so pushes stop locally when affected guardrails are already red.
+ 
+ The baseline quality gate runs the fast gate, Playwright browser tests, and executable capability-kit verification. The capability phase copies each supported kit into its own operating-system temporary Worker, installs only its manifest-declared test dependencies plus the repository-pinned verification toolchain, generates binding types, type-checks, runs the kit tests, and removes the fixture. It therefore requires npm registry access, but writes no generated application files into the repository. The explicit `quality:gate:deep` command adds incremental mutation testing for local assertion-strength feedback. Both commands print named phase transitions and an elapsed-time heartbeat every 30 seconds while a phase is still running, while preserving each child command's live output. GitHub Actions runs separate fast, browser, and full mutation jobs, with repository-shape validation and capability verification included in the fast job. Local CI runs should go through `npm run ci:local`, which prewarms through one stable install step before independent jobs run concurrently with isolated writable dependency views. The command emits structured lifecycle progress and pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.
++
++## Skill Validation
++
++After creating or updating a skill, run:
++
++```bash
++npm run skill:validate -- .codex/skills/modern-web-guidance
++```
++
++The repository-owned validator uses the existing Node setup and pinned `yaml` dev dependency; PyYAML is unnecessary. It checks `SKILL.md` frontmatter and unfinished placeholders. Review `agents/openai.yaml` and behavioral quality separately. Tests use disposable OS temporary directories and remove them afterward; the validator creates no artifacts. Run its CLI regression tests with `node --test scripts/validate-skill.test.mjs` (also included in `npm run test:tooling`).
+diff --git a/package-lock.json b/package-lock.json
+index d8f37d0..b7bcc89 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -23,7 +23,8 @@
+         "typescript": "npm:@typescript/typescript6@6.0.2",
+         "typescript-7": "npm:typescript@7.0.2",
+         "vitest": "4.1.11",
+-        "wrangler": "4.127.1"
++        "wrangler": "4.127.1",
++        "yaml": "2.9.0"
+       },
+       "engines": {
+         "node": "24.20.0",
+diff --git a/package.json b/package.json
+index aaa51c2..b7722ab 100644
+--- a/package.json
++++ b/package.json
+@@ -42,6 +42,7 @@
+     "quality:gate:fast": "npm run format:check && npm run lint && npm run typecheck && npm run quality:structure && npm run worker:client-guard && npm run worker:node-import-guard && npm run test:tooling && npm run security:audit && npm run test:coverage",
+     "quality:structure": "node ./scripts/check-source-shape.mjs",
+     "security:audit": "npm audit --omit=dev --audit-level high",
++    "skill:validate": "node ./scripts/validate-skill.mjs",
+     "test": "vitest run --passWithNoTests",
+     "test:affected": "node ./scripts/run-affected-tests.mjs",
+     "test:coverage": "node ./scripts/run-coverage-gate.mjs",
+@@ -68,6 +69,7 @@
+     "typescript": "npm:@typescript/typescript6@6.0.2",
+     "typescript-7": "npm:typescript@7.0.2",
+     "vitest": "4.1.11",
+-    "wrangler": "4.127.1"
++    "wrangler": "4.127.1",
++    "yaml": "2.9.0"
+   }
+ }
+diff --git a/specs/agent-skills/spec.md b/specs/agent-skills/spec.md
+index e44b620..de33ed8 100644
+--- a/specs/agent-skills/spec.md
++++ b/specs/agent-skills/spec.md
+@@ -123,7 +123,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ - **Pruned bundles:** confirm unused Cloudflare product skills, `sandbox-sdk`, and communication-style suites are absent from repository skill roots
+ - **Instruction size:** inspect `wc -w $(rg --files .codex/skills -g SKILL.md)` and review any entrypoint whose growth is not justified by a fragile workflow or safety boundary
+ - **Documentation check:** `npm run format:check`
+-- **Wayfinder structure:** confirm the skill has valid `name` and `description` frontmatter plus valid `agents/openai.yaml`; use the skill-creator validator when its Python dependencies are available
++- **Wayfinder structure:** confirm the skill has valid `name` and `description` frontmatter plus valid `agents/openai.yaml`; run `npm run skill:validate -- .codex/skills/wayfinder` for `SKILL.md` and review UI metadata separately
+ - **Specification and TDD structure:** apply the same metadata validation to `.codex/skills/to-spec/` and `.codex/skills/tdd/`
+ - **Architecture review structure:** validate `.codex/skills/architecture-review/` metadata and confirm its workflow routes lasting outcomes into architecture docs, ADRs, or specs
+ - **Project start structure:** validate `.codex/skills/start-project/` metadata and confirm its workflow is read-only until the exact pruning plan is approved
+@@ -239,3 +239,11 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ - Given: a change only adjusts copy or applies established styling or behavior patterns without choosing a platform feature, interpreting compatibility, or designing a fallback
+ - When: the agent routes the task
+ - Then: it skips Modern Web Guidance and follows the smaller relevant workflow
++
++### Repository-Owned Skill Validation
++
++Use `npm run skill:validate -- <skill-directory>` after creating or updating a skill. The CLI reads only that directory’s `SKILL.md`, prints success and exits 0 for valid input, or reports an error and exits 1 for invalid input, read errors, or incorrect arguments. It writes no files. Its CLI regression tests run through the existing `test:tooling` glob; this adds no automatic skill-discovery gate.
++
++The validator uses directly pinned `yaml` with YAML 1.1 scalar resolution to retain the Python validator’s conventions. It requires mapping frontmatter with string `name` and `description`, permits only `name`, `description`, `license`, `allowed-tools`, and `metadata`, checks trimmed nonempty names for hyphen-case and a 64-character limit, and checks descriptions for a 1024-character limit, angle brackets, and leading TODO scaffolds. For compatibility, blank strings retain the installed validator’s permissive behavior. Standalone body TODO placeholders fail outside fenced examples; inline explanatory mentions remain valid.
++
++Unlike the installed validator, duplicate YAML keys and parser warnings (including unsupported tags) are errors. LF and CRLF delimiters and a closing delimiter at EOF are supported. UI metadata, semantic skill quality, and invocation policy still require separate review. The installed system skill is not modified. Rationale: [ADR-064](../../docs/adrs/implemented/ADR-064-use-node-skill-validation.md).
+diff --git a/scripts/validate-skill.mjs b/scripts/validate-skill.mjs
+new file mode 100644
+index 0000000..27f6c96
+--- /dev/null
++++ b/scripts/validate-skill.mjs
+@@ -0,0 +1,65 @@
++import { readFileSync } from "node:fs";
++import { join } from "node:path";
++import { isMap, parseDocument } from "yaml";
++
++function validate(content) {
++  const match = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(content);
++  if (!match) throw new Error("Invalid or missing YAML frontmatter");
++  const document = parseDocument(match[1], { version: "1.1" });
++  const issue = document.errors[0] ?? document.warnings[0];
++  if (issue) throw new Error(`Invalid YAML: ${issue.message}`);
++  if (!isMap(document.contents)) throw new Error("Frontmatter must be a YAML dictionary");
++  const header = document.toJS({ mapAsMap: true });
++  const allowed = new Set(["name", "description", "license", "allowed-tools", "metadata"]);
++  for (const key of header.keys()) {
++    if (!allowed.has(key)) throw new Error(`Unexpected frontmatter key: ${String(key)}`);
++  }
++  for (const key of ["name", "description"]) {
++    if (!header.has(key)) throw new Error(`Missing ${key}`);
++    if (typeof header.get(key) !== "string") throw new Error(`${key} must be a string`);
++  }
++  const name = header.get("name").trim();
++  if (name && (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name) || name.length > 64)) {
++    throw new Error("Name must be hyphen-case and at most 64 characters");
++  }
++  const description = header.get("description").trim();
++  if (description.length > 1024 || /[<>]/.test(description)) {
++    throw new Error("Description must be at most 1024 characters without angle brackets");
++  }
++  if (description.startsWith("[TODO:")) throw new Error("Description contains an unfinished TODO placeholder");
++  validateBody(content.slice(match[0].length));
++}
++
++function validateBody(body) {
++  let fenceMarker;
++  let fenceLength = 0;
++  for (const line of body.split(/\r?\n/)) {
++    const fence = /^[ \t]*(?:(?:[-+*]|\d+[.)])[ \t]+)?(`{3,}|~{3,})(.*)$/.exec(line);
++    if (fence) {
++      const marker = fence[1][0];
++      if (!fenceMarker) {
++        fenceMarker = marker;
++        fenceLength = fence[1].length;
++      } else if (marker === fenceMarker && fence[1].length >= fenceLength && !fence[2].trim()) {
++        fenceMarker = undefined;
++      }
++      continue;
++    }
++    if (!fenceMarker && /^ {0,3}\[TODO:[^\n]*\][ \t]*$/.test(line)) {
++      throw new Error("Skill instructions contain an unfinished TODO placeholder");
++    }
++  }
++}
++
++if (process.argv.length !== 3) {
++  console.error("Usage: node scripts/validate-skill.mjs <skill_directory>");
++  process.exitCode = 1;
++} else {
++  try {
++    validate(readFileSync(join(process.argv[2], "SKILL.md"), "utf8"));
++    console.log("Skill is valid!");
++  } catch (error) {
++    console.error(error instanceof Error ? error.message : String(error));
++    process.exitCode = 1;
++  }
++}
+diff --git a/scripts/validate-skill.test.mjs b/scripts/validate-skill.test.mjs
+new file mode 100644
+index 0000000..7454fe5
+--- /dev/null
++++ b/scripts/validate-skill.test.mjs
+@@ -0,0 +1,81 @@
++import assert from "node:assert/strict";
++import { spawnSync } from "node:child_process";
++import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import { fileURLToPath } from "node:url";
++import test from "node:test";
++
++const cli = fileURLToPath(new URL("./validate-skill.mjs", import.meta.url));
++function validate(content) {
++  const dir = mkdtempSync(join(tmpdir(), "validate-skill-"));
++  try {
++    if (content !== null) writeFileSync(join(dir, "SKILL.md"), content);
++    return spawnSync(process.execPath, [cli, dir], { encoding: "utf8" });
++  } finally {
++    rmSync(dir, { recursive: true, force: true });
++  }
++}
++const skill = (header = "name: example-skill\ndescription: Useful guidance", body = "# Instructions") => `---\n${header}\n---\n${body}\n`;
++
++test("accepts a skill with folded YAML and nested metadata", () => {
++  const result = validate(
++    skill("name: example-skill\ndescription: >-\n  Useful guidance\n  across lines\nmetadata:\n  short-description: Example"),
++  );
++  assert.equal(result.status, 0, result.stderr);
++  assert.match(result.stdout, /Skill is valid/);
++});
++
++for (const [label, content, message] of [
++  ["missing file", null, /ENOENT/],
++  ["missing frontmatter", "# Instructions", /frontmatter/],
++  ["invalid delimiter", "---\nname: example\n---oops", /frontmatter/],
++  ["malformed YAML", skill("name: ["), /Invalid YAML/],
++  ["duplicate keys", skill("name: one\nname: two\ndescription: Example"), /Invalid YAML/],
++  ["unsupported tag", skill("name: !custom example\ndescription: Example"), /Invalid YAML/],
++  ["sequence root", skill("- name\n- description"), /dictionary/],
++  ["empty root", skill(""), /dictionary/],
++  ["unknown property", skill("name: example\ndescription: Example\nextra: true"), /Unexpected/],
++  ["missing name", skill("description: Example"), /Missing name/],
++  ["missing description", skill("name: example"), /Missing description/],
++  ["numeric name", skill("name: 42\ndescription: Example"), /name must be a string/],
++  ["YAML 1.1 boolean", skill("name: yes\ndescription: Example"), /name must be a string/],
++  ["description object", skill("name: example\ndescription: {}"), /description must be a string/],
++  ["invalid name", skill("name: bad--name\ndescription: Example"), /hyphen-case/],
++  ["long name", skill(`name: ${"a".repeat(65)}\ndescription: Example`), /64/],
++  ["long description", skill(`name: example\ndescription: ${"a".repeat(1025)}`), /1024/],
++  ["description markup", skill("name: example\ndescription: Use <tag>"), /angle brackets/],
++  ["description scaffold", skill('name: example\ndescription: "[TODO: explain]"'), /unfinished TODO/],
++  ["body scaffold", skill(undefined, "[TODO: explain]"), /unfinished TODO/],
++  ["scaffold after fence", skill(undefined, "```\nexample\n```\n[TODO: explain]"), /unfinished TODO/],
++]) {
++  test(`rejects ${label}`, () => {
++    const result = validate(content);
++    assert.equal(result.status, 1);
++    assert.match(result.stderr, message);
++  });
++}
++
++for (const body of [
++  "```md\n[TODO: example]\n```",
++  "~~~~\n```\n[TODO: example]\n~~~\n[TODO: still example]\n~~~~",
++  "- ```md\n  [TODO: example]\n  ```",
++  "Mention [TODO: example] in prose.",
++]) {
++  test(`allows illustrative placeholders: ${JSON.stringify(body)}`, () => {
++    assert.equal(validate(skill(undefined, body)).status, 0);
++  });
++}
++
++test("accepts CRLF and a closing delimiter at EOF", () => {
++  assert.equal(validate(skill().replaceAll("\n", "\r\n")).status, 0);
++  assert.equal(validate("---\nname: example\ndescription: Example\n---").status, 0);
++});
++
++test("reports usage for missing or excess arguments", () => {
++  for (const args of [[], ["one", "two"]]) {
++    const result = spawnSync(process.execPath, [cli, ...args], { encoding: "utf8" });
++    assert.equal(result.status, 1);
++    assert.match(result.stderr, /Usage:/);
++  }
++});
+diff --git a/docs/adrs/implemented/ADR-064-use-node-skill-validation.md b/docs/adrs/implemented/ADR-064-use-node-skill-validation.md
+new file mode 100644
+index 0000000..8688493
+--- /dev/null
++++ b/docs/adrs/implemented/ADR-064-use-node-skill-validation.md
+@@ -0,0 +1,31 @@
++# ADR-064: Use Node Skill Validation
++
++**Status:** Implemented
++
++**Date:** 2026-09-15
++
++## Context
++
++The installed system skill’s Python validator failed because PyYAML was missing. This repository already pins Node and installs `yaml` transitively, but transitive availability is not a reliable interface for project-owned tooling.
++
++## Decision
++
++Own `scripts/validate-skill.mjs` and expose `npm run skill:validate -- <skill-directory>`. Declare `yaml@2.9.0` directly as a development dependency and retain the existing structural and placeholder checks through CLI regression tests in the current tooling suite. Use YAML 1.1 scalar resolution for compatibility; reject duplicate keys and parser warnings explicitly. Accept CRLF and an exact closing frontmatter delimiter at EOF. The agent-skill spec owns the precise contract.
++
++Route repository skill work to this command without changing the installed system skill or adding a new CI lane. Keep UI metadata and behavioral review separate. The validator is read-only; tests use cleaned-up OS temporary directories.
++
++## Alternatives
++
++- Install PyYAML: retains an additional Python environment prerequisite unrelated to the template’s runtime.
++- Patch the installed system skill: creates machine-local behavior outside repository versioning and may be overwritten by updates.
++- Parse YAML manually: adds avoidable parsing edge cases for folded strings, metadata, and typed scalars.
++- Import a transitive package without declaring it: allows unrelated dependency updates to break validation.
++
++## Consequences
++
++Validation is reproducible after npm installation and portable through a template update pack. The repository owns a small validator and its tests; future upstream validation changes require deliberate review. No claim is made that structural validation establishes skill quality or validates UI metadata.
++
++## References
++
++- [yaml API and parsing options](https://eemeli.org/yaml/)
++- [Agent-skill contract](../../../specs/agent-skills/spec.md)

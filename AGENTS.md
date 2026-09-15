@@ -150,3 +150,7 @@
 
 - Use the project-local [`simplify`](./.codex/skills/simplify/SKILL.md) skill after implementation when the user wants code simplified without changing behavior.
 - Treat the skill as guidance for reducing naming, state, and conceptual overhead inside the requested scope.
+
+## Skill Validation
+
+- Validate created or updated skills with `npm run skill:validate -- <skill-directory>`. Use this repository-owned Node validator instead of the installed system skill’s Python validator. It checks `SKILL.md`, not `agents/openai.yaml` or behavioral quality; review those separately when relevant.
