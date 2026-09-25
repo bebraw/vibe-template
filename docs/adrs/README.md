@@ -97,6 +97,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-062](./implemented/ADR-062-retain-durable-implementation-context.md)              | Implemented | Retain relevant initialization context in existing documents with explicit increment boundaries.  |
 | [ADR-063](./implemented/ADR-063-add-non-destructive-room-initialization.md)            | Implemented | Initialize room choices atomically without disturbing existing sessions.                          |
 | [ADR-064](./implemented/ADR-064-use-node-skill-validation.md)                          | Implemented | Validate skill structure through repository-owned Node tooling without PyYAML.                    |
+| [ADR-065](./implemented/ADR-065-offer-security-audit-as-optional-kit.md)               | Implemented | Offer Cloudflare's full security audit as an optional, pinned capability kit.                     |
 
 ## Creating A New ADR
 

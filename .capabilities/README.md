@@ -15,6 +15,7 @@ Capability kits are reviewable partial-upgrade guides for applying one template 
 | [`lighthouse-performance`](./lighthouse-performance/README.md)         | Add local Lighthouse web-quality reports and category budgets.     |
 | [`website-baseline`](./website-baseline/README.md)                     | Add an applicability-aware website quality checklist.              |
 | [`engineering-quality-skills`](./engineering-quality-skills/README.md) | Add focused correctness review, test review, and debugging skills. |
+| [`security-audit`](./security-audit/README.md)                         | Add an opt-in, independently verified security audit workflow.     |
 | [`workers-ai`](./workers-ai/README.md)                                 | Add typed, validated Workers AI structured-output calls.           |
 | [`room-state`](./room-state/README.md)                                 | Add one Durable Object per room for replaceable voting.            |
 | [`progressive-interaction`](./progressive-interaction/README.md)       | Enhance conventional forms with fragment replacement.              |
@@ -51,6 +52,7 @@ First, inspect the target repo for:
 - existing local quality/test scripts
 - existing mutation testing setup or assertion-strength checks
 - existing coding-agent skills for correctness review, test review, or debugging
+- existing security-review guidance and whether the agent supports independent audit agents and an isolated execution sandbox
 - existing Git hooks or hook managers
 - app/runtime surface that might need browser, screenshot, or Lighthouse checks
 - Cloudflare Wrangler config, bindings, generated environment types, and Worker test setup
@@ -98,6 +100,10 @@ Capability Pull Plan
 [ ] engineering-quality-skills
     Adds focused correctness review, test review, and systematic debugging skills without runtime dependencies.
     Include if the repo uses Codex-compatible skills and lacks equivalent evidence-driven review and debugging workflows.
+
+[ ] security-audit
+    Adds Cloudflare's pinned multi-phase audit skill, companion guides, schema, and validators.
+    Include only when the repo wants explicit, source-grounded full audits, has independent-agent support, and can provide a separate output path. Check the upstream sandbox contract before executing target-controlled code. Keep existing focused security guidance.
 
 [ ] workers-ai
     Adds a generated-type binding adapter, configurable model, runtime structured-output validation, timeout, deterministic fallback, and mock runner.

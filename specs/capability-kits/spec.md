@@ -15,8 +15,9 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Copyable files:** `files/`
 - **Package-manager recipes:** `recipes/`
 - **Validation notes:** `checks.md`
-- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`, `workers-ai`, `room-state`, `progressive-interaction`, `browser-static-assets`, `deployment-safety`
+- **Available kits:** `typescript-setup`, `local-ci`, `quality-gate`, `mutation-testing`, `pre-push-quality-gate`, `readme-screenshot`, `lighthouse-performance`, `website-baseline`, `engineering-quality-skills`, `security-audit`, `workers-ai`, `room-state`, `progressive-interaction`, `browser-static-assets`, `deployment-safety`
 - **Third-party skill provenance:** vendored skills retain their license, upstream repository, and reviewed revision in the copyable files.
+- **Security audit kit:** `.capabilities/security-audit/` owns the complete pinned Cloudflare skill distribution and adopter guidance; the adopting project's existing security skill remains the focused-review owner. Full audit reports live outside the target repository by default, and target-controlled execution requires the upstream OS-enforced sandbox contract.
 - **Optional adjacent setup:** capability kits may include prompted optional steps for prerequisites such as GitHub Actions workflows.
 - **Negotiation prompt:** `.capabilities/README.md` includes a prompt-style UI for selecting capabilities before editing a target repo.
 - **Later maintenance sync:** template update packs under `.template/updates/` cover follow-up changes to projects that already adopted a kit.
@@ -92,6 +93,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - [ ] Validation steps live in `checks.md`.
 - [ ] Durable docs mention capability kits as a supported partial-upgrade path.
 - [ ] Executable application kits are verified as independent adopter Workers by the baseline quality gate and CI.
+- [ ] The security audit kit retains its complete pinned upstream skill, license, source revision, schema, validator tests, and explicit full-audit routing without adding a default CI scan or audit artifacts to adopters.
 
 ### Regression Guardrails
 
@@ -112,6 +114,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - The README screenshot kit owns its copyable screenshot script because the template baseline no longer ships that script; the Lighthouse kit must keep its script aligned with `scripts/run-lighthouse.mjs` and audit performance, accessibility, best practices, and SEO.
 - The website baseline kit must separate universal browser requirements from public-site and feature-dependent requirements, and must keep emerging agent-readiness conventions opt-in.
 - The engineering quality skills kit must keep its copyable `correctness-review`, `test-review`, and `debug` skills aligned with the project-local versions and preserve upstream MIT attribution.
+- The security audit kit must remain opt-in, preserve its pinned upstream source and MIT attribution, and require independent verification, an explicit report-output location, and the upstream execution sandbox before target-controlled execution.
 - The Workers AI kit must use generated `Env` types at the binding boundary, require runtime validation even when JSON Schema is requested, distinguish timeout/binding/validation fallbacks, reject non-positive or non-finite timeouts, and enforce its deadline even when a runner ignores `AbortSignal`. It must contain no application prompts or schemas and emit redacted start/finish events without prompts, schemas, raw output, fallback values, or exception text.
 - The Room State kit must use one SQLite-backed Durable Object per deterministic room id, accept votes only for seeded choices, replace rather than duplicate a voter's prior choice, and keep initialize/seed/reset/status behind an application-owned authorization check.
 - The Room State kit must bound buffered form bodies and store only a per-room digest of its opaque first-party voter cookie. It must not claim cryptographic ballot secrecy or authenticated identity.
@@ -223,6 +226,12 @@ The template is useful both as a starter repo and as a source of specific practi
 - Given: another repo uses coding-agent skills and wants stronger behavioral review and debugging guidance
 - When: the agent applies `.capabilities/engineering-quality-skills/`
 - Then: the target repo receives correctness review, test review, and debug skills with source metadata and MIT attribution, without runtime dependencies
+
+**Scenario: Consumer adopts a full security audit workflow**
+
+- Given: a target repo wants explicit codebase audits and can support independent agents and a separate output location
+- When: the agent applies `.capabilities/security-audit/`
+- Then: the target receives the complete pinned Cloudflare skill, guides, schema, validators, tests, and attribution; focused security review remains available, and no default CI scan or audit-output directory is added
 
 **Scenario: Worker adds bounded structured inference**
 

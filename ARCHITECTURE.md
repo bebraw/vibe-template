@@ -76,6 +76,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Room initialization must check and seed atomically within the room authority, preserve initialized sessions, and require application-owned authorization; destructive reseeding stays explicit. See [ADR-063](docs/adrs/implemented/ADR-063-add-non-destructive-room-initialization.md).
 - Anonymous room voting must validate POST origins, minimize voter-cookie retention, and expose participant selection plus lockable monotonic revisions without claiming cookie-based identity.
 - Vendor third-party agent skills at a reviewed source revision, retain their license and source metadata, and adapt only where template compatibility requires it.
+- Offer the full Cloudflare security-audit workflow only as an opt-in capability kit; keep focused security review in the baseline skill, audit reports outside adopter source by default, and target-controlled execution behind the upstream OS-enforced sandbox contract.
 
 ## Template Updates
 

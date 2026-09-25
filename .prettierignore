@@ -6,6 +6,7 @@ node_modules
 .asdlc
 .github/skills
 .codex/skills/**/references
+.capabilities/security-audit/files/.codex/skills/security-audit
 playwright-report
 reports
 test-results

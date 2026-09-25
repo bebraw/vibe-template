@@ -1,0 +1,138 @@
+{
+  "name": "security-audit",
+  "description": "Add Cloudflare’s opt-in, independently verified security audit workflow.",
+  "dependencies": {},
+  "scripts": {},
+  "source": {
+    "repository": "https://github.com/cloudflare/security-audit-skill",
+    "revision": "c1c8a8c1471069fb0e188eeaff69b8e8db6564a8",
+    "license": "MIT"
+  },
+  "files": [
+    {
+      "source": "files/.codex/skills/security-audit/AI-AND-LLM.md",
+      "target": ".codex/skills/security-audit/AI-AND-LLM.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/ATTACK-CLASSES.md",
+      "target": ".codex/skills/security-audit/ATTACK-CLASSES.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/CLIENT-SIDE.md",
+      "target": ".codex/skills/security-audit/CLIENT-SIDE.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/CLOUD-AND-DEPLOYMENT.md",
+      "target": ".codex/skills/security-audit/CLOUD-AND-DEPLOYMENT.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/DATA-ISOLATION-AND-LIFECYCLE.md",
+      "target": ".codex/skills/security-audit/DATA-ISOLATION-AND-LIFECYCLE.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/DESKTOP-MOBILE-AND-LOCAL-IPC.md",
+      "target": ".codex/skills/security-audit/DESKTOP-MOBILE-AND-LOCAL-IPC.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/HUNTING.md",
+      "target": ".codex/skills/security-audit/HUNTING.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/LICENSE",
+      "target": ".codex/skills/security-audit/LICENSE",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/MEMORY-SAFETY-AND-BINARY.md",
+      "target": ".codex/skills/security-audit/MEMORY-SAFETY-AND-BINARY.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/PROTOCOLS-RPC-AND-MESSAGING.md",
+      "target": ".codex/skills/security-audit/PROTOCOLS-RPC-AND-MESSAGING.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/RECONNAISSANCE.md",
+      "target": ".codex/skills/security-audit/RECONNAISSANCE.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/RESOURCE-EXHAUSTION-AND-AVAILABILITY.md",
+      "target": ".codex/skills/security-audit/RESOURCE-EXHAUSTION-AND-AVAILABILITY.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/SKILL.md",
+      "target": ".codex/skills/security-audit/SKILL.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/SOURCE.md",
+      "target": ".codex/skills/security-audit/SOURCE.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/SUPPLY-CHAIN-AND-RELEASE.md",
+      "target": ".codex/skills/security-audit/SUPPLY-CHAIN-AND-RELEASE.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/VALIDATION-AND-REPORTING.md",
+      "target": ".codex/skills/security-audit/VALIDATION-AND-REPORTING.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/WEB-PROTOCOL-AND-AUTH.md",
+      "target": ".codex/skills/security-audit/WEB-PROTOCOL-AND-AUTH.md",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/report-schema.json",
+      "target": ".codex/skills/security-audit/report-schema.json",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/validate-coverage-ledger.cjs",
+      "target": ".codex/skills/security-audit/validate-coverage-ledger.cjs",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/validate-coverage-ledger.test.cjs",
+      "target": ".codex/skills/security-audit/validate-coverage-ledger.test.cjs",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/validate-findings.cjs",
+      "target": ".codex/skills/security-audit/validate-findings.cjs",
+      "mode": "copy"
+    },
+    {
+      "source": "files/.codex/skills/security-audit/validate-findings.test.cjs",
+      "target": ".codex/skills/security-audit/validate-findings.test.cjs",
+      "mode": "copy"
+    }
+  ],
+  "docs": [
+    "Register security-audit for explicit codebase audits while preserving existing focused security review guidance.",
+    "Choose and document an audit-output path and retention policy before a full run; do not commit audit artifacts or secrets.",
+    "Verify independent-agent support and all upstream sandbox controls before executing target-controlled code."
+  ],
+  "verify": [
+    "Confirm every manifest file was copied and the source revision and license were retained.",
+    "Run the bundled validator tests with node --test.",
+    "Run the target repository’s skill validator and normal documentation or quality checks."
+  ],
+  "notes": [
+    "This kit is optional and adds no package dependency, default CI step, or runtime behavior.",
+    "The upstream skill, guides, schema, and tests are copied without modification; validate-findings.cjs removes one unused catch binding for Oxlint compatibility.",
+    "A workspace-write sandbox alone does not satisfy the upstream execution-safety contract."
+  ]
+}
