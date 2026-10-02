@@ -6,7 +6,7 @@
 
 The template should include agent workflows that are broadly useful to its baseline without vendoring large product documentation snapshots already available from connected platform tools.
 
-The skill baseline targets capable `gpt-5.6-sol`-class agents that can inspect repositories, use tools, and apply ordinary engineering judgment. Skill context should therefore carry only routing, project-specific decisions, non-obvious invariants, exact local interfaces, and safety boundaries.
+The skill baseline targets agents that can inspect repositories, use tools, and apply ordinary engineering judgment, without naming a model generation. Skill context should carry routing, project-specific decisions, non-obvious invariants, exact local interfaces, and safety boundaries. Context reading and approval requests are scoped to the task; explicit user authorization remains effective through necessary implementation and verification.
 
 Large, uncertain initiatives also need a lightweight way to preserve discovery across sessions without requiring an external issue tracker or turning transient planning notes into architectural authority.
 
@@ -23,7 +23,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Copy policy:** keep an intentional distribution copy byte-equivalent to its canonical `.codex/skills/` source unless the target surface requires a documented compatibility adaptation
 - **Composition roots:** `AGENTS.md` for model routing and `README.md` for user discovery
 - **Skill contracts:** each canonical `SKILL.md` plus optional `agents/openai.yaml`
-- **Agent capability baseline:** `gpt-5.6-sol`-class repository navigation, tool use, and engineering judgment
+- **Agent capability baseline:** repository navigation, tool use, and engineering judgment; [ADR-066](../../docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md) owns contextual reading and authorization policy
 - **Instruction budget:** concise descriptions and entrypoints; version-sensitive manuals stay in current primary documentation rather than the prompt
 - **Dependency direction:** routing and distribution surfaces point to canonical skills; canonical skills do not depend on their copies
 - **Cloudflare knowledge and account layer:** connected Cloudflare MCP
@@ -42,8 +42,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Capability architecture review skill:** `.codex/skills/architecture-review/`
 - **Architecture-feedback integration:** review-skill behavior is owned here; `specs/architecture-feedback/spec.md` owns its composition with deterministic source-shape evidence
 - **Web-platform implementation skill:** `.codex/skills/modern-web-guidance/`
-- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `684ab9d7c6b78fc2cd5677912d874397cb2e5dfa`, which labels itself `0.0.179`
-- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@0.0.180`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v0.0.180` and commit `29ecd9546013e32e0a597ad5ab3a2fc26add1f1d`, with npm integrity `sha512-55diU2dH4nMF2DKWmvOdeLKWUvTTz32UIcSlYFSa+AN699MVC7pvqJ4mlFMmPd7qfnRJiP/FxKcSkIOP0MSDDw==`
+- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `84ae7251ee919239d5ea85aef25897983f26601e`, published as `0.0.191`; [ADR-067](../../docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md) records the review
+- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@0.0.191`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v0.0.191` and commit `7b4b980569da01d6e9f4379bd852b903fac0554d`, with npm integrity `sha512-BF3UZQKsA3+Xi3iSkxMn68Nx2xaf6fr+awsVDIg4F9Vqfh8wvzOTTWtHnktOJOxfrr+hzZzWmrBs5vR3MO4dBA==`
 - **Browser-support target:** Baseline Widely available for core behavior, with progressive enhancement for newer features unless a project records a narrower target
 - **Guidance authority:** retrieved guidance informs implementation; repository architecture, specs, source conventions, and verification remain authoritative
 - **Browser verification boundary:** the current Playwright and Lighthouse setup provides Chromium evidence and does not claim cross-browser compatibility
@@ -104,6 +104,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - The baseline must not reintroduce `cloudflare`, `agents-sdk`, `cloudflare-email-service`, or `durable-objects` as vendored skills without an explicit architecture change.
 - The baseline must not reintroduce `sandbox-sdk` or communication-style skill suites without adopting their capability explicitly.
 - Compact rewrites must preserve destructive-action approval, secret handling, retrieval pins, telemetry controls, public-seam testing, evidence thresholds, and repository verification rules.
+- Explicit specification requests proceed when the domain, destination, and contract are settled; To Spec asks only about material unresolved choices. Project Start retains its approved-plan checkpoint.
+- Read only context relevant to the requested task, and do not repeat approvals already supplied for that scope. Required quality gates remain mandatory, while additional verification needs a change, failure, or unresolved concern.
 - Version-sensitive commands and thresholds must be retrieved or resolved from installed tool help rather than accumulated in skill entrypoints.
 - The Worker and Wrangler skill copies must remain available while this repository is a Cloudflare Worker starter.
 - Removing a baseline skill must not remove its runtime dependency or product implementation implicitly.
@@ -127,7 +129,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Specification and TDD structure:** apply the same metadata validation to `.codex/skills/to-spec/` and `.codex/skills/tdd/`
 - **Architecture review structure:** validate `.codex/skills/architecture-review/` metadata and confirm its workflow routes lasting outcomes into architecture docs, ADRs, or specs
 - **Project start structure:** validate `.codex/skills/start-project/` metadata and confirm its workflow is read-only until the exact pruning plan is approved
-- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands pin `modern-web-guidance@0.0.180` with `DISABLE_TELEMETRY=1`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
+- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands pin `modern-web-guidance@0.0.191` with `DISABLE_TELEMETRY=1`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
 - **README catalog:** confirm every `.codex/skills/*/SKILL.md` has a corresponding README link and that explicit-only workflows are identified
 
 ### Scenarios
@@ -178,7 +180,19 @@ Browser-facing implementation needs current web-platform and compatibility guida
 
 - Given: the user has settled the feature behavior and important constraints
 - When: the user explicitly invokes To Spec
-- Then: the agent confirms one `specs/<feature-domain>/spec.md` target and synthesizes the agreed Blueprint and Contract without creating tracker state
+- Then: the agent states one settled `specs/<feature-domain>/spec.md` target and writes the agreed Blueprint and Contract without another approval request or tracker state
+
+**Scenario: Routine edit has a known owner**
+
+- Given: the requested edit has a clear source or documentation owner
+- When: the agent gathers context
+- Then: it reads the relevant contract and nearby evidence without loading unrelated docs or skills
+
+**Scenario: User already authorized the action**
+
+- Given: the conversation explicitly authorizes an action within the requested scope
+- When: a skill describes an approval boundary for that action
+- Then: the agent continues necessary work without asking again, while retaining explicit workflow checkpoints and authorization for unrelated actions
 
 **Scenario: Specification still contains a material decision**
 

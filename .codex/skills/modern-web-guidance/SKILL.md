@@ -12,13 +12,13 @@ Use focused Chrome guidance as implementation input while keeping repository arc
 Search once with the desired browser behavior:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.180 search "<query>"
+DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.191 search "<query>"
 ```
 
 Retrieve only the most relevant guide IDs:
 
 ```bash
-DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.180 retrieve "<id>"
+DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.191 retrieve "<id>"
 ```
 
 Multiple IDs are appropriate only when the task crosses distinct concerns. If the pinned package is unavailable, use current primary web-platform documentation and state the fallback; never substitute a moving version or enable telemetry.
@@ -38,4 +38,4 @@ When a justified browser API lacks TypeScript declarations, consider [modern-web
 
 Skip this skill for copy-only work, routine changes that apply established repository patterns, backend-only Worker code, CI, and general tooling.
 
-Provenance and reviewed package coordinates are recorded in `docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md` and `specs/agent-skills/spec.md`.
+Provenance and current package coordinates are recorded in `docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md` and `specs/agent-skills/spec.md`; `ADR-052` records the original scoped integration.

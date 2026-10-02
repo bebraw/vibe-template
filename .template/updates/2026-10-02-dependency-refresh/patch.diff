@@ -1,0 +1,420 @@
+diff --git a/.capabilities/browser-static-assets/manifest.json b/.capabilities/browser-static-assets/manifest.json
+index 8669262..93bd929 100644
+--- a/.capabilities/browser-static-assets/manifest.json
++++ b/.capabilities/browser-static-assets/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add a typed native browser-module build and a Cloudflare Workers static-assets path.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1",
++      "@playwright/test": "1.63.0",
+       "typescript": "npm:@typescript/typescript6@6.0.2",
+       "typescript-7": "npm:typescript@7.0.2"
+     }
+diff --git a/.capabilities/browser-static-assets/recipes/npm.md b/.capabilities/browser-static-assets/recipes/npm.md
+index 0c0c306..364bf3e 100644
+--- a/.capabilities/browser-static-assets/recipes/npm.md
++++ b/.capabilities/browser-static-assets/recipes/npm.md
+@@ -5,7 +5,7 @@ This kit uses the target's TypeScript and Playwright toolchain. Reconcile existi
+ If either tool is absent, install the exact versions after approval:
+ 
+ ```bash
+-npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.62.1
++npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.63.0
+ ```
+ 
+ ## Package Scripts
+diff --git a/.capabilities/lighthouse-performance/manifest.json b/.capabilities/lighthouse-performance/manifest.json
+index f460cd3..4e2d95d 100644
+--- a/.capabilities/lighthouse-performance/manifest.json
++++ b/.capabilities/lighthouse-performance/manifest.json
+@@ -3,9 +3,9 @@
+   "description": "Add local Lighthouse web-quality reports and configurable category budgets.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1",
+-      "chrome-launcher": "1.2.1",
+-      "lighthouse": "13.4.1"
++      "@playwright/test": "1.63.0",
++      "chrome-launcher": "1.2.2",
++      "lighthouse": "13.5.0"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/lighthouse-performance/recipes/npm.md b/.capabilities/lighthouse-performance/recipes/npm.md
+index 68988c8..27c8dca 100644
+--- a/.capabilities/lighthouse-performance/recipes/npm.md
++++ b/.capabilities/lighthouse-performance/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1 chrome-launcher@1.2.1 lighthouse@13.4.1
++npm install --save-dev --save-exact @playwright/test@1.63.0 chrome-launcher@1.2.2 lighthouse@13.5.0
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/progressive-interaction/manifest.json b/.capabilities/progressive-interaction/manifest.json
+index bf9a8f3..27ddfe3 100644
+--- a/.capabilities/progressive-interaction/manifest.json
++++ b/.capabilities/progressive-interaction/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Enhance conventional HTML forms with background submission and declared fragment replacement.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1",
++      "@playwright/test": "1.63.0",
+       "typescript": "npm:@typescript/typescript6@6.0.2"
+     }
+   },
+diff --git a/.capabilities/progressive-interaction/recipes/npm.md b/.capabilities/progressive-interaction/recipes/npm.md
+index 054d9a5..e5ab7ee 100644
+--- a/.capabilities/progressive-interaction/recipes/npm.md
++++ b/.capabilities/progressive-interaction/recipes/npm.md
+@@ -7,7 +7,7 @@ Use the target repo's existing client build and static-asset serving path. This
+ If the target does not already use the test dependencies and the user approves adding them:
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1 typescript@npm:@typescript/typescript6@6.0.2
++npm install --save-dev --save-exact @playwright/test@1.63.0 typescript@npm:@typescript/typescript6@6.0.2
+ ```
+ 
+ If Playwright or TypeScript is already pinned, adapt the test to compatible versions rather than installing second copies.
+diff --git a/.capabilities/quality-gate/manifest.json b/.capabilities/quality-gate/manifest.json
+index f763e6c..19d8706 100644
+--- a/.capabilities/quality-gate/manifest.json
++++ b/.capabilities/quality-gate/manifest.json
+@@ -5,11 +5,11 @@
+   "dependencies": {
+     "dev": {
+       "@vitest/coverage-v8": "4.1.11",
+-      "prettier": "3.9.6",
++      "prettier": "3.9.9",
+       "vitest": "4.1.11"
+     },
+     "optionalDev": {
+-      "@playwright/test": "1.62.1"
++      "@playwright/test": "1.63.0"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/quality-gate/recipes/npm.md b/.capabilities/quality-gate/recipes/npm.md
+index 2607957..ccfbc49 100644
+--- a/.capabilities/quality-gate/recipes/npm.md
++++ b/.capabilities/quality-gate/recipes/npm.md
+@@ -9,7 +9,7 @@ Apply `.capabilities/typescript-setup/` first unless the target repo already has
+ Add the fast-gate dependencies:
+ 
+ ```bash
+-npm install --save-dev --save-exact prettier@3.9.6 vitest@4.1.11 @vitest/coverage-v8@4.1.11
++npm install --save-dev --save-exact prettier@3.9.9 vitest@4.1.11 @vitest/coverage-v8@4.1.11
+ ```
+ 
+ Add or merge these scripts:
+diff --git a/.capabilities/quality-gate/recipes/playwright.md b/.capabilities/quality-gate/recipes/playwright.md
+index 1541f85..f5e3e7f 100644
+--- a/.capabilities/quality-gate/recipes/playwright.md
++++ b/.capabilities/quality-gate/recipes/playwright.md
+@@ -5,7 +5,7 @@ Use this recipe only after the user approves adding a browser gate.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1
++npm install --save-dev --save-exact @playwright/test@1.63.0
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/readme-screenshot/manifest.json b/.capabilities/readme-screenshot/manifest.json
+index 620ed6f..49dc83e 100644
+--- a/.capabilities/readme-screenshot/manifest.json
++++ b/.capabilities/readme-screenshot/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add local-only Playwright screenshot capture for README images.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1"
++      "@playwright/test": "1.63.0"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/readme-screenshot/recipes/npm.md b/.capabilities/readme-screenshot/recipes/npm.md
+index a028551..a2fdf6a 100644
+--- a/.capabilities/readme-screenshot/recipes/npm.md
++++ b/.capabilities/readme-screenshot/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1
++npm install --save-dev --save-exact @playwright/test@1.63.0
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/room-state/manifest.json b/.capabilities/room-state/manifest.json
+index 914d8ca..2fcc0ef 100644
+--- a/.capabilities/room-state/manifest.json
++++ b/.capabilities/room-state/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add one SQLite-backed Durable Object per room with predefined, replaceable anonymous voting.",
+   "dependencies": {
+     "dev": {
+-      "@cloudflare/vitest-plugin": "1.1.4",
++      "@cloudflare/vitest-plugin": "1.3.5",
+       "@vitest/coverage-istanbul": "4.1.11",
+       "vitest": "4.1.11"
+     },
+diff --git a/.capabilities/room-state/recipes/npm.md b/.capabilities/room-state/recipes/npm.md
+index 7fda472..17dad13 100644
+--- a/.capabilities/room-state/recipes/npm.md
++++ b/.capabilities/room-state/recipes/npm.md
+@@ -8,7 +8,7 @@ Install exact versions compatible with the kit snapshot:
+ 
+ ```bash
+ npm uninstall @cloudflare/vitest-pool-workers @vitest/coverage-v8
+-npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.1.4 @vitest/coverage-istanbul@4.1.11 vitest@4.1.11
++npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.3.5 @vitest/coverage-istanbul@4.1.11 vitest@4.1.11
+ ```
+ 
+ If the target already uses Vitest, reconcile its pinned version with the plugin's peer dependency instead of installing a second test stack. When the target collects Worker-runtime coverage, set `test.coverage.provider` to `"istanbul"`; native V8 coverage is not supported in the Workers runtime. Preserve its existing include, exclude, reporter, and threshold settings.
+diff --git a/.capabilities/typescript-setup/manifest.json b/.capabilities/typescript-setup/manifest.json
+index 560a047..86b4bb1 100644
+--- a/.capabilities/typescript-setup/manifest.json
++++ b/.capabilities/typescript-setup/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add strict no-emit TypeScript checking for npm projects.",
+   "dependencies": {
+     "dev": {
+-      "@types/node": "24.13.3",
++      "@types/node": "24.19.1",
+       "typescript": "npm:@typescript/typescript6@6.0.2",
+       "typescript-7": "npm:typescript@7.0.2"
+     }
+diff --git a/.capabilities/typescript-setup/recipes/npm.md b/.capabilities/typescript-setup/recipes/npm.md
+index 524c548..ecd3de5 100644
+--- a/.capabilities/typescript-setup/recipes/npm.md
++++ b/.capabilities/typescript-setup/recipes/npm.md
+@@ -7,7 +7,7 @@ Apply this recipe when the target repo uses npm.
+ Add the TypeScript dependencies:
+ 
+ ```bash
+-npm install --save-dev --save-exact @types/node@24.13.3 typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2
++npm install --save-dev --save-exact @types/node@24.19.1 typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2
+ ```
+ 
+ This keeps the TypeScript 6 compatibility package under the canonical
+diff --git a/.codex/skills/modern-web-guidance/SKILL.md b/.codex/skills/modern-web-guidance/SKILL.md
+index baca114..ee1f94c 100644
+--- a/.codex/skills/modern-web-guidance/SKILL.md
++++ b/.codex/skills/modern-web-guidance/SKILL.md
+@@ -12,13 +12,13 @@ Use focused Chrome guidance as implementation input while keeping repository arc
+ Search once with the desired browser behavior:
+ 
+ ```bash
+-DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.180 search "<query>"
++DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.191 search "<query>"
+ ```
+ 
+ Retrieve only the most relevant guide IDs:
+ 
+ ```bash
+-DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.180 retrieve "<id>"
++DISABLE_TELEMETRY=1 npx -y modern-web-guidance@0.0.191 retrieve "<id>"
+ ```
+ 
+ Multiple IDs are appropriate only when the task crosses distinct concerns. If the pinned package is unavailable, use current primary web-platform documentation and state the fallback; never substitute a moving version or enable telemetry.
+@@ -38,4 +38,4 @@ When a justified browser API lacks TypeScript declarations, consider [modern-web
+ 
+ Skip this skill for copy-only work, routine changes that apply established repository patterns, backend-only Worker code, CI, and general tooling.
+ 
+-Provenance and reviewed package coordinates are recorded in `docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md` and `specs/agent-skills/spec.md`.
++Provenance and current package coordinates are recorded in `docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md` and `specs/agent-skills/spec.md`; `ADR-052` records the original scoped integration.
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 29c1612..4e9ca34 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -61,7 +61,7 @@ jobs:
+   quality-browser:
+     runs-on: ubuntu-latest
+     container:
+-      image: mcr.microsoft.com/playwright:v1.62.1-noble
++      image: mcr.microsoft.com/playwright:v1.63.0-noble
+       options: --ipc=host
+     steps:
+       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+diff --git a/.nvmrc b/.nvmrc
+index 0f60905..166aae1 100644
+--- a/.nvmrc
++++ b/.nvmrc
+@@ -1 +1 @@
+-v24.20.0
++v24.21.0
+diff --git a/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md b/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md
+index 27128ba..3dc80d5 100644
+--- a/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md
++++ b/docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md
+@@ -4,6 +4,8 @@
+ 
+ **Date:** 2026-08-10
+ 
++Current instruction and executable coordinates are recorded in [ADR-067](./ADR-067-refresh-reviewed-web-guidance.md); the scoped integration decision remains active.
++
+ ## Context
+ 
+ The template is an AI-assisted, browser-facing Worker starter. Its local frontend skills cover design direction, established visual style, and measured performance, but they do not provide a focused way to discover current HTML, CSS, Web API, browser-support, and fallback patterns before implementation.
+diff --git a/docs/development.md b/docs/development.md
+index 745278b..5724307 100644
+--- a/docs/development.md
++++ b/docs/development.md
+@@ -100,7 +100,7 @@ The starter Worker and Room State verifier use compatibility date `2026-09-04`.
+ 
+ The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. Both commands inherit the user's normal `HOME`; it is not a Wrangler control variable. The e2e server forces Chokidar polling mode to avoid file-watcher exhaustion in macOS-hosted local runs while preserving the normal `npm run dev` developer loop. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
+ 
+-The GitHub Actions CI workflow splits fast checks, browser checks, and mutation checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.62.1-noble`, pins every `uses:` action reference to a full commit SHA, and cancels superseded runs on the same ref. The browser and mutation jobs use `scripts/classify-expensive-ci.mjs` after checkout and skip cache restoration, Node setup, dependency installation, and gate execution when every changed file is in a known non-runtime area such as docs, specs, template update packs, or agent skill material. Unknown paths, missing commit ranges, and classifier failures take the safe path and run the expensive gates. The full `quality-mutation` workflow job is reserved for GitHub Actions with a `github.server_url` guard, so Local CI runs skip it; use `npm run quality:gate:deep` or `npm run mutation` when local mutation feedback is needed. Dependency installation uses plain `npm ci`; Local CI explicitly prewarms through the fast job's stable `install` step, then gives parallel jobs isolated writable `node_modules` views. This prevents cross-job cache races while avoiding duplicate cold installs, unnecessary npm self-upgrades in CI, and mutable action tags.
++The GitHub Actions CI workflow splits fast checks, browser checks, and mutation checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.63.0-noble`, pins every `uses:` action reference to a full commit SHA, and cancels superseded runs on the same ref. The browser and mutation jobs use `scripts/classify-expensive-ci.mjs` after checkout and skip cache restoration, Node setup, dependency installation, and gate execution when every changed file is in a known non-runtime area such as docs, specs, template update packs, or agent skill material. Unknown paths, missing commit ranges, and classifier failures take the safe path and run the expensive gates. The full `quality-mutation` workflow job is reserved for GitHub Actions with a `github.server_url` guard, so Local CI runs skip it; use `npm run quality:gate:deep` or `npm run mutation` when local mutation feedback is needed. Dependency installation uses plain `npm ci`; Local CI explicitly prewarms through the fast job's stable `install` step, then gives parallel jobs isolated writable `node_modules` views. This prevents cross-job cache races while avoiding duplicate cold installs, unnecessary npm self-upgrades in CI, and mutable action tags.
+ 
+ The starter UI now follows the same Tailwind v4 baseline shape as `thesis-journey-tracker`: Tailwind input lives in `src/tailwind-input.css`, generated CSS is written to `.generated/styles.css`, and Wrangler runs `npm run build:css` automatically before local development.
+ 
+@@ -114,6 +114,8 @@ Mutation testing uses Stryker with Vitest and the TypeScript checker. `npm run m
+ 
+ The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `src/**/*.ts`, and `npm run typecheck` runs TypeScript 7. During the TypeScript 7.0 transition, `typescript` is intentionally pinned to the `@typescript/typescript6` compatibility package for tools that import the compiler API, while `typescript-7` provides the compiler used by the typecheck script.
+ 
++The October 2026 dependency refresh keeps Vitest and its coverage providers at `4.1.11`: the Room State kit's `@cloudflare/vitest-plugin` `1.3.5` still declares Vitest `^4.1.0`. Keep those packages aligned when updating capability manifests and installation recipes. Playwright's package and browser CI image must also move together. A full `npm audit` checks development tooling that the normal shipped-runtime audit omits; the refresh resolves its findings through Wrangler's updated dependencies and compatible transitive lockfile updates without adding overrides.
++
+ Oxlint provides the baseline JavaScript and TypeScript correctness lint. `npm run lint` uses Oxlint's default rules, treats warnings as failures, and stays separate from both Prettier formatting and TypeScript project checking. The affected-file guardrail scopes Oxlint to changed JavaScript and TypeScript files during iteration and pre-push checks.
+ 
+ `npm run format:check` enables Prettier's content-based cache at `.cache/prettier`. Repeated checks skip unchanged files while content hashing keeps the result safe across branch switches and timestamp changes. The cache is disposable, ignored local state; remove it when measuring a cold formatting run. CI does not restore this cache, so every clean runner still performs a cold check.
+diff --git a/package.json b/package.json
+index b7722ab..e9a7760 100644
+--- a/package.json
++++ b/package.json
+@@ -2,9 +2,9 @@
+   "name": "vibe-template",
+   "private": true,
+   "type": "module",
+-  "packageManager": "npm@11.19.1",
++  "packageManager": "npm@11.21.0",
+   "engines": {
+-    "node": "24.20.0",
++    "node": "24.21.0",
+     "npm": ">=11 <12"
+   },
+   "devEngines": {
+@@ -52,24 +52,24 @@
+     "worker:node-import-guard": "node ./scripts/assert-no-worker-node-imports.mjs"
+   },
+   "devDependencies": {
+-    "@playwright/test": "1.62.1",
++    "@playwright/test": "1.63.0",
+     "@stryker-mutator/core": "10.0.0",
+     "@stryker-mutator/typescript-checker": "10.0.0",
+     "@stryker-mutator/vitest-runner": "10.0.0",
+     "@tailwindcss/cli": "4.3.3",
+-    "@types/node": "24.13.3",
++    "@types/node": "24.19.1",
+     "@vitest/coverage-v8": "4.1.11",
+-    "chrome-launcher": "1.2.1",
+-    "fallow": "3.21.0",
+-    "lighthouse": "13.4.1",
+-    "oxlint": "1.80.0",
+-    "prettier": "3.9.6",
++    "chrome-launcher": "1.2.2",
++    "fallow": "3.31.0",
++    "lighthouse": "13.5.0",
++    "oxlint": "1.86.0",
++    "prettier": "3.9.9",
+     "run-local-ci": "0.18.1",
+     "tailwindcss": "4.3.3",
+     "typescript": "npm:@typescript/typescript6@6.0.2",
+     "typescript-7": "npm:typescript@7.0.2",
+     "vitest": "4.1.11",
+-    "wrangler": "4.127.1",
+-    "yaml": "2.9.0"
++    "wrangler": "4.146.0",
++    "yaml": "2.9.1"
+   }
+ }
+diff --git a/specs/quality-gate/spec.md b/specs/quality-gate/spec.md
+index f15189d..ba29c32 100644
+--- a/specs/quality-gate/spec.md
++++ b/specs/quality-gate/spec.md
+@@ -50,7 +50,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
+ - **Affected file helper logic:** `scripts/affected-file-utils.mjs`
+ - **Runtime pin source:** `package.json#engines.node`
+ - **Package manager hint source:** `package.json#packageManager`
+-- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.62.1-noble`
++- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.63.0-noble`
++- **Current Vitest compatibility:** `4.1.11` with matching coverage providers; the Room State kit's Cloudflare testing plugin requires `^4.1.0`, so the dependency refresh does not adopt Vitest 5
+ - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
+ - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
+ - **Worker Node-import guard:** `scripts/assert-no-worker-node-imports.mjs`
+diff --git a/specs/agent-skills/spec.md b/specs/agent-skills/spec.md
+index de33ed8..e3884dc 100644
+--- a/specs/agent-skills/spec.md
++++ b/specs/agent-skills/spec.md
+@@ -42,8 +42,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ - **Capability architecture review skill:** `.codex/skills/architecture-review/`
+ - **Architecture-feedback integration:** review-skill behavior is owned here; `specs/architecture-feedback/spec.md` owns its composition with deterministic source-shape evidence
+ - **Web-platform implementation skill:** `.codex/skills/modern-web-guidance/`
+-- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `684ab9d7c6b78fc2cd5677912d874397cb2e5dfa`, which labels itself `0.0.179`
+-- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@0.0.180`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v0.0.180` and commit `29ecd9546013e32e0a597ad5ab3a2fc26add1f1d`, with npm integrity `sha512-55diU2dH4nMF2DKWmvOdeLKWUvTTz32UIcSlYFSa+AN699MVC7pvqJ4mlFMmPd7qfnRJiP/FxKcSkIOP0MSDDw==`
++- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `84ae7251ee919239d5ea85aef25897983f26601e`, published as `0.0.191`; [ADR-067](../../docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md) records the review
++- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@0.0.191`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v0.0.191` and commit `7b4b980569da01d6e9f4379bd852b903fac0554d`, with npm integrity `sha512-BF3UZQKsA3+Xi3iSkxMn68Nx2xaf6fr+awsVDIg4F9Vqfh8wvzOTTWtHnktOJOxfrr+hzZzWmrBs5vR3MO4dBA==`
+ - **Browser-support target:** Baseline Widely available for core behavior, with progressive enhancement for newer features unless a project records a narrower target
+ - **Guidance authority:** retrieved guidance informs implementation; repository architecture, specs, source conventions, and verification remain authoritative
+ - **Browser verification boundary:** the current Playwright and Lighthouse setup provides Chromium evidence and does not claim cross-browser compatibility
+@@ -127,7 +127,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ - **Specification and TDD structure:** apply the same metadata validation to `.codex/skills/to-spec/` and `.codex/skills/tdd/`
+ - **Architecture review structure:** validate `.codex/skills/architecture-review/` metadata and confirm its workflow routes lasting outcomes into architecture docs, ADRs, or specs
+ - **Project start structure:** validate `.codex/skills/start-project/` metadata and confirm its workflow is read-only until the exact pruning plan is approved
+-- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands pin `modern-web-guidance@0.0.180` with `DISABLE_TELEMETRY=1`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
++- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands pin `modern-web-guidance@0.0.191` with `DISABLE_TELEMETRY=1`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
+ - **README catalog:** confirm every `.codex/skills/*/SKILL.md` has a corresponding README link and that explicit-only workflows are identified
+ 
+ ### Scenarios
+diff --git a/docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md b/docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md
+new file mode 100644
+index 0000000..20c27da
+--- /dev/null
++++ b/docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md
+@@ -0,0 +1,41 @@
++# ADR-067: Refresh Reviewed Web Guidance
++
++**Status:** Implemented
++
++**Date:** 2026-10-02
++
++## Context
++
++ADR-052 pinned Modern Web Guidance's instruction provenance and executable artifact separately. The reviewed `0.0.180` artifact has newer guide releases, and the user authorized the dependency updates identified in the maintenance review.
++
++The upstream `0.0.191` instructions still mandate broad frontend activation, use `@latest`, and give retrieved examples stronger authority than this template permits. The local adaptation remains necessary.
++
++## Decision
++
++Review the instruction snapshot from `GoogleChrome/modern-web-guidance` revision `84ae7251ee919239d5ea85aef25897983f26601e`, published as `0.0.191`, while retaining narrow local routing and repository authority.
++
++Pin search and retrieval to `modern-web-guidance@0.0.191`. Its npm artifact records `GoogleChrome/modern-web-guidance-src` tag `v0.0.191` and source commit `7b4b980569da01d6e9f4379bd852b903fac0554d`, with integrity `sha512-BF3UZQKsA3+Xi3iSkxMn68Nx2xaf6fr+awsVDIg4F9Vqfh8wvzOTTWtHnktOJOxfrr+hzZzWmrBs5vR3MO4dBA==`.
++
++Verify the downloaded tarball against that integrity, inspect the telemetry opt-out, and exercise search and retrieval with `DISABLE_TELEMETRY=1` in a disposable npm cache. Keep the existing license, Baseline support policy, primary-documentation fallback, and prohibition on automatic or moving-version updates.
++
++This supersedes only ADR-052's reviewed snapshot and artifact coordinates. Its integration boundaries and optional browser-types recommendation remain active.
++
++## Trigger
++
++The dependency review found the newer artifact; the user requested its update alongside the project toolchain.
++
++## Consequences
++
++- **Positive:** browser implementation can retrieve the newer guide set through the same reviewed interface.
++- **Negative:** the artifact remains a sizeable on-demand download and needs deliberate review for future upgrades.
++- **Neutral:** no application dependency, guide corpus, new persistent write target, or CI gate is added.
++
++## Alternatives Considered
++
++### Retain 0.0.180
++
++This avoids a download but leaves the guide set behind the reviewed release without a compatibility reason.
++
++### Install The Upstream Instructions Unchanged
++
++Their broad activation and mutable version bypass the repository's focused routing, reviewed pins, and local authority.

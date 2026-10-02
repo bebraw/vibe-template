@@ -4,6 +4,8 @@
 
 **Date:** 2026-08-31
 
+The named-model assumption is superseded by [ADR-066](./ADR-066-scope-agent-guidance-to-the-task.md); the compact skill and removal decisions remain active.
+
 ## Context
 
 The repository had 26 active local skill entrypoints containing 15,727 words, including 1,023 words of descriptions exposed during skill routing. Several skills repeated generic engineering advice already handled by capable agents, while Wrangler, Worker, Sandbox, and performance skills embedded version-sensitive command catalogs and tutorials despite the repository's retrieval-first architecture.

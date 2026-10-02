@@ -1,0 +1,220 @@
+diff --git a/.codex/skills/to-spec/SKILL.md b/.codex/skills/to-spec/SKILL.md
+index d679466..0438901 100644
+--- a/.codex/skills/to-spec/SKILL.md
++++ b/.codex/skills/to-spec/SKILL.md
+@@ -9,12 +9,12 @@ Write accepted behavior to `specs/<feature-domain>/spec.md`. Prefer an existing
+ 
+ ## Readiness
+ 
+-Read the settled conversation, referenced wayfinding map, `AGENTS.md`, architecture docs, relevant ADRs, existing spec, and enough code to verify current behavior. Stop and name any unresolved decision that would materially change the contract or architecture. Do not ask for facts available in the repository.
++Use the settled conversation and the repository context relevant to the requested domain: an existing spec, referenced wayfinding results, applicable architecture decisions, and code needed to verify current behavior. Stop and name any unresolved decision that would materially change the contract or architecture. Do not ask for facts available in the repository.
+ 
+ ## Process
+ 
+ 1. Select one independently evolvable feature domain.
+-2. Present the target path and concise synthesis of problem, behavior, and architecture impact; confirm before writing.
++2. State the target path and concise synthesis of problem, behavior, and architecture impact. Proceed when the user has requested specification and the destination and contract are settled; ask only about a material unresolved choice.
+ 3. Use `specs/feature-template/spec.md` as the baseline while preserving useful domain sections.
+ 4. Record only verified context: purpose, entry points, data and dependency boundaries, prohibited approaches, observable completion criteria, regression guardrails, exact verification, and important Given/When/Then scenarios.
+ 5. Add or update an ADR when settled context changes a lasting architecture decision; link it instead of duplicating rationale.
+diff --git a/AGENTS.md b/AGENTS.md
+index af05ec8..4d85abe 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -27,6 +27,8 @@
+ - Before making irreversible structural changes.
+ - Before adding new lasting write targets such as generated output directories, local state files, caches, archives, or persisted tool artifacts.
+ 
++Ask only when the action is not already authorized in the conversation. Existing authorization carries through necessary implementation and verification; it does not authorize unrelated scope or bypass explicit workflow checkpoints such as the Project Start Plan.
++
+ **ALWAYS**
+ 
+ - Consult `.asdlc/SKILL.md` before giving ASDLC-specific guidance.
+@@ -37,19 +39,10 @@
+ - Add or update an ADR in `docs/adrs/` in the same change set whenever a decision introduces or changes a lasting architectural constraint, selects between credible alternatives, or supersedes an earlier architecture decision. Keep drafts in `docs/adrs/proposed/`, approved-but-not-yet-implemented decisions in `docs/adrs/accepted/`, and implemented decisions in `docs/adrs/implemented/`.
+ - Record global architecture rules in `ARCHITECTURE.md` and feature-level contracts in `specs/{feature-domain}/spec.md`.
+ - Treat completed feature work as spec work: create a new `specs/{feature-domain}/spec.md` or update the relevant existing spec in the same change set whenever feature behavior, contracts, workflows, or quality guardrails change.
+-- Prefer the Local CI workflow before relying on remote CI when workflow-sensitive validation is required.
+-- Treat a non-documentation change as ready after the quality gate passes. Also require local CI when the change touches GitHub Actions workflows, package metadata or dependency installation, build or container setup, browser CI setup, or when the user asks for full PR or release readiness.
+ - Treat `package.json` as the source of truth for pinned Node and npm versions, with `.nvmrc` kept in sync as a convenience mirror for `nvm use`.
+ - Read the relevant library or tool documentation carefully before applying, upgrading, or reconfiguring it in the project, especially when behavior is version-sensitive.
+-- Use `npm run quality:gate:fast` for quick local iteration, `npm run quality:gate` for the full baseline gate, and `npm run ci:local` for the local workflow check.
+-- Use `npm run quality:gate:deep` when an explicit local readiness check should also include incremental mutation testing.
+-- Use `npm run quality:affected` for affected-file guardrails while iterating or before push when a full fast gate would do avoidable work.
+-- Treat `npm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.
+ - Treat high automated test coverage as part of done work for `src/` code. The baseline gate should fail when `src/` code exists without matching unit coverage.
+ - Keep new workflow write targets explicit and documented instead of adding ad hoc file writes.
+-- Use targeted checks while iterating, then run `npm run quality:gate` before treating a non-documentation change as ready.
+-- Run `npm run ci:local` for workflow-sensitive changes and explicit full PR or release readiness checks. Ordinary source, test, and tooling changes that do not cross those boundaries do not require Local CI.
+-- For documentation-only changes that do not alter executable instructions or workflow contracts, use the smallest relevant local checks such as `npm run format:check`.
+ 
+ ## TypeScript
+ 
+@@ -58,12 +51,13 @@
+ - Prefer explicit domain types over inferred object blobs, especially at module, API, fixture, and workflow boundaries.
+ - Do not silence errors with `as unknown as`, `@ts-ignore`, or broad casts. Use local guards, narrower interfaces, or small helper types instead.
+ 
+-## Local CI
++## Verification
+ 
+-- Use the project-local [`local-ci`](./.codex/skills/local-ci/SKILL.md) skill when testing, running checks, or validating code changes before pushing.
+-- Use Local CI to validate workflow-sensitive changes before relying on remote GitHub Actions.
+-- Require Local CI when a change touches GitHub Actions workflows, package metadata or dependency installation, build or container setup, browser CI setup, or when the user asks for full PR or release readiness.
+-- Skip Local CI for ordinary source, test, tooling, and documentation changes that do not cross those workflow-sensitive boundaries.
++- Use targeted checks or `npm run quality:affected` while iterating; `npm run quality:gate:fast` provides the fast baseline. TypeScript changes require `npm run typecheck`, which is included in the baseline gates.
++- Run `npm run quality:gate` before treating a non-documentation change as ready. Use `npm run quality:gate:deep` when explicit local readiness should also include incremental mutation testing.
++- Also run `npm run ci:local` for GitHub Actions workflows, package metadata or dependency installation, build or container setup, browser CI setup, and explicit full PR or release readiness. Use the project-local [`local-ci`](./.codex/skills/local-ci/SKILL.md) skill for this workflow and paused-runner retries before relying on remote CI.
++- Ordinary source, test, and tooling changes outside those workflow-sensitive boundaries do not require Local CI. Documentation-only changes that do not alter executable instructions or workflow contracts use the smallest relevant check, such as `npm run format:check`.
++- The local quality gates and capability checks use disposable fixtures without production access. Run them, fix failures caused by the requested change, and retry affected checks within the authorized scope. After required checks pass, repeat or broaden verification only for a new change, failure, or unresolved concern.
+ 
+ ## Cloudflare
+ 
+@@ -90,7 +84,7 @@
+ 
+ ## Implementation Context
+ 
+-- Before implementation, read `README.md` and follow its context links to the relevant feature spec, authoritative inputs, architecture decisions, and operational docs. Use their owned facts instead of asking the user to repeat documented context.
++- Use `README.md` for context discovery when needed, then read the feature spec, authoritative inputs, architecture decisions, and operational docs relevant to the requested change. Routine edits do not require a whole-project documentation pass. Use documented facts instead of asking the user to repeat them.
+ - Complete the requested increment and stop at its documented boundary. Deferred capabilities provide context, not authorization to implement them.
+ - Preserve documented working behavior and persistent content requirements when adding capabilities or changing presentation. Later explicit user instructions take precedence over earlier project guidance; update the authoritative documentation when they change a durable requirement.
+ - Leave unspecified, reversible implementation and visual choices to agent judgment.
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 92d4296..98796bf 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -15,7 +15,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
+ - Add or update an ADR in `docs/adrs/` whenever a change introduces or changes a lasting architectural constraint, selects between credible architectural alternatives, or replaces an earlier decision. Keep drafts in `docs/adrs/proposed/`, approved-but-not-yet-implemented decisions in `docs/adrs/accepted/`, and implemented decisions in `docs/adrs/implemented/`.
+ - Create or update the relevant feature spec in `specs/` in the same change set whenever feature behavior, contracts, workflows, or regression guardrails change.
+ - Add or update a template update pack in `.template/updates/` in the same change set whenever a reusable template maintenance change should be portable to downstream projects.
+-- Keep agent skill descriptions discriminating and entrypoints limited to project-specific decisions, invariants, exact local commands, and safety boundaries. Assume a capable `gpt-5.6-sol`-class baseline; retrieve version-sensitive manuals instead of vendoring command catalogs or teaching generic engineering judgment.
++- Keep agent skill descriptions discriminating and entrypoints limited to project-specific decisions, invariants, exact local commands, and safety boundaries. Describe required repository navigation, tool use, and engineering judgment as capabilities rather than a named model. Read task-relevant context, honor existing authorization within its scope, and retrieve version-sensitive manuals; see [ADR-066](docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md).
+ - Keep optional multi-session discovery maps under `docs/wayfinding/<effort>.md`. Treat them as working context rather than durable authority, and promote lasting outcomes into `ARCHITECTURE.md`, ADRs, or feature specs.
+ - Use focused red-green slices for observable runtime behavior and regression fixes when a stable test seam exists. When no meaningful failing test can be written, use and state the relevant deterministic verification instead.
+ - For every new or materially expanded independently evolvable capability, record its source root, composition root, state authority, public contracts, and dependency direction in the relevant feature spec.
+diff --git a/docs/adrs/implemented/ADR-049-adopt-local-spec-and-tdd-skills.md b/docs/adrs/implemented/ADR-049-adopt-local-spec-and-tdd-skills.md
+index 7008f19..68a4ce5 100644
+--- a/docs/adrs/implemented/ADR-049-adopt-local-spec-and-tdd-skills.md
++++ b/docs/adrs/implemented/ADR-049-adopt-local-spec-and-tdd-skills.md
+@@ -2,6 +2,8 @@
+ 
+ **Status:** Implemented
+ 
++The adapted To Spec confirmation policy is superseded by [ADR-066](./ADR-066-scope-agent-guidance-to-the-task.md); the specification and TDD ownership decisions remain active.
++
+ **Date:** 2026-08-03
+ 
+ ## Context
+diff --git a/docs/adrs/implemented/ADR-054-target-a-compact-agent-skill-baseline.md b/docs/adrs/implemented/ADR-054-target-a-compact-agent-skill-baseline.md
+index c914ff7..26ef5ca 100644
+--- a/docs/adrs/implemented/ADR-054-target-a-compact-agent-skill-baseline.md
++++ b/docs/adrs/implemented/ADR-054-target-a-compact-agent-skill-baseline.md
+@@ -4,6 +4,8 @@
+ 
+ **Date:** 2026-08-31
+ 
++The named-model assumption is superseded by [ADR-066](./ADR-066-scope-agent-guidance-to-the-task.md); the compact skill and removal decisions remain active.
++
+ ## Context
+ 
+ The repository had 26 active local skill entrypoints containing 15,727 words, including 1,023 words of descriptions exposed during skill routing. Several skills repeated generic engineering advice already handled by capable agents, while Wrangler, Worker, Sandbox, and performance skills embedded version-sensitive command catalogs and tutorials despite the repository's retrieval-first architecture.
+diff --git a/specs/agent-skills/spec.md b/specs/agent-skills/spec.md
+index de33ed8..241234c 100644
+--- a/specs/agent-skills/spec.md
++++ b/specs/agent-skills/spec.md
+@@ -6,7 +6,7 @@
+ 
+ The template should include agent workflows that are broadly useful to its baseline without vendoring large product documentation snapshots already available from connected platform tools.
+ 
+-The skill baseline targets capable `gpt-5.6-sol`-class agents that can inspect repositories, use tools, and apply ordinary engineering judgment. Skill context should therefore carry only routing, project-specific decisions, non-obvious invariants, exact local interfaces, and safety boundaries.
++The skill baseline targets agents that can inspect repositories, use tools, and apply ordinary engineering judgment, without naming a model generation. Skill context should carry routing, project-specific decisions, non-obvious invariants, exact local interfaces, and safety boundaries. Context reading and approval requests are scoped to the task; explicit user authorization remains effective through necessary implementation and verification.
+ 
+ Large, uncertain initiatives also need a lightweight way to preserve discovery across sessions without requiring an external issue tracker or turning transient planning notes into architectural authority.
+ 
+@@ -23,7 +23,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ - **Copy policy:** keep an intentional distribution copy byte-equivalent to its canonical `.codex/skills/` source unless the target surface requires a documented compatibility adaptation
+ - **Composition roots:** `AGENTS.md` for model routing and `README.md` for user discovery
+ - **Skill contracts:** each canonical `SKILL.md` plus optional `agents/openai.yaml`
+-- **Agent capability baseline:** `gpt-5.6-sol`-class repository navigation, tool use, and engineering judgment
++- **Agent capability baseline:** repository navigation, tool use, and engineering judgment; [ADR-066](../../docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md) owns contextual reading and authorization policy
+ - **Instruction budget:** concise descriptions and entrypoints; version-sensitive manuals stay in current primary documentation rather than the prompt
+ - **Dependency direction:** routing and distribution surfaces point to canonical skills; canonical skills do not depend on their copies
+ - **Cloudflare knowledge and account layer:** connected Cloudflare MCP
+@@ -104,6 +104,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ - The baseline must not reintroduce `cloudflare`, `agents-sdk`, `cloudflare-email-service`, or `durable-objects` as vendored skills without an explicit architecture change.
+ - The baseline must not reintroduce `sandbox-sdk` or communication-style skill suites without adopting their capability explicitly.
+ - Compact rewrites must preserve destructive-action approval, secret handling, retrieval pins, telemetry controls, public-seam testing, evidence thresholds, and repository verification rules.
++- Explicit specification requests proceed when the domain, destination, and contract are settled; To Spec asks only about material unresolved choices. Project Start retains its approved-plan checkpoint.
++- Read only context relevant to the requested task, and do not repeat approvals already supplied for that scope. Required quality gates remain mandatory, while additional verification needs a change, failure, or unresolved concern.
+ - Version-sensitive commands and thresholds must be retrieved or resolved from installed tool help rather than accumulated in skill entrypoints.
+ - The Worker and Wrangler skill copies must remain available while this repository is a Cloudflare Worker starter.
+ - Removing a baseline skill must not remove its runtime dependency or product implementation implicitly.
+@@ -178,7 +180,19 @@ Browser-facing implementation needs current web-platform and compatibility guida
+ 
+ - Given: the user has settled the feature behavior and important constraints
+ - When: the user explicitly invokes To Spec
+-- Then: the agent confirms one `specs/<feature-domain>/spec.md` target and synthesizes the agreed Blueprint and Contract without creating tracker state
++- Then: the agent states one settled `specs/<feature-domain>/spec.md` target and writes the agreed Blueprint and Contract without another approval request or tracker state
++
++**Scenario: Routine edit has a known owner**
++
++- Given: the requested edit has a clear source or documentation owner
++- When: the agent gathers context
++- Then: it reads the relevant contract and nearby evidence without loading unrelated docs or skills
++
++**Scenario: User already authorized the action**
++
++- Given: the conversation explicitly authorizes an action within the requested scope
++- When: a skill describes an approval boundary for that action
++- Then: the agent continues necessary work without asking again, while retaining explicit workflow checkpoints and authorization for unrelated actions
+ 
+ **Scenario: Specification still contains a material decision**
+ 
+diff --git a/docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md b/docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md
+new file mode 100644
+index 0000000..2d3b4d5
+--- /dev/null
++++ b/docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md
+@@ -0,0 +1,43 @@
++# ADR-066: Scope Agent Guidance To The Task
++
++**Status:** Implemented
++
++**Date:** 2026-10-02
++
++## Context
++
++ADR-054 already removed unused skills and condensed the retained entrypoints. The remaining baseline still names a particular model generation, repeats verification requirements in `AGENTS.md`, requires README discovery before every implementation, and makes To Spec request confirmation even after a user has explicitly asked to record a settled contract.
++
++These instructions add reading and approval steps without resolving uncertainty. Current [OpenAI skill guidance](https://developers.openai.com/plugins/build/skills) and its [instruction review guidance](https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra) support narrow routing, contextual reading, and clear decision boundaries. Repository-specific constraints remain necessary across different agents.
++
++## Decision
++
++Describe the baseline by repository navigation, tool use, and engineering judgment rather than a model name. Retain ADR-054's compact, retrieval-first skills, precise routing, intentional distribution copies, and removal of unused product and persona suites.
++
++Use README links for discovery when needed and load the contracts relevant to the requested task. Consolidate verification policy in one `AGENTS.md` section without changing required gates. Allow local checks, fixes caused by the requested change, and affected retries within existing authorization; additional verification needs a new change, failure, or unresolved concern.
++
++To Spec states its destination and proceeds when the user has requested specification and the destination and contract are settled. It still asks about material unresolved choices and does not authorize implementation.
++
++Existing authorization carries through necessary work within its scope. Preserve dependency and lasting-write approval when not already authorized, irreversible-action boundaries, and Project Start's explicit approved-plan checkpoint.
++
++This supersedes the named-model assumption in ADR-054 and the unconditional confirmation step in ADR-049's adapted To Spec workflow; their other decisions remain active.
++
++## Trigger
++
++The user requested dependency maintenance and a review of legacy code and skills as agent capabilities improve.
++
++## Consequences
++
++- **Positive:** routine work loads less irrelevant context, settled specification requests complete directly, and approvals remain tied to actual uncertainty or scope.
++- **Negative:** agents must judge which context matters; lower-capability environments may need focused additional guidance demonstrated by failures.
++- **Neutral:** runtime behavior, skill ownership, required quality gates, and destructive workflow checkpoints stay unchanged.
++
++## Alternatives Considered
++
++### Replace The Named Model With A Newer Model
++
++This would age again and imply that a model name proves the capabilities required by the repository.
++
++### Delete The Remaining Skills Or Relax The Quality Gates
++
++The retained skills carry project contracts and exact operational interfaces. Better model reasoning does not establish dependency compatibility, runtime correctness, or authorization for destructive changes.

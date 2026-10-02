@@ -2,9 +2,9 @@
   "name": "vibe-template",
   "private": true,
   "type": "module",
-  "packageManager": "npm@11.19.1",
+  "packageManager": "npm@11.21.0",
   "engines": {
-    "node": "24.20.0",
+    "node": "24.21.0",
     "npm": ">=11 <12"
   },
   "devEngines": {
@@ -52,24 +52,24 @@
     "worker:node-import-guard": "node ./scripts/assert-no-worker-node-imports.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "1.63.0",
     "@stryker-mutator/core": "10.0.0",
     "@stryker-mutator/typescript-checker": "10.0.0",
     "@stryker-mutator/vitest-runner": "10.0.0",
     "@tailwindcss/cli": "4.3.3",
-    "@types/node": "24.13.3",
+    "@types/node": "24.19.1",
     "@vitest/coverage-v8": "4.1.11",
-    "chrome-launcher": "1.2.1",
-    "fallow": "3.21.0",
-    "lighthouse": "13.4.1",
-    "oxlint": "1.80.0",
-    "prettier": "3.9.6",
+    "chrome-launcher": "1.2.2",
+    "fallow": "3.31.0",
+    "lighthouse": "13.5.0",
+    "oxlint": "1.86.0",
+    "prettier": "3.9.9",
     "run-local-ci": "0.18.1",
     "tailwindcss": "4.3.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
     "vitest": "4.1.11",
-    "wrangler": "4.127.1",
-    "yaml": "2.9.0"
+    "wrangler": "4.146.0",
+    "yaml": "2.9.1"
   }
 }

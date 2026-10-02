@@ -8,7 +8,7 @@ Install exact versions compatible with the kit snapshot:
 
 ```bash
 npm uninstall @cloudflare/vitest-pool-workers @vitest/coverage-v8
-npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.1.4 @vitest/coverage-istanbul@4.1.11 vitest@4.1.11
+npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.3.5 @vitest/coverage-istanbul@4.1.11 vitest@4.1.11
 ```
 
 If the target already uses Vitest, reconcile its pinned version with the plugin's peer dependency instead of installing a second test stack. When the target collects Worker-runtime coverage, set `test.coverage.provider` to `"istanbul"`; native V8 coverage is not supported in the Workers runtime. Preserve its existing include, exclude, reporter, and threshold settings.

@@ -4,6 +4,8 @@
 
 **Date:** 2026-08-10
 
+Current instruction and executable coordinates are recorded in [ADR-067](./ADR-067-refresh-reviewed-web-guidance.md); the scoped integration decision remains active.
+
 ## Context
 
 The template is an AI-assisted, browser-facing Worker starter. Its local frontend skills cover design direction, established visual style, and measured performance, but they do not provide a focused way to discover current HTML, CSS, Web API, browser-support, and fallback patterns before implementation.

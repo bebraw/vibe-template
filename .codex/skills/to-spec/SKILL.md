@@ -9,12 +9,12 @@ Write accepted behavior to `specs/<feature-domain>/spec.md`. Prefer an existing 
 
 ## Readiness
 
-Read the settled conversation, referenced wayfinding map, `AGENTS.md`, architecture docs, relevant ADRs, existing spec, and enough code to verify current behavior. Stop and name any unresolved decision that would materially change the contract or architecture. Do not ask for facts available in the repository.
+Use the settled conversation and the repository context relevant to the requested domain: an existing spec, referenced wayfinding results, applicable architecture decisions, and code needed to verify current behavior. Stop and name any unresolved decision that would materially change the contract or architecture. Do not ask for facts available in the repository.
 
 ## Process
 
 1. Select one independently evolvable feature domain.
-2. Present the target path and concise synthesis of problem, behavior, and architecture impact; confirm before writing.
+2. State the target path and concise synthesis of problem, behavior, and architecture impact. Proceed when the user has requested specification and the destination and contract are settled; ask only about a material unresolved choice.
 3. Use `specs/feature-template/spec.md` as the baseline while preserving useful domain sections.
 4. Record only verified context: purpose, entry points, data and dependency boundaries, prohibited approaches, observable completion criteria, regression guardrails, exact verification, and important Given/When/Then scenarios.
 5. Add or update an ADR when settled context changes a lasting architecture decision; link it instead of duplicating rationale.

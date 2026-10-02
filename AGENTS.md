@@ -27,6 +27,8 @@
 - Before making irreversible structural changes.
 - Before adding new lasting write targets such as generated output directories, local state files, caches, archives, or persisted tool artifacts.
 
+Ask only when the action is not already authorized in the conversation. Existing authorization carries through necessary implementation and verification; it does not authorize unrelated scope or bypass explicit workflow checkpoints such as the Project Start Plan.
+
 **ALWAYS**
 
 - Consult `.asdlc/SKILL.md` before giving ASDLC-specific guidance.
@@ -37,19 +39,10 @@
 - Add or update an ADR in `docs/adrs/` in the same change set whenever a decision introduces or changes a lasting architectural constraint, selects between credible alternatives, or supersedes an earlier architecture decision. Keep drafts in `docs/adrs/proposed/`, approved-but-not-yet-implemented decisions in `docs/adrs/accepted/`, and implemented decisions in `docs/adrs/implemented/`.
 - Record global architecture rules in `ARCHITECTURE.md` and feature-level contracts in `specs/{feature-domain}/spec.md`.
 - Treat completed feature work as spec work: create a new `specs/{feature-domain}/spec.md` or update the relevant existing spec in the same change set whenever feature behavior, contracts, workflows, or quality guardrails change.
-- Prefer the Local CI workflow before relying on remote CI when workflow-sensitive validation is required.
-- Treat a non-documentation change as ready after the quality gate passes. Also require local CI when the change touches GitHub Actions workflows, package metadata or dependency installation, build or container setup, browser CI setup, or when the user asks for full PR or release readiness.
 - Treat `package.json` as the source of truth for pinned Node and npm versions, with `.nvmrc` kept in sync as a convenience mirror for `nvm use`.
 - Read the relevant library or tool documentation carefully before applying, upgrading, or reconfiguring it in the project, especially when behavior is version-sensitive.
-- Use `npm run quality:gate:fast` for quick local iteration, `npm run quality:gate` for the full baseline gate, and `npm run ci:local` for the local workflow check.
-- Use `npm run quality:gate:deep` when an explicit local readiness check should also include incremental mutation testing.
-- Use `npm run quality:affected` for affected-file guardrails while iterating or before push when a full fast gate would do avoidable work.
-- Treat `npm run typecheck` as part of the baseline gate whenever TypeScript files or typed tooling config are involved.
 - Treat high automated test coverage as part of done work for `src/` code. The baseline gate should fail when `src/` code exists without matching unit coverage.
 - Keep new workflow write targets explicit and documented instead of adding ad hoc file writes.
-- Use targeted checks while iterating, then run `npm run quality:gate` before treating a non-documentation change as ready.
-- Run `npm run ci:local` for workflow-sensitive changes and explicit full PR or release readiness checks. Ordinary source, test, and tooling changes that do not cross those boundaries do not require Local CI.
-- For documentation-only changes that do not alter executable instructions or workflow contracts, use the smallest relevant local checks such as `npm run format:check`.
 
 ## TypeScript
 
@@ -58,12 +51,13 @@
 - Prefer explicit domain types over inferred object blobs, especially at module, API, fixture, and workflow boundaries.
 - Do not silence errors with `as unknown as`, `@ts-ignore`, or broad casts. Use local guards, narrower interfaces, or small helper types instead.
 
-## Local CI
+## Verification
 
-- Use the project-local [`local-ci`](./.codex/skills/local-ci/SKILL.md) skill when testing, running checks, or validating code changes before pushing.
-- Use Local CI to validate workflow-sensitive changes before relying on remote GitHub Actions.
-- Require Local CI when a change touches GitHub Actions workflows, package metadata or dependency installation, build or container setup, browser CI setup, or when the user asks for full PR or release readiness.
-- Skip Local CI for ordinary source, test, tooling, and documentation changes that do not cross those workflow-sensitive boundaries.
+- Use targeted checks or `npm run quality:affected` while iterating; `npm run quality:gate:fast` provides the fast baseline. TypeScript changes require `npm run typecheck`, which is included in the baseline gates.
+- Run `npm run quality:gate` before treating a non-documentation change as ready. Use `npm run quality:gate:deep` when explicit local readiness should also include incremental mutation testing.
+- Also run `npm run ci:local` for GitHub Actions workflows, package metadata or dependency installation, build or container setup, browser CI setup, and explicit full PR or release readiness. Use the project-local [`local-ci`](./.codex/skills/local-ci/SKILL.md) skill for this workflow and paused-runner retries before relying on remote CI.
+- Ordinary source, test, and tooling changes outside those workflow-sensitive boundaries do not require Local CI. Documentation-only changes that do not alter executable instructions or workflow contracts use the smallest relevant check, such as `npm run format:check`.
+- The local quality gates and capability checks use disposable fixtures without production access. Run them, fix failures caused by the requested change, and retry affected checks within the authorized scope. After required checks pass, repeat or broaden verification only for a new change, failure, or unresolved concern.
 
 ## Cloudflare
 
@@ -90,7 +84,7 @@
 
 ## Implementation Context
 
-- Before implementation, read `README.md` and follow its context links to the relevant feature spec, authoritative inputs, architecture decisions, and operational docs. Use their owned facts instead of asking the user to repeat documented context.
+- Use `README.md` for context discovery when needed, then read the feature spec, authoritative inputs, architecture decisions, and operational docs relevant to the requested change. Routine edits do not require a whole-project documentation pass. Use documented facts instead of asking the user to repeat them.
 - Complete the requested increment and stop at its documented boundary. Deferred capabilities provide context, not authorization to implement them.
 - Preserve documented working behavior and persistent content requirements when adding capabilities or changing presentation. Later explicit user instructions take precedence over earlier project guidance; update the authoritative documentation when they change a durable requirement.
 - Leave unspecified, reversible implementation and visual choices to agent judgment.

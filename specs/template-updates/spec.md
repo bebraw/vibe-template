@@ -22,6 +22,8 @@ copying unrelated starter structure.
 - **Guide role:** manual fallback for diverged target projects
 - **Applied update record:** target project docs or package metadata containing the template source, baseline Git revision, and applied update IDs when local pack history is pruned
 - **Current backfilled updates:**
+  - `2026-10-02-dependency-refresh`
+  - `2026-10-02-scope-agent-guidance`
   - `2026-09-08-non-destructive-room-initialization`
   - `2026-06-09-node-24-npm-baseline`
   - `2026-06-10-capability-kits`

@@ -98,6 +98,8 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-063](./implemented/ADR-063-add-non-destructive-room-initialization.md)            | Implemented | Initialize room choices atomically without disturbing existing sessions.                          |
 | [ADR-064](./implemented/ADR-064-use-node-skill-validation.md)                          | Implemented | Validate skill structure through repository-owned Node tooling without PyYAML.                    |
 | [ADR-065](./implemented/ADR-065-offer-security-audit-as-optional-kit.md)               | Implemented | Offer Cloudflare's full security audit as an optional, pinned capability kit.                     |
+| [ADR-066](./implemented/ADR-066-scope-agent-guidance-to-the-task.md)                   | Implemented | Use capability-based, task-scoped agent guidance and honor existing authorization.                |
+| [ADR-067](./implemented/ADR-067-refresh-reviewed-web-guidance.md)                      | Implemented | Review and pin Modern Web Guidance 0.0.191 while retaining local integration boundaries.          |
 
 ## Creating A New ADR
 

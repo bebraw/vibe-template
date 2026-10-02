@@ -2,6 +2,8 @@
 
 **Status:** Implemented
 
+The adapted To Spec confirmation policy is superseded by [ADR-066](./ADR-066-scope-agent-guidance-to-the-task.md); the specification and TDD ownership decisions remain active.
+
 **Date:** 2026-08-03
 
 ## Context

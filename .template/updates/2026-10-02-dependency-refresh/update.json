@@ -1,0 +1,19 @@
+{
+  "id": "2026-10-02-dependency-refresh",
+  "title": "Refresh compatible tooling and reviewed web guidance",
+  "status": "implemented",
+  "risk": "medium",
+  "adrs": ["docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md"],
+  "touches": [
+    "package.json",
+    "package-lock.json",
+    ".nvmrc",
+    ".github/workflows/ci.yml",
+    ".capabilities/",
+    ".codex/skills/modern-web-guidance/",
+    "docs/development.md",
+    "specs/agent-skills/spec.md",
+    "specs/quality-gate/spec.md"
+  ],
+  "checks": ["npm audit", "npm run skill:validate -- .codex/skills/modern-web-guidance", "npm run quality:gate", "npm run ci:local"]
+}
