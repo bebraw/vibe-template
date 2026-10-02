@@ -5,7 +5,7 @@ This kit uses the target's TypeScript and Playwright toolchain. Reconcile existi
 If either tool is absent, install the exact versions after approval:
 
 ```bash
-npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.63.0
+npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.62.1
 ```
 
 ## Package Scripts

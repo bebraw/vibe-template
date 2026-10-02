@@ -7,7 +7,7 @@ Use the target repo's existing client build and static-asset serving path. This 
 If the target does not already use the test dependencies and the user approves adding them:
 
 ```bash
-npm install --save-dev --save-exact @playwright/test@1.63.0 typescript@npm:@typescript/typescript6@6.0.2
+npm install --save-dev --save-exact @playwright/test@1.62.1 typescript@npm:@typescript/typescript6@6.0.2
 ```
 
 If Playwright or TypeScript is already pinned, adapt the test to compatible versions rather than installing second copies.

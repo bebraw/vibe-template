@@ -100,6 +100,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-065](./implemented/ADR-065-offer-security-audit-as-optional-kit.md)               | Implemented | Offer Cloudflare's full security audit as an optional, pinned capability kit.                     |
 | [ADR-066](./implemented/ADR-066-scope-agent-guidance-to-the-task.md)                   | Implemented | Use capability-based, task-scoped agent guidance and honor existing authorization.                |
 | [ADR-067](./implemented/ADR-067-refresh-reviewed-web-guidance.md)                      | Implemented | Review and pin Modern Web Guidance 0.0.191 while retaining local integration boundaries.          |
+| [ADR-068](./implemented/ADR-068-verify-browser-screenshot-tracing.md)                  | Implemented | Verify screenshot tracing and Linux ARM64 Lighthouse audits before distributing browser pins.     |
 
 ## Creating A New ADR
 

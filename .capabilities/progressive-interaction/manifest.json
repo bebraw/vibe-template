@@ -3,7 +3,7 @@
   "description": "Enhance conventional HTML forms with background submission and declared fragment replacement.",
   "dependencies": {
     "dev": {
-      "@playwright/test": "1.63.0",
+      "@playwright/test": "1.62.1",
       "typescript": "npm:@typescript/typescript6@6.0.2"
     }
   },

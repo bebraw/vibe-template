@@ -1,0 +1,17 @@
+{
+  "id": "2026-10-02-playwright-tracing-rollback",
+  "title": "Restore verified Playwright screenshot tracing on Linux ARM64",
+  "status": "implemented",
+  "risk": "medium",
+  "adrs": ["docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md"],
+  "touches": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows/ci.yml",
+    ".capabilities/",
+    "src/browser-tracing.e2e.ts",
+    "docs/development.md",
+    "specs/quality-gate/spec.md"
+  ],
+  "checks": ["npm audit", "npm run e2e", "LIGHTHOUSE_URL=<target-url> npm run lighthouse", "npm run quality:gate", "npm run ci:local"]
+}

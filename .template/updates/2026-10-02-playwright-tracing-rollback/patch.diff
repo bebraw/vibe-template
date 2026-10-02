@@ -1,0 +1,217 @@
+diff --git a/.capabilities/browser-static-assets/manifest.json b/.capabilities/browser-static-assets/manifest.json
+index 93bd929..8669262 100644
+--- a/.capabilities/browser-static-assets/manifest.json
++++ b/.capabilities/browser-static-assets/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add a typed native browser-module build and a Cloudflare Workers static-assets path.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.63.0",
++      "@playwright/test": "1.62.1",
+       "typescript": "npm:@typescript/typescript6@6.0.2",
+       "typescript-7": "npm:typescript@7.0.2"
+     }
+diff --git a/.capabilities/browser-static-assets/recipes/npm.md b/.capabilities/browser-static-assets/recipes/npm.md
+index 364bf3e..0c0c306 100644
+--- a/.capabilities/browser-static-assets/recipes/npm.md
++++ b/.capabilities/browser-static-assets/recipes/npm.md
+@@ -5,7 +5,7 @@ This kit uses the target's TypeScript and Playwright toolchain. Reconcile existi
+ If either tool is absent, install the exact versions after approval:
+ 
+ ```bash
+-npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.63.0
++npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.62.1
+ ```
+ 
+ ## Package Scripts
+diff --git a/.capabilities/lighthouse-performance/manifest.json b/.capabilities/lighthouse-performance/manifest.json
+index 4e2d95d..1098b41 100644
+--- a/.capabilities/lighthouse-performance/manifest.json
++++ b/.capabilities/lighthouse-performance/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add local Lighthouse web-quality reports and configurable category budgets.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.63.0",
++      "@playwright/test": "1.62.1",
+       "chrome-launcher": "1.2.2",
+       "lighthouse": "13.5.0"
+     }
+diff --git a/.capabilities/lighthouse-performance/recipes/npm.md b/.capabilities/lighthouse-performance/recipes/npm.md
+index 27c8dca..51963f0 100644
+--- a/.capabilities/lighthouse-performance/recipes/npm.md
++++ b/.capabilities/lighthouse-performance/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.63.0 chrome-launcher@1.2.2 lighthouse@13.5.0
++npm install --save-dev --save-exact @playwright/test@1.62.1 chrome-launcher@1.2.2 lighthouse@13.5.0
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/progressive-interaction/manifest.json b/.capabilities/progressive-interaction/manifest.json
+index 27ddfe3..bf9a8f3 100644
+--- a/.capabilities/progressive-interaction/manifest.json
++++ b/.capabilities/progressive-interaction/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Enhance conventional HTML forms with background submission and declared fragment replacement.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.63.0",
++      "@playwright/test": "1.62.1",
+       "typescript": "npm:@typescript/typescript6@6.0.2"
+     }
+   },
+diff --git a/.capabilities/progressive-interaction/recipes/npm.md b/.capabilities/progressive-interaction/recipes/npm.md
+index e5ab7ee..054d9a5 100644
+--- a/.capabilities/progressive-interaction/recipes/npm.md
++++ b/.capabilities/progressive-interaction/recipes/npm.md
+@@ -7,7 +7,7 @@ Use the target repo's existing client build and static-asset serving path. This
+ If the target does not already use the test dependencies and the user approves adding them:
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.63.0 typescript@npm:@typescript/typescript6@6.0.2
++npm install --save-dev --save-exact @playwright/test@1.62.1 typescript@npm:@typescript/typescript6@6.0.2
+ ```
+ 
+ If Playwright or TypeScript is already pinned, adapt the test to compatible versions rather than installing second copies.
+diff --git a/.capabilities/quality-gate/manifest.json b/.capabilities/quality-gate/manifest.json
+index 19d8706..281af99 100644
+--- a/.capabilities/quality-gate/manifest.json
++++ b/.capabilities/quality-gate/manifest.json
+@@ -9,7 +9,7 @@
+       "vitest": "4.1.11"
+     },
+     "optionalDev": {
+-      "@playwright/test": "1.63.0"
++      "@playwright/test": "1.62.1"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/quality-gate/recipes/playwright.md b/.capabilities/quality-gate/recipes/playwright.md
+index f5e3e7f..1541f85 100644
+--- a/.capabilities/quality-gate/recipes/playwright.md
++++ b/.capabilities/quality-gate/recipes/playwright.md
+@@ -5,7 +5,7 @@ Use this recipe only after the user approves adding a browser gate.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.63.0
++npm install --save-dev --save-exact @playwright/test@1.62.1
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/readme-screenshot/manifest.json b/.capabilities/readme-screenshot/manifest.json
+index 49dc83e..620ed6f 100644
+--- a/.capabilities/readme-screenshot/manifest.json
++++ b/.capabilities/readme-screenshot/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add local-only Playwright screenshot capture for README images.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.63.0"
++      "@playwright/test": "1.62.1"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/readme-screenshot/recipes/npm.md b/.capabilities/readme-screenshot/recipes/npm.md
+index a2fdf6a..a028551 100644
+--- a/.capabilities/readme-screenshot/recipes/npm.md
++++ b/.capabilities/readme-screenshot/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.63.0
++npm install --save-dev --save-exact @playwright/test@1.62.1
+ ```
+ 
+ Add or merge:
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 4e9ca34..29c1612 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -61,7 +61,7 @@ jobs:
+   quality-browser:
+     runs-on: ubuntu-latest
+     container:
+-      image: mcr.microsoft.com/playwright:v1.63.0-noble
++      image: mcr.microsoft.com/playwright:v1.62.1-noble
+       options: --ipc=host
+     steps:
+       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+diff --git a/package.json b/package.json
+index e9a7760..5d9461b 100644
+--- a/package.json
++++ b/package.json
+@@ -52,7 +52,7 @@
+     "worker:node-import-guard": "node ./scripts/assert-no-worker-node-imports.mjs"
+   },
+   "devDependencies": {
+-    "@playwright/test": "1.63.0",
++    "@playwright/test": "1.62.1",
+     "@stryker-mutator/core": "10.0.0",
+     "@stryker-mutator/typescript-checker": "10.0.0",
+     "@stryker-mutator/vitest-runner": "10.0.0",
+diff --git a/src/browser-tracing.e2e.ts b/src/browser-tracing.e2e.ts
+new file mode 100644
+index 0000000..25efbf8
+--- /dev/null
++++ b/src/browser-tracing.e2e.ts
+@@ -0,0 +1,55 @@
++import { chromium, expect, test } from "@playwright/test";
++
++interface TraceChunk {
++  data: string;
++  base64Encoded?: boolean;
++  eof: boolean;
++}
++
++for (const mode of ["headless shell", "full Chromium"]) {
++  test(`collects screenshot trace events with ${mode}`, async () => {
++    const options = mode === "full Chromium" ? { executablePath: chromium.executablePath(), args: ["--disable-gpu"] } : {};
++    const browser = await chromium.launch(options);
++
++    try {
++      const page = await browser.newPage();
++      const session = await page.context().newCDPSession(page);
++      await session.send("Tracing.start", {
++        categories: "devtools.timeline,v8.execute,disabled-by-default-devtools.screenshot",
++        transferMode: "ReturnAsStream",
++      });
++
++      await page.goto("data:text/html,<h1>Browser tracing regression</h1>");
++      await page.waitForTimeout(5_000);
++
++      const completion = new Promise<string>((resolve, reject) => {
++        session.once("Tracing.tracingComplete", ({ stream }) => {
++          if (stream) resolve(stream);
++          else reject(new Error("Screenshot trace did not return a stream."));
++        });
++      });
++      await session.send("Tracing.end");
++      const stream = await completion;
++      let contents = "";
++
++      while (true) {
++        const chunk: TraceChunk = await session.send("IO.read", { handle: stream });
++        contents += chunk.base64Encoded ? Buffer.from(chunk.data, "base64").toString("utf8") : chunk.data;
++        if (chunk.eof) break;
++      }
++
++      await session.send("IO.close", { handle: stream });
++      const trace: unknown = JSON.parse(contents);
++      expect(trace).toMatchObject({
++        traceEvents: expect.arrayContaining([
++          expect.objectContaining({
++            name: "Screenshot",
++            args: expect.objectContaining({ snapshot: expect.any(String) }),
++          }),
++        ]),
++      });
++    } finally {
++      await browser.close();
++    }
++  });
++}

@@ -50,7 +50,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Affected file helper logic:** `scripts/affected-file-utils.mjs`
 - **Runtime pin source:** `package.json#engines.node`
 - **Package manager hint source:** `package.json#packageManager`
-- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.63.0-noble`
+- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.62.1-noble`
+- **Browser tracing regression:** `src/browser-tracing.e2e.ts` collects real screenshot trace events from both the bundled headless shell and full Chromium without external network access or saved traces
 - **Current Vitest compatibility:** `4.1.11` with matching coverage providers; the Room State kit's Cloudflare testing plugin requires `^4.1.0`, so the dependency refresh does not adopt Vitest 5
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
@@ -130,6 +131,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Local CI must explicitly prewarm through one stable npm install step before parallel jobs start.
 - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
 - The browser CI job must use a container image whose version exactly matches the pinned `@playwright/test` version instead of reinstalling Chromium at runtime.
+- The browser gate must collect screenshot trace events from both the default headless shell and the full Chromium executable used by Lighthouse; a browser disconnect, incomplete trace, or missing screenshot events must fail the gate.
+- Browser dependency refreshes must also pass full mobile and desktop Lighthouse audits with screenshot collection enabled in Linux ARM64 Local CI before their pins are distributed. [ADR-068](../../docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md) records the verification policy and current rollback.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and Local CI's warmed `node_modules` layout.
 - The Worker client-code guard must allow only empty same-origin `/assets/*.js` module tags independent of attribute order, and must fail on inline, malformed, classic, remote, or non-asset scripts, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files while preserving source locations.

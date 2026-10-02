@@ -39,6 +39,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Enable Workers Logs and sampled traces explicitly for the starter; keep sampling rates visible in Wrangler configuration so downstream projects can tune collection volume deliberately.
 - Keep the npm package explicitly ESM so TypeScript-based Vite configuration has one unambiguous module format.
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
+- Verify browser refreshes with screenshot tracing and full Lighthouse audits on the supported macOS host's Linux ARM64 Local CI environment before distributing new pins; ordinary browser tests alone do not cover the audit runtime. See [ADR-068](docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md).
 - The repo-managed `pre-push` Git hook should run affected-file guardrails before code is pushed.
 - Formatting, Oxlint correctness checks, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
 - The fast and affected quality paths enforce extreme source-file and flat-directory limits through `npm run quality:structure`; Fallow remains the richer advisory layer for coupling, churn, complexity, and refactoring evidence.

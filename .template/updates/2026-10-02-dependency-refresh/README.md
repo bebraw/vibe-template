@@ -2,6 +2,8 @@
 
 Use this pack for a project that already adopted the template's tooling or capability kits. The patch coordinates exact pins and the Playwright CI image; regenerate the adopter's own lockfile instead of copying the template lockfile.
 
+**Browser correction:** the Playwright `1.63.0` coordinates below are historical. Apply [`2026-10-02-playwright-tracing-rollback`](../2026-10-02-playwright-tracing-rollback/README.md) with this pack, retaining Playwright `1.62.1` and its matching image until screenshot tracing and full Lighthouse audits pass on Linux ARM64. The other dependency refreshes remain current.
+
 ## Apply
 
 1. Pin Node to `24.21.0` in `package.json` and mirror `v24.21.0` in `.nvmrc`. Update the package-manager hint to `npm@11.21.0` while retaining the supported npm 11 range; CI can continue using a compatible bundled npm release.
