@@ -95,7 +95,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - [ ] The full gate runs the fast and browser gates in order without unconditionally running mutation testing.
 - [ ] The deep local gate runs the fast, browser, and incremental mutation gates in order.
 - [ ] The full and deep local gates report phase starts, completions, failures, and periodic elapsed-time heartbeats.
-- [ ] The repo-managed `pre-push` hook runs affected-file guardrails before a push leaves the machine.
+- [ ] When enabled, the repo-managed `pre-push` hook runs affected-file guardrails before a push leaves the machine.
 - [ ] Local and remote CI use the same split verification model for non-documentation changes.
 - [ ] Remote browser and mutation jobs avoid dependency installation and gate execution for known non-runtime-only changes.
 - [ ] Local CI is required for workflow-sensitive changes and explicit full PR or release readiness, but not for ordinary changes outside those boundaries.
@@ -119,7 +119,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Fallow diagnostics must use `--no-cache` in repo scripts so normal diagnostic runs do not create a persistent `.fallow/` cache.
 - `npm run mutation` must fail when the mutation score is below the configured break threshold.
 - `npm run mutation:incremental` must fail when the resulting mutation score is below the configured break threshold.
-- `npm install` must keep the repo-managed `pre-push` hook configured without requiring extra setup steps.
+- `npm install` must configure the repo-managed `pre-push` hook when no different hook path is configured. If a different hook path is configured, it must preserve that path and warn that the repo-managed hook is not enabled.
 - The CI workflow must cancel superseded runs for the same ref.
 - The CI workflow must run browser and mutation gates when any changed path is runtime-related or unknown, when no reliable changed-file range is available, or when classification fails.
 - The CI workflow may skip browser and mutation setup and execution only when every changed file is in the classifier's explicit non-runtime allowlist.
@@ -140,6 +140,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The Worker Node-import guard must fail on static, dynamic, or CommonJS imports of Node built-ins from production `src/` files while excluding tests, declarations, and test-support modules.
 - The affected guardrail path must pass only affected production source files to the Worker Node-import guard.
 - The affected guardrail path must pass only affected JavaScript and TypeScript files to Oxlint.
+- For the first push to a new remote branch, affected guardrails must consider all tracked files in the pushed tree rather than only the tip commit, preserve special characters in file names, and reject a different checkout or missing tracked workspace paths that cannot be checked safely.
 - The affected guardrail path must run JavaScript syntax checks only for affected JavaScript files.
 - The affected guardrail path must run package audit only when package metadata or lockfiles change.
 - The affected guardrail path must run the source-shape check when production source, the checker, or its configuration changes.

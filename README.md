@@ -8,6 +8,19 @@ The repo vendors ASDLC reference material in `.asdlc/` as local guidance instead
 
 Local development in this repo targets macOS. Other platforms may need script and tooling adjustments before the baseline workflow works as documented.
 
+## Quick Start
+
+With [nvm](https://github.com/nvm-sh/nvm) installed, run:
+
+```bash
+nvm install
+nvm use
+npm ci
+npm run dev
+```
+
+Open `http://127.0.0.1:8787`. For browser tests, install the pinned browser with `npm run playwright:install`. See [development setup](docs/development.md) for prerequisites and verification.
+
 ## Documentation
 
 - Development setup and local CI: `docs/development.md`
@@ -23,14 +36,14 @@ Local development in this repo targets macOS. Other platforms may need script an
 
 The repository includes compact instructions under `.codex/skills/` that help capable coding agents follow project-specific conventions without repeating generic engineering guidance. Version-sensitive details come from current primary sources. You can describe the job normally and let the agent select a matching skill, or require one by name—for example, `Use $security to review this authentication change`.
 
-`$start-project`, `$wayfinder`, and `$to-spec` are intentionally explicit: the agent uses them only when you name them. This keeps repository pruning, exploratory maps, and durable specifications from appearing as accidental side effects.
+`$start-project`, `$wayfinder`, and `$to-spec` are intentionally explicit: name the skill or explicitly request its corresponding project initialization, wayfinding, or specification workflow. This keeps repository pruning, exploratory maps, and durable specifications from appearing as accidental side effects.
 
 ### From Idea to Implementation
 
-- [`$start-project`](.codex/skills/start-project/SKILL.md) — define a fresh clone's current increment, route relevant audience, inputs, constraints, and deferred direction into existing docs, and present an approval-gated initialization and pruning plan before changing files. Explicit invocation required.
+- [`$start-project`](.codex/skills/start-project/SKILL.md) — define a fresh clone's current increment, route relevant audience, inputs, constraints, and deferred direction into existing docs, and present an approval-gated initialization and pruning plan before changing files. Explicit request required.
 - [`$brainstorming`](.codex/skills/brainstorming/SKILL.md) — compare lightweight approaches and clarify trade-offs before committing to a design.
-- [`$wayfinder`](.codex/skills/wayfinder/SKILL.md) — map a large, uncertain, multi-session initiative in `docs/wayfinding/` when it is not ready for a responsible spec. Explicit invocation required.
-- [`$to-spec`](.codex/skills/to-spec/SKILL.md) — turn settled discussion or wayfinding results into the repository's living `specs/<feature-domain>/spec.md`. Explicit invocation required.
+- [`$wayfinder`](.codex/skills/wayfinder/SKILL.md) — map a large, uncertain, multi-session initiative in `docs/wayfinding/` when it is not ready for a responsible spec. Explicit request required.
+- [`$to-spec`](.codex/skills/to-spec/SKILL.md) — turn settled discussion or wayfinding results into the repository's living `specs/<feature-domain>/spec.md`. Explicit request required.
 - [`$tdd`](.codex/skills/tdd/SKILL.md) — implement observable runtime behavior through focused red-green slices when a stable test seam exists.
 - [`$debug`](.codex/skills/debug/SKILL.md) — reproduce and localize failures, fix their root cause, add a regression guard, and verify the result.
 - [`$simplify`](.codex/skills/simplify/SKILL.md) — reduce incidental complexity in recently changed code without altering behavior.
@@ -62,7 +75,7 @@ Each linked `SKILL.md` is the source of truth for boundaries and workflow detail
 
 - Run `nvm use` before `npm install` or any other development command so your shell picks up the repo-pinned Node.js version from `.nvmrc` and stays close to the expected npm baseline.
 - Install dependencies with `npm install`.
-- `npm install` also configures the repo-managed `pre-push` hook so `git push` runs affected guardrails before code leaves your machine.
+- Installation configures the repo-managed `pre-push` hook when no different hook path is already configured. If a different path exists, it is preserved and installation prints a warning; integrate the affected guardrails with the existing hooks to enable them.
 - The exact project Node.js version is pinned in `package.json` and mirrored in `.nvmrc` for `nvm` users, and CI reads the `package.json` value directly.
 - npm is constrained to the supported npm 11 range in `package.json`; local development is expected to use `nvm use`, and CI uses the npm release bundled with the pinned Node setup as long as it satisfies that range.
 - Copy `.dev.vars.example` to `.dev.vars` before running projects that need local secrets.
@@ -79,7 +92,7 @@ Each linked `SKILL.md` is the source of truth for boundaries and workflow detail
 - Run the deterministic source-shape smoke alarms directly with `npm run quality:structure`; threshold failures call for architecture review or an exact rationale-bearing exception, not mechanical file splitting.
 - Run the containerized local workflow with `npm run ci:local` when changing GitHub Actions, dependencies or installation behavior, build or container setup, browser CI setup, or when performing a full PR or release readiness check. It emits structured run, job, and step progress for agents, uses Local CI parallelism with warm-cache serialization, and pauses failed runners for retry.
 - Run advisory codebase readability diagnostics with `npm run diagnostics:codebase`.
-- The repo-managed `pre-push` hook runs `npm run quality:affected` automatically after `npm install`.
+- When configured, the repo-managed `pre-push` hook runs `npm run quality:affected` automatically.
 - If Local CI warns about `No such remote 'origin'`, set `GITHUB_REPO=owner/repo` in `.env.local-ci`.
 - Retry a paused local CI run with `npm run ci:local:retry -- --name <runner-name>`.
 - Install the pinned Playwright browser with `npm run playwright:install`.

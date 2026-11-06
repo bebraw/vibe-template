@@ -46,7 +46,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-011](./implemented/ADR-011-upgrade-runtime-baseline-to-node-24.md)                | Accepted    | Move the template runtime baseline from Node 22 to Node 24 LTS.                                   |
 | [ADR-012](./implemented/ADR-012-constrain-local-tooling-to-macos.md)                   | Accepted    | Treat macOS as the local tooling baseline and use direct pinned Agent CI scripts.                 |
 | [ADR-013](./implemented/ADR-013-return-to-npm-for-agent-ci-compatibility.md)           | Accepted    | Return to npm because local Agent CI remains unreliable with pnpm warmed dependency mounts.       |
-| [ADR-014](./implemented/ADR-014-run-the-fast-gate-on-pre-push.md)                      | Accepted    | Run the fast quality gate automatically before pushes to catch cheap failures locally.            |
+| [ADR-014](./implemented/ADR-014-run-the-fast-gate-on-pre-push.md)                      | Superseded  | Run the fast quality gate automatically before pushes to catch cheap failures locally.            |
 | [ADR-015](./implemented/ADR-015-relax-npm-version-enforcement.md)                      | Accepted    | Keep npm as the required package manager while relaxing exact npm patch enforcement.              |
 | [ADR-016](./implemented/ADR-016-allow-lightweight-local-readme-screenshot-tooling.md)  | Superseded  | Allowed a lightweight local script for refreshing the committed README screenshot.                |
 | [ADR-017](./implemented/ADR-017-prune-redundant-package-scripts.md)                    | Accepted    | Keep one canonical package script per normal workflow and remove redundant aliases.               |
@@ -101,6 +101,8 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-066](./implemented/ADR-066-scope-agent-guidance-to-the-task.md)                   | Implemented | Use capability-based, task-scoped agent guidance and honor existing authorization.                |
 | [ADR-067](./implemented/ADR-067-refresh-reviewed-web-guidance.md)                      | Implemented | Review and pin Modern Web Guidance 0.0.191 while retaining local integration boundaries.          |
 | [ADR-068](./implemented/ADR-068-verify-browser-screenshot-tracing.md)                  | Implemented | Verify screenshot tracing and Linux ARM64 Lighthouse audits before distributing browser pins.     |
+| [ADR-069](./implemented/ADR-069-adopt-typescript-7-typechecking.md)                    | Implemented | Use TypeScript 7 for project checks while retaining the TypeScript 6 compiler API for tooling.    |
+| [ADR-070](./implemented/ADR-070-preserve-existing-git-hook-configuration.md)           | Implemented | Preserve existing Git hook configuration and check the tracked tree on a first push.              |
 
 ## Creating A New ADR
 

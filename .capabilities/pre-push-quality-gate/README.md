@@ -6,7 +6,7 @@ Use this kit to add a repo-managed Git `pre-push` hook that runs the target repo
 
 - `scripts/setup-git-hooks.mjs`
 - `.githooks/pre-push`
-- A `prepare` script that configures `core.hooksPath`
+- A `prepare` script that configures `core.hooksPath` when no different hook path already exists
 
 ## Good Fit
 
@@ -27,3 +27,5 @@ Use this kit to add a repo-managed Git `pre-push` hook that runs the target repo
 3. Follow `recipes/npm.md`.
 4. Copy files from `files/`.
 5. Run the checks in `checks.md`.
+
+Installation preserves an existing different local or inherited `core.hooksPath` and warns that the kit's hook is not enabled. Integrate the guardrail into that existing hook setup deliberately; do not assume both paths run.

@@ -6,11 +6,11 @@ node_modules/
 .pnpm-store/
 .stryker-tmp/
 .wrangler/
-.dev.vars
-.env.agent-ci
-.env.local-ci
-.env
-.env.local
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
+!.env.local-ci.example
 playwright-report/
 reports/
 test-results/

@@ -18,7 +18,7 @@
     }
   ],
   "docs": [
-    "Document that npm install configures the repo-managed pre-push hook.",
+    "Document that npm install configures the repo-managed pre-push hook only when no different hook path is configured, and otherwise preserves the existing path with a warning.",
     "Document that the hook runs npm run quality:gate:fast."
   ],
   "verify": ["npm install", "git config --get core.hooksPath", "npm run quality:gate:fast"],

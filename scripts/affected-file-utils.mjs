@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import process from "node:process";
 
 const zeroSha = "0000000000000000000000000000000000000000";
@@ -89,15 +90,35 @@ function collectPrePushFiles(repoRoot, input) {
 }
 
 function getPrePushLineFiles(repoRoot, line) {
-  const [, localSha, , remoteSha] = line.trim().split(/\s+/);
+  const [, localSha, remoteRef, remoteSha] = line.trim().split(/\s+/);
 
   if (!localSha || localSha === zeroSha) {
     return [];
   }
 
-  return remoteSha && remoteSha !== zeroSha
-    ? gitFiles(repoRoot, ["diff", "--name-only", "--diff-filter=ACMR", `${remoteSha}..${localSha}`])
-    : gitFiles(repoRoot, ["diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", localSha]);
+  if (remoteSha && remoteSha !== zeroSha) {
+    return gitFiles(repoRoot, ["diff", "--name-only", "--diff-filter=ACMR", `${remoteSha}..${localSha}`]);
+  }
+
+  if (remoteRef?.startsWith("refs/heads/")) {
+    const head = spawn(repoRoot, "git", ["rev-parse", "--verify", "HEAD^{commit}"], { encoding: "utf8", allowFailure: true });
+    if (head.status !== 0 || head.stdout.trim() !== localSha) {
+      console.error("Cannot check a first branch push from a different checkout. Check out the pushed commit and retry.");
+      process.exit(1);
+    }
+  }
+
+  const files = gitFiles(repoRoot, ["ls-tree", "-r", "--name-only", localSha]);
+  if (remoteRef?.startsWith("refs/heads/")) {
+    const missing = files.filter((file) => !existsSync(join(repoRoot, file)));
+    if (missing.length > 0) {
+      console.error(
+        `Cannot check first branch push: tracked paths are missing or dangling in the workspace: ${missing.map((file) => JSON.stringify(file)).join(", ")}`,
+      );
+      process.exit(1);
+    }
+  }
+  return files;
 }
 
 function getWorktreeFiles(repoRoot) {
@@ -131,11 +152,12 @@ function getBranchFiles(repoRoot) {
 }
 
 function gitFiles(repoRoot, args) {
-  const result = spawn(repoRoot, "git", args, { encoding: "utf8" });
-  return result.stdout
-    .split("\n")
-    .map((file) => file.trim())
-    .filter(Boolean);
+  const result = spawn(repoRoot, "git", [args[0], "-z", ...args.slice(1)], { encoding: "utf8", allowFailure: true });
+  if ((result.status ?? 1) !== 0) {
+    process.stderr.write(result.stderr);
+    process.exit(result.status ?? 1);
+  }
+  return result.stdout.split("\0").filter(Boolean);
 }
 
 function exitOnSpawnError(result) {

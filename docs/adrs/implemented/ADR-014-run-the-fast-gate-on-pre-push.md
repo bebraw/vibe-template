@@ -1,6 +1,6 @@
 # ADR-014: Run The Fast Gate On Pre-Push
 
-**Status:** Accepted
+**Status:** Superseded by [ADR-070](./ADR-070-preserve-existing-git-hook-configuration.md)
 
 **Date:** 2026-04-19
 

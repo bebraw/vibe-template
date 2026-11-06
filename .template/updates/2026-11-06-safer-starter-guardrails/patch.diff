@@ -1,0 +1,233 @@
+diff --git a/.capabilities/pre-push-quality-gate/README.md b/.capabilities/pre-push-quality-gate/README.md
+index 8c4784d..22f68aa 100644
+--- a/.capabilities/pre-push-quality-gate/README.md
++++ b/.capabilities/pre-push-quality-gate/README.md
+@@ -6,7 +6,7 @@ Use this kit to add a repo-managed Git `pre-push` hook that runs the target repo
+ 
+ - `scripts/setup-git-hooks.mjs`
+ - `.githooks/pre-push`
+-- A `prepare` script that configures `core.hooksPath`
++- A `prepare` script that configures `core.hooksPath` when no different hook path already exists
+ 
+ ## Good Fit
+ 
+@@ -27,3 +27,5 @@ Use this kit to add a repo-managed Git `pre-push` hook that runs the target repo
+ 3. Follow `recipes/npm.md`.
+ 4. Copy files from `files/`.
+ 5. Run the checks in `checks.md`.
++
++Installation preserves an existing different local or inherited `core.hooksPath` and warns that the kit's hook is not enabled. Integrate the guardrail into that existing hook setup deliberately; do not assume both paths run.
+diff --git a/.capabilities/pre-push-quality-gate/checks.md b/.capabilities/pre-push-quality-gate/checks.md
+index aebb603..b74dd76 100644
+--- a/.capabilities/pre-push-quality-gate/checks.md
++++ b/.capabilities/pre-push-quality-gate/checks.md
+@@ -10,6 +10,6 @@ npm run quality:gate:fast
+ 
+ Expected:
+ 
+-- `git config --get core.hooksPath` prints `.githooks`
+-- `.githooks/pre-push` is executable
++- With no pre-existing different hook path, `git config --get core.hooksPath` resolves to `.githooks` and `.githooks/pre-push` is executable.
++- With a different existing hook path, installation preserves that path and warns that the kit's hook needs integration.
+ - `npm run quality:gate:fast` passes
+diff --git a/.capabilities/pre-push-quality-gate/files/scripts/setup-git-hooks.mjs b/.capabilities/pre-push-quality-gate/files/scripts/setup-git-hooks.mjs
+index b8b2131..d677847 100644
+--- a/.capabilities/pre-push-quality-gate/files/scripts/setup-git-hooks.mjs
++++ b/.capabilities/pre-push-quality-gate/files/scripts/setup-git-hooks.mjs
+@@ -1,6 +1,6 @@
+ import { spawnSync } from "node:child_process";
+ import { chmodSync, existsSync } from "node:fs";
+-import { join } from "node:path";
++import { join, resolve } from "node:path";
+ import process from "node:process";
+ 
+ function isGitWorktree() {
+@@ -18,12 +18,36 @@ if (!isGitWorktree()) {
+   process.exit(0);
+ }
+ 
++const existing = spawnSync("git", ["config", "--path", "--get", "core.hooksPath"], {
++  stdio: ["ignore", "pipe", "pipe"],
++  env: process.env,
++  encoding: "utf8",
++});
++
++if (existing.error || (existing.status !== 0 && existing.status !== 1)) {
++  console.error(`Git hook setup failed: ${existing.error?.message ?? existing.stderr.trim()}`);
++  process.exit(1);
++}
++
++const existingPath = existing.status === 0 ? existing.stdout.replace(/\r?\n$/, "") : null;
++if (existingPath !== null && (!existingPath || resolve(existingPath) !== resolve(".githooks"))) {
++  console.warn(
++    `Git hook setup skipped: existing core.hooksPath is ${JSON.stringify(existingPath)}. Integrate .githooks/pre-push with the existing hooks to enable the repo guardrails.`,
++  );
++  process.exit(0);
++}
++
+ const prePushHookPath = join(process.cwd(), ".githooks", "pre-push");
+ 
+ if (existsSync(prePushHookPath)) {
+   chmodSync(prePushHookPath, 0o755);
+ }
+ 
++if (existingPath !== null) {
++  console.log("Repo Git hooks are already configured at .githooks.");
++  process.exit(0);
++}
++
+ const result = spawnSync("git", ["config", "--local", "core.hooksPath", ".githooks"], {
+   env: process.env,
+   stdio: "inherit",
+diff --git a/.capabilities/pre-push-quality-gate/manifest.json b/.capabilities/pre-push-quality-gate/manifest.json
+index 064b16d..bbe1c14 100644
+--- a/.capabilities/pre-push-quality-gate/manifest.json
++++ b/.capabilities/pre-push-quality-gate/manifest.json
+@@ -18,7 +18,7 @@
+     }
+   ],
+   "docs": [
+-    "Document that npm install configures the repo-managed pre-push hook.",
++    "Document that npm install configures the repo-managed pre-push hook only when no different hook path is configured, and otherwise preserves the existing path with a warning.",
+     "Document that the hook runs npm run quality:gate:fast."
+   ],
+   "verify": ["npm install", "git config --get core.hooksPath", "npm run quality:gate:fast"],
+diff --git a/.gitignore b/.gitignore
+index d8baa24..6b341de 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -6,11 +6,11 @@ node_modules/
+ .pnpm-store/
+ .stryker-tmp/
+ .wrangler/
+-.dev.vars
+-.env.agent-ci
+-.env.local-ci
+-.env
+-.env.local
++.dev.vars*
++!.dev.vars.example
++.env*
++!.env.example
++!.env.local-ci.example
+ playwright-report/
+ reports/
+ test-results/
+diff --git a/scripts/affected-file-utils.mjs b/scripts/affected-file-utils.mjs
+index 5ce8c9f..25a82fb 100644
+--- a/scripts/affected-file-utils.mjs
++++ b/scripts/affected-file-utils.mjs
+@@ -1,5 +1,6 @@
+ import { spawnSync } from "node:child_process";
+ import { existsSync, readFileSync } from "node:fs";
++import { join } from "node:path";
+ import process from "node:process";
+ 
+ const zeroSha = "0000000000000000000000000000000000000000";
+@@ -89,15 +90,35 @@ function collectPrePushFiles(repoRoot, input) {
+ }
+ 
+ function getPrePushLineFiles(repoRoot, line) {
+-  const [, localSha, , remoteSha] = line.trim().split(/\s+/);
++  const [, localSha, remoteRef, remoteSha] = line.trim().split(/\s+/);
+ 
+   if (!localSha || localSha === zeroSha) {
+     return [];
+   }
+ 
+-  return remoteSha && remoteSha !== zeroSha
+-    ? gitFiles(repoRoot, ["diff", "--name-only", "--diff-filter=ACMR", `${remoteSha}..${localSha}`])
+-    : gitFiles(repoRoot, ["diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", localSha]);
++  if (remoteSha && remoteSha !== zeroSha) {
++    return gitFiles(repoRoot, ["diff", "--name-only", "--diff-filter=ACMR", `${remoteSha}..${localSha}`]);
++  }
++
++  if (remoteRef?.startsWith("refs/heads/")) {
++    const head = spawn(repoRoot, "git", ["rev-parse", "--verify", "HEAD^{commit}"], { encoding: "utf8", allowFailure: true });
++    if (head.status !== 0 || head.stdout.trim() !== localSha) {
++      console.error("Cannot check a first branch push from a different checkout. Check out the pushed commit and retry.");
++      process.exit(1);
++    }
++  }
++
++  const files = gitFiles(repoRoot, ["ls-tree", "-r", "--name-only", localSha]);
++  if (remoteRef?.startsWith("refs/heads/")) {
++    const missing = files.filter((file) => !existsSync(join(repoRoot, file)));
++    if (missing.length > 0) {
++      console.error(
++        `Cannot check first branch push: tracked paths are missing or dangling in the workspace: ${missing.map((file) => JSON.stringify(file)).join(", ")}`,
++      );
++      process.exit(1);
++    }
++  }
++  return files;
+ }
+ 
+ function getWorktreeFiles(repoRoot) {
+@@ -131,11 +152,12 @@ function getBranchFiles(repoRoot) {
+ }
+ 
+ function gitFiles(repoRoot, args) {
+-  const result = spawn(repoRoot, "git", args, { encoding: "utf8" });
+-  return result.stdout
+-    .split("\n")
+-    .map((file) => file.trim())
+-    .filter(Boolean);
++  const result = spawn(repoRoot, "git", [args[0], "-z", ...args.slice(1)], { encoding: "utf8", allowFailure: true });
++  if ((result.status ?? 1) !== 0) {
++    process.stderr.write(result.stderr);
++    process.exit(result.status ?? 1);
++  }
++  return result.stdout.split("\0").filter(Boolean);
+ }
+ 
+ function exitOnSpawnError(result) {
+diff --git a/scripts/setup-git-hooks.mjs b/scripts/setup-git-hooks.mjs
+index b8b2131..d677847 100644
+--- a/scripts/setup-git-hooks.mjs
++++ b/scripts/setup-git-hooks.mjs
+@@ -1,6 +1,6 @@
+ import { spawnSync } from "node:child_process";
+ import { chmodSync, existsSync } from "node:fs";
+-import { join } from "node:path";
++import { join, resolve } from "node:path";
+ import process from "node:process";
+ 
+ function isGitWorktree() {
+@@ -18,12 +18,36 @@ if (!isGitWorktree()) {
+   process.exit(0);
+ }
+ 
++const existing = spawnSync("git", ["config", "--path", "--get", "core.hooksPath"], {
++  stdio: ["ignore", "pipe", "pipe"],
++  env: process.env,
++  encoding: "utf8",
++});
++
++if (existing.error || (existing.status !== 0 && existing.status !== 1)) {
++  console.error(`Git hook setup failed: ${existing.error?.message ?? existing.stderr.trim()}`);
++  process.exit(1);
++}
++
++const existingPath = existing.status === 0 ? existing.stdout.replace(/\r?\n$/, "") : null;
++if (existingPath !== null && (!existingPath || resolve(existingPath) !== resolve(".githooks"))) {
++  console.warn(
++    `Git hook setup skipped: existing core.hooksPath is ${JSON.stringify(existingPath)}. Integrate .githooks/pre-push with the existing hooks to enable the repo guardrails.`,
++  );
++  process.exit(0);
++}
++
+ const prePushHookPath = join(process.cwd(), ".githooks", "pre-push");
+ 
+ if (existsSync(prePushHookPath)) {
+   chmodSync(prePushHookPath, 0o755);
+ }
+ 
++if (existingPath !== null) {
++  console.log("Repo Git hooks are already configured at .githooks.");
++  process.exit(0);
++}
++
+ const result = spawnSync("git", ["config", "--local", "core.hooksPath", ".githooks"], {
+   env: process.env,
+   stdio: "inherit",

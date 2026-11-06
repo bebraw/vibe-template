@@ -100,7 +100,7 @@ README and agent routing must lead a fresh agent to the relevant feature spec, a
 
 ### Verification
 
-- **Skill metadata:** run the skill-creator validator against `.codex/skills/start-project/` and any maintained compatibility copies
+- **Skill metadata:** run `npm run skill:validate -- .codex/skills/start-project/` and validate any maintained compatibility copies with the same repository-owned validator
 - **Documentation:** `npm run format:check`
 - **Catalog coverage:** confirm README and `AGENTS.md` identify Start Project as explicit-only
 - **Update path:** confirm `.template/updates/AGENT_SYNC.md` can discover `source`, `baseline`, and `updates` from existing metadata

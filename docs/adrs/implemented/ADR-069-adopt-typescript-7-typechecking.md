@@ -1,8 +1,10 @@
-# ADR-034: Adopt TypeScript 7 Type Checking
+# ADR-069: Adopt TypeScript 7 Type Checking
 
 **Status:** Implemented
 
 **Date:** 2026-07-08
+
+Originally numbered ADR-034; renumbered to resolve a collision with the Agent CI progress decision.
 
 ## Context
 

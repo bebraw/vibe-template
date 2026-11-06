@@ -40,7 +40,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
 - Keep the npm package explicitly ESM so TypeScript-based Vite configuration has one unambiguous module format.
 - The verification baseline is split into a fast gate and a browser gate so quick checks can return earlier without dropping full coverage.
 - Verify browser refreshes with screenshot tracing and full Lighthouse audits on the supported macOS host's Linux ARM64 Local CI environment before distributing new pins; ordinary browser tests alone do not cover the audit runtime. See [ADR-068](docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md).
-- The repo-managed `pre-push` Git hook should run affected-file guardrails before code is pushed.
+- Configure the repo-managed `pre-push` hook to run affected-file guardrails when no different Git hook path is configured. Preserve a different existing path and warn that the repo hook is not enabled; see [ADR-070](docs/adrs/implemented/ADR-070-preserve-existing-git-hook-configuration.md).
 - Formatting, Oxlint correctness checks, type checking, unit tests, and end-to-end tests are part of the baseline quality gate.
 - The fast and affected quality paths enforce extreme source-file and flat-directory limits through `npm run quality:structure`; Fallow remains the richer advisory layer for coupling, churn, complexity, and refactoring evidence.
 - Keep incremental mutation testing in an explicit deep local gate instead of making it an unconditional baseline phase. GitHub remains responsible for the clean full mutation signal on runtime-relevant changes.

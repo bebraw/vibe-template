@@ -18,7 +18,7 @@ This template is set up for the Local CI runner.
 - Local development in this template targets macOS. The documented commands assume a macOS shell environment and are not maintained as a cross-platform baseline.
 - Run `nvm use` before `npm install` or any other development command so your shell uses the Node.js version mirrored in `.nvmrc`, which also keeps the bundled npm release inside the repo's supported npm 11 range.
 - Install dependencies with `npm install`.
-- `npm install` also configures the repo-managed Git hook path and enables the `pre-push` hook that runs affected-file guardrails.
+- Installation configures the repo-managed Git hook path and enables affected-file guardrails unless a different hook path is already configured. In that case the path is preserved and a warning asks the user to integrate the guardrails with their existing hooks.
 - The exact Node.js version is pinned in `package.json`, mirrored in `.nvmrc` for `nvm` users, and read directly by CI through `actions/setup-node`.
 - The repo requires npm 11 in `package.json` but does not pin one exact patch release. Local development, CI, and platforms such as Cloudflare may use different npm 11 patch versions as long as they stay inside the supported major range.
 - Copy `.dev.vars.example` to `.dev.vars` and replace placeholder values when a project needs local secrets.
@@ -146,8 +146,8 @@ When adding a new tool or workflow that writes files, document the target path i
 
 The template keeps secret handling lightweight and explicit:
 
-- Keep local secrets in untracked files such as `.dev.vars`.
-- Commit example files such as `.dev.vars.example` with placeholder values only.
+- Keep local secrets in untracked files such as `.dev.vars` or `.dev.vars.production`. The ignore rules also cover environment-specific `.env` files.
+- Commit only the explicitly allowed example files, such as `.dev.vars.example` and `.env.local-ci.example`, with placeholder values only.
 - Treat `npm run security:audit` as part of the baseline gate for shipped runtime dependencies.
 
 ## Quality Gate
@@ -157,7 +157,7 @@ Use this expectation for routine changes:
 - `npm run quality:gate` must pass before a change is considered ready.
 - Use `npm run quality:gate:fast` for quicker local iteration when browser coverage is not the immediate focus.
 - `npm run ci:local` should also pass when the change is workflow-sensitive or the user asks for full PR or release readiness.
-- The repo-managed `pre-push` hook runs `npm run quality:affected` automatically after `npm install`, so pushes stop locally when affected guardrails are already red.
+- When configured, the repo-managed `pre-push` hook runs `npm run quality:affected` automatically, so pushes stop locally when affected guardrails are already red.
 
 The baseline quality gate runs the fast gate, Playwright browser tests, and executable capability-kit verification. The capability phase copies each supported kit into its own operating-system temporary Worker, installs only its manifest-declared test dependencies plus the repository-pinned verification toolchain, generates binding types, type-checks, runs the kit tests, and removes the fixture. It therefore requires npm registry access, but writes no generated application files into the repository. The explicit `quality:gate:deep` command adds incremental mutation testing for local assertion-strength feedback. Both commands print named phase transitions and an elapsed-time heartbeat every 30 seconds while a phase is still running, while preserving each child command's live output. GitHub Actions runs separate fast, browser, and full mutation jobs, with repository-shape validation and capability verification included in the fast job. Local CI runs should go through `npm run ci:local`, which prewarms through one stable install step before independent jobs run concurrently with isolated writable dependency views. The command emits structured lifecycle progress and pauses a failed runner for agent retry. Local browser installation should go through the pinned `npm run playwright:install` script.
 
