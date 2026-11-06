@@ -1,0 +1,8 @@
+{
+  "id": "2026-11-06-dependency-refresh",
+  "title": "Refresh compatible tooling and coordinated test dependencies",
+  "status": "implemented",
+  "risk": "medium",
+  "touches": ["package.json", "package-lock.json", ".github/workflows/ci.yml", ".capabilities/", "docs/", "specs/"],
+  "checks": ["npm audit", "npm run quality:gate", "npm run ci:local", "npm run capabilities:verify"]
+}

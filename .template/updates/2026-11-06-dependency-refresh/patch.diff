@@ -1,0 +1,383 @@
+diff --git a/.capabilities/browser-static-assets/manifest.json b/.capabilities/browser-static-assets/manifest.json
+index 8669262..472f4d0 100644
+--- a/.capabilities/browser-static-assets/manifest.json
++++ b/.capabilities/browser-static-assets/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add a typed native browser-module build and a Cloudflare Workers static-assets path.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1",
++      "@playwright/test": "1.65.0",
+       "typescript": "npm:@typescript/typescript6@6.0.2",
+       "typescript-7": "npm:typescript@7.0.2"
+     }
+diff --git a/.capabilities/browser-static-assets/recipes/npm.md b/.capabilities/browser-static-assets/recipes/npm.md
+index 0c0c306..51e0279 100644
+--- a/.capabilities/browser-static-assets/recipes/npm.md
++++ b/.capabilities/browser-static-assets/recipes/npm.md
+@@ -5,7 +5,7 @@ This kit uses the target's TypeScript and Playwright toolchain. Reconcile existi
+ If either tool is absent, install the exact versions after approval:
+ 
+ ```bash
+-npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.62.1
++npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.65.0
+ ```
+ 
+ ## Package Scripts
+diff --git a/.capabilities/lighthouse-performance/manifest.json b/.capabilities/lighthouse-performance/manifest.json
+index 1098b41..bab70e7 100644
+--- a/.capabilities/lighthouse-performance/manifest.json
++++ b/.capabilities/lighthouse-performance/manifest.json
+@@ -3,9 +3,9 @@
+   "description": "Add local Lighthouse web-quality reports and configurable category budgets.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1",
+-      "chrome-launcher": "1.2.2",
+-      "lighthouse": "13.5.0"
++      "@playwright/test": "1.65.0",
++      "chrome-launcher": "1.2.3",
++      "lighthouse": "13.6.0"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/lighthouse-performance/recipes/npm.md b/.capabilities/lighthouse-performance/recipes/npm.md
+index 51963f0..7744147 100644
+--- a/.capabilities/lighthouse-performance/recipes/npm.md
++++ b/.capabilities/lighthouse-performance/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1 chrome-launcher@1.2.2 lighthouse@13.5.0
++npm install --save-dev --save-exact @playwright/test@1.65.0 chrome-launcher@1.2.3 lighthouse@13.6.0
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/mutation-testing/manifest.json b/.capabilities/mutation-testing/manifest.json
+index 1d0caea..8b05bd9 100644
+--- a/.capabilities/mutation-testing/manifest.json
++++ b/.capabilities/mutation-testing/manifest.json
+@@ -4,9 +4,9 @@
+   "requires": ["typescript-setup", "quality-gate"],
+   "dependencies": {
+     "dev": {
+-      "@stryker-mutator/core": "10.0.0",
+-      "@stryker-mutator/typescript-checker": "10.0.0",
+-      "@stryker-mutator/vitest-runner": "10.0.0"
++      "@stryker-mutator/core": "10.1.1",
++      "@stryker-mutator/typescript-checker": "10.1.1",
++      "@stryker-mutator/vitest-runner": "10.1.1"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/mutation-testing/recipes/npm.md b/.capabilities/mutation-testing/recipes/npm.md
+index d73350e..c0cd7e0 100644
+--- a/.capabilities/mutation-testing/recipes/npm.md
++++ b/.capabilities/mutation-testing/recipes/npm.md
+@@ -9,7 +9,7 @@ Apply `.capabilities/typescript-setup/` and `.capabilities/quality-gate/` first
+ Add the mutation testing dependencies:
+ 
+ ```bash
+-npm install --save-dev --save-exact @stryker-mutator/core@10.0.0 @stryker-mutator/typescript-checker@10.0.0 @stryker-mutator/vitest-runner@10.0.0
++npm install --save-dev --save-exact @stryker-mutator/core@10.1.1 @stryker-mutator/typescript-checker@10.1.1 @stryker-mutator/vitest-runner@10.1.1
+ ```
+ 
+ Add or merge this script:
+diff --git a/.capabilities/progressive-interaction/manifest.json b/.capabilities/progressive-interaction/manifest.json
+index bf9a8f3..d43afbf 100644
+--- a/.capabilities/progressive-interaction/manifest.json
++++ b/.capabilities/progressive-interaction/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Enhance conventional HTML forms with background submission and declared fragment replacement.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1",
++      "@playwright/test": "1.65.0",
+       "typescript": "npm:@typescript/typescript6@6.0.2"
+     }
+   },
+diff --git a/.capabilities/progressive-interaction/recipes/npm.md b/.capabilities/progressive-interaction/recipes/npm.md
+index 054d9a5..5700af9 100644
+--- a/.capabilities/progressive-interaction/recipes/npm.md
++++ b/.capabilities/progressive-interaction/recipes/npm.md
+@@ -7,7 +7,7 @@ Use the target repo's existing client build and static-asset serving path. This
+ If the target does not already use the test dependencies and the user approves adding them:
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1 typescript@npm:@typescript/typescript6@6.0.2
++npm install --save-dev --save-exact @playwright/test@1.65.0 typescript@npm:@typescript/typescript6@6.0.2
+ ```
+ 
+ If Playwright or TypeScript is already pinned, adapt the test to compatible versions rather than installing second copies.
+diff --git a/.capabilities/quality-gate/manifest.json b/.capabilities/quality-gate/manifest.json
+index 281af99..251944e 100644
+--- a/.capabilities/quality-gate/manifest.json
++++ b/.capabilities/quality-gate/manifest.json
+@@ -4,12 +4,12 @@
+   "requires": ["typescript-setup"],
+   "dependencies": {
+     "dev": {
+-      "@vitest/coverage-v8": "4.1.11",
+-      "prettier": "3.9.9",
+-      "vitest": "4.1.11"
++      "@vitest/coverage-v8": "5.1.0",
++      "prettier": "3.9.10",
++      "vitest": "5.1.0"
+     },
+     "optionalDev": {
+-      "@playwright/test": "1.62.1"
++      "@playwright/test": "1.65.0"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/quality-gate/recipes/npm.md b/.capabilities/quality-gate/recipes/npm.md
+index ccfbc49..5f52792 100644
+--- a/.capabilities/quality-gate/recipes/npm.md
++++ b/.capabilities/quality-gate/recipes/npm.md
+@@ -9,7 +9,7 @@ Apply `.capabilities/typescript-setup/` first unless the target repo already has
+ Add the fast-gate dependencies:
+ 
+ ```bash
+-npm install --save-dev --save-exact prettier@3.9.9 vitest@4.1.11 @vitest/coverage-v8@4.1.11
++npm install --save-dev --save-exact prettier@3.9.10 vitest@5.1.0 @vitest/coverage-v8@5.1.0
+ ```
+ 
+ Add or merge these scripts:
+diff --git a/.capabilities/quality-gate/recipes/playwright.md b/.capabilities/quality-gate/recipes/playwright.md
+index 1541f85..8354336 100644
+--- a/.capabilities/quality-gate/recipes/playwright.md
++++ b/.capabilities/quality-gate/recipes/playwright.md
+@@ -5,7 +5,7 @@ Use this recipe only after the user approves adding a browser gate.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1
++npm install --save-dev --save-exact @playwright/test@1.65.0
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/readme-screenshot/manifest.json b/.capabilities/readme-screenshot/manifest.json
+index 620ed6f..c1fb8a6 100644
+--- a/.capabilities/readme-screenshot/manifest.json
++++ b/.capabilities/readme-screenshot/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add local-only Playwright screenshot capture for README images.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.62.1"
++      "@playwright/test": "1.65.0"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/readme-screenshot/recipes/npm.md b/.capabilities/readme-screenshot/recipes/npm.md
+index a028551..9e85c19 100644
+--- a/.capabilities/readme-screenshot/recipes/npm.md
++++ b/.capabilities/readme-screenshot/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+ 
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.62.1
++npm install --save-dev --save-exact @playwright/test@1.65.0
+ ```
+ 
+ Add or merge:
+diff --git a/.capabilities/room-state/manifest.json b/.capabilities/room-state/manifest.json
+index 2fcc0ef..5a96231 100644
+--- a/.capabilities/room-state/manifest.json
++++ b/.capabilities/room-state/manifest.json
+@@ -3,9 +3,9 @@
+   "description": "Add one SQLite-backed Durable Object per room with predefined, replaceable anonymous voting.",
+   "dependencies": {
+     "dev": {
+-      "@cloudflare/vitest-plugin": "1.3.5",
+-      "@vitest/coverage-istanbul": "4.1.11",
+-      "vitest": "4.1.11"
++      "@cloudflare/vitest-plugin": "1.6.0",
++      "@vitest/coverage-istanbul": "5.1.0",
++      "vitest": "5.1.0"
+     },
+     "removeDev": ["@cloudflare/vitest-pool-workers", "@vitest/coverage-v8"]
+   },
+diff --git a/.capabilities/room-state/recipes/npm.md b/.capabilities/room-state/recipes/npm.md
+index 17dad13..48cdb61 100644
+--- a/.capabilities/room-state/recipes/npm.md
++++ b/.capabilities/room-state/recipes/npm.md
+@@ -8,7 +8,7 @@ Install exact versions compatible with the kit snapshot:
+ 
+ ```bash
+ npm uninstall @cloudflare/vitest-pool-workers @vitest/coverage-v8
+-npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.3.5 @vitest/coverage-istanbul@4.1.11 vitest@4.1.11
++npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.6.0 @vitest/coverage-istanbul@5.1.0 vitest@5.1.0
+ ```
+ 
+ If the target already uses Vitest, reconcile its pinned version with the plugin's peer dependency instead of installing a second test stack. When the target collects Worker-runtime coverage, set `test.coverage.provider` to `"istanbul"`; native V8 coverage is not supported in the Workers runtime. Preserve its existing include, exclude, reporter, and threshold settings.
+diff --git a/.capabilities/typescript-setup/manifest.json b/.capabilities/typescript-setup/manifest.json
+index 86b4bb1..23c5c1c 100644
+--- a/.capabilities/typescript-setup/manifest.json
++++ b/.capabilities/typescript-setup/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add strict no-emit TypeScript checking for npm projects.",
+   "dependencies": {
+     "dev": {
+-      "@types/node": "24.19.1",
++      "@types/node": "24.19.2",
+       "typescript": "npm:@typescript/typescript6@6.0.2",
+       "typescript-7": "npm:typescript@7.0.2"
+     }
+diff --git a/.capabilities/typescript-setup/recipes/npm.md b/.capabilities/typescript-setup/recipes/npm.md
+index ecd3de5..2d6c420 100644
+--- a/.capabilities/typescript-setup/recipes/npm.md
++++ b/.capabilities/typescript-setup/recipes/npm.md
+@@ -7,7 +7,7 @@ Apply this recipe when the target repo uses npm.
+ Add the TypeScript dependencies:
+ 
+ ```bash
+-npm install --save-dev --save-exact @types/node@24.19.1 typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2
++npm install --save-dev --save-exact @types/node@24.19.2 typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2
+ ```
+ 
+ This keeps the TypeScript 6 compatibility package under the canonical
+diff --git a/.capabilities/workers-ai/manifest.json b/.capabilities/workers-ai/manifest.json
+index 2f0c4f0..decc713 100644
+--- a/.capabilities/workers-ai/manifest.json
++++ b/.capabilities/workers-ai/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add a typed Workers AI binding boundary with validated structured output and deterministic fallback behavior.",
+   "dependencies": {
+     "dev": {
+-      "vitest": "4.1.11"
++      "vitest": "5.1.0"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/workers-ai/recipes/npm.md b/.capabilities/workers-ai/recipes/npm.md
+index 0d35e6a..866aa61 100644
+--- a/.capabilities/workers-ai/recipes/npm.md
++++ b/.capabilities/workers-ai/recipes/npm.md
+@@ -1,11 +1,11 @@
+ # npm Recipe
+ 
+-This kit adds no application dependency. Its network-free tests require Vitest `4.1.11`; reconcile that exact version with the target's test stack before installing it. The kit also assumes Wrangler is already pinned in the target project; ask before installing or upgrading either tool.
++This kit adds no application dependency. Its network-free tests require Vitest `5.1.0`; reconcile that exact version with the target's test stack before installing it. The kit also assumes Wrangler is already pinned in the target project; ask before installing or upgrading either tool.
+ 
+ If the target does not already provide the compatible Vitest version, install it after approval:
+ 
+ ```bash
+-npm install --save-dev --save-exact vitest@4.1.11
++npm install --save-dev --save-exact vitest@5.1.0
+ ```
+ 
+ ## Wrangler Configuration
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 29c1612..0027ae4 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -61,7 +61,7 @@ jobs:
+   quality-browser:
+     runs-on: ubuntu-latest
+     container:
+-      image: mcr.microsoft.com/playwright:v1.62.1-noble
++      image: mcr.microsoft.com/playwright:v1.65.0-noble
+       options: --ipc=host
+     steps:
+       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+diff --git a/docs/development.md b/docs/development.md
+index 0d53e21..f58da5b 100644
+--- a/docs/development.md
++++ b/docs/development.md
+@@ -100,13 +100,13 @@ The starter Worker and Room State verifier use compatibility date `2026-09-04`.
+ 
+ The template now ships with a minimal Worker stub in `src/worker.ts`. `npm run dev` starts it on `http://127.0.0.1:8787`, and Playwright uses `npm run e2e:server` on `http://127.0.0.1:8788` so browser tests can run without extra setup. Both commands inherit the user's normal `HOME`; it is not a Wrangler control variable. The e2e server forces Chokidar polling mode to avoid file-watcher exhaustion in macOS-hosted local runs while preserving the normal `npm run dev` developer loop. API modules live under `src/api/`, view modules live under `src/views/`, and tests are colocated under `src/`.
+ 
+-The GitHub Actions CI workflow splits fast checks, browser checks, and mutation checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.62.1-noble`, pins every `uses:` action reference to a full commit SHA, and cancels superseded runs on the same ref. The browser and mutation jobs use `scripts/classify-expensive-ci.mjs` after checkout and skip cache restoration, Node setup, dependency installation, and gate execution when every changed file is in a known non-runtime area such as docs, specs, template update packs, or agent skill material. Unknown paths, missing commit ranges, and classifier failures take the safe path and run the expensive gates. The full `quality-mutation` workflow job is reserved for GitHub Actions with a `github.server_url` guard, so Local CI runs skip it; use `npm run quality:gate:deep` or `npm run mutation` when local mutation feedback is needed. Dependency installation uses plain `npm ci`; Local CI explicitly prewarms through the fast job's stable `install` step, then gives parallel jobs isolated writable `node_modules` views. This prevents cross-job cache races while avoiding duplicate cold installs, unnecessary npm self-upgrades in CI, and mutable action tags.
++The GitHub Actions CI workflow splits fast checks, browser checks, and mutation checks into separate jobs, reads the pinned Node version from `package.json`, relies on the npm release bundled with that Node setup as long as it satisfies the repo's npm 11 constraint, runs repository-shape validation as part of the fast job, runs the browser job in the version-pinned Playwright container image `mcr.microsoft.com/playwright:v1.65.0-noble`, pins every `uses:` action reference to a full commit SHA, and cancels superseded runs on the same ref. The browser and mutation jobs use `scripts/classify-expensive-ci.mjs` after checkout and skip cache restoration, Node setup, dependency installation, and gate execution when every changed file is in a known non-runtime area such as docs, specs, template update packs, or agent skill material. Unknown paths, missing commit ranges, and classifier failures take the safe path and run the expensive gates. The full `quality-mutation` workflow job is reserved for GitHub Actions with a `github.server_url` guard, so Local CI runs skip it; use `npm run quality:gate:deep` or `npm run mutation` when local mutation feedback is needed. Dependency installation uses plain `npm ci`; Local CI explicitly prewarms through the fast job's stable `install` step, then gives parallel jobs isolated writable `node_modules` views. This prevents cross-job cache races while avoiding duplicate cold installs, unnecessary npm self-upgrades in CI, and mutable action tags.
+ 
+ The starter UI now follows the same Tailwind v4 baseline shape as `thesis-journey-tracker`: Tailwind input lives in `src/tailwind-input.css`, generated CSS is written to `.generated/styles.css`, and Wrangler runs `npm run build:css` automatically before local development.
+ 
+ The Lighthouse setup is also generic, but the Worker stub gives it a concrete local target. Use `LIGHTHOUSE_URL=http://127.0.0.1:8787 LIGHTHOUSE_SERVER_COMMAND="npm run dev" npm run lighthouse`. Reports cover performance, accessibility, best practices, and SEO in mobile and desktop modes and are written to `reports/lighthouse/`. Configure the performance floor with `LIGHTHOUSE_MIN_PERFORMANCE_SCORE` and the other category floors with `LIGHTHOUSE_MIN_QUALITY_SCORE`.
+ 
+-Playwright stays at `1.62.1` with its matching CI image. In the macOS ARM64 host's Linux ARM64 container, Playwright `1.63.0`'s Chromium `153.0.8010.12` crashes its GPU process when DevTools screenshot tracing starts, including on an in-memory page. The preceding Chromium `151.0.7922.34` completes that trace and full Lighthouse `13.5.0` audits. `src/browser-tracing.e2e.ts` guards both the headless shell and full Chromium through the normal browser gate, reading screenshot events in memory without adding report files. Before refreshing Playwright again, run this regression and full mobile/desktop Lighthouse audits in the matching Linux ARM64 image with screenshots enabled; disabling screenshot collection does not verify the audit runtime. See [ADR-068](adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md).
++Playwright `1.65.0` and its matching CI image passed screenshot tracing and full mobile and desktop Lighthouse audits with screenshots enabled in a Linux ARM64 container on a macOS ARM64 host. Playwright `1.63.0`'s Chromium had crashed when screenshot tracing started, as documented in [ADR-068](adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md). `src/browser-tracing.e2e.ts` guards both the headless shell and full Chromium through the normal browser gate, reading screenshot events in memory without adding report files. Before refreshing Playwright again, run this regression and full mobile/desktop Lighthouse audits in the matching Linux ARM64 image with screenshots enabled; disabling screenshot collection does not verify the audit runtime.
+ 
+ The Vitest setup is generic as well. `vitest.config.ts` targets colocated `src/**/*.test.ts` files while excluding `src/**/*.e2e.ts`. The default `npm test` command uses `--passWithNoTests` so the template remains usable before a project adds its first test file.
+ 
+@@ -116,7 +116,7 @@ Mutation testing uses Stryker with Vitest and the TypeScript checker. `npm run m
+ 
+ The TypeScript setup is generic too. `tsconfig.json` covers repo-level `.ts` files and `src/**/*.ts`, and `npm run typecheck` runs TypeScript 7. During the TypeScript 7.0 transition, `typescript` is intentionally pinned to the `@typescript/typescript6` compatibility package for tools that import the compiler API, while `typescript-7` provides the compiler used by the typecheck script.
+ 
+-The October 2026 dependency refresh keeps Vitest and its coverage providers at `4.1.11`: the Room State kit's `@cloudflare/vitest-plugin` `1.3.5` still declares Vitest `^4.1.0`. Keep those packages aligned when updating capability manifests and installation recipes. Playwright's package and browser CI image must also move together. A full `npm audit` checks development tooling that the normal shipped-runtime audit omits; the refresh resolves its findings through Wrangler's updated dependencies and compatible transitive lockfile updates without adding overrides.
++Vitest and its coverage providers are aligned at `5.1.0`; the Room State kit's `@cloudflare/vitest-plugin` `1.6.0` and Stryker Vitest runner `10.1.1` support that major. Keep those packages aligned when updating capability manifests and installation recipes. Playwright's package and browser CI image must also move together. A full `npm audit` checks development tooling that the normal shipped-runtime audit omits.
+ 
+ Oxlint provides the baseline JavaScript and TypeScript correctness lint. `npm run lint` uses Oxlint's default rules, treats warnings as failures, and stays separate from both Prettier formatting and TypeScript project checking. The affected-file guardrail scopes Oxlint to changed JavaScript and TypeScript files during iteration and pre-push checks.
+ 
+diff --git a/package.json b/package.json
+index 5d9461b..e1e7217 100644
+--- a/package.json
++++ b/package.json
+@@ -52,24 +52,24 @@
+     "worker:node-import-guard": "node ./scripts/assert-no-worker-node-imports.mjs"
+   },
+   "devDependencies": {
+-    "@playwright/test": "1.62.1",
+-    "@stryker-mutator/core": "10.0.0",
+-    "@stryker-mutator/typescript-checker": "10.0.0",
+-    "@stryker-mutator/vitest-runner": "10.0.0",
+-    "@tailwindcss/cli": "4.3.3",
+-    "@types/node": "24.19.1",
+-    "@vitest/coverage-v8": "4.1.11",
+-    "chrome-launcher": "1.2.2",
+-    "fallow": "3.31.0",
+-    "lighthouse": "13.5.0",
+-    "oxlint": "1.86.0",
+-    "prettier": "3.9.9",
++    "@playwright/test": "1.65.0",
++    "@stryker-mutator/core": "10.1.1",
++    "@stryker-mutator/typescript-checker": "10.1.1",
++    "@stryker-mutator/vitest-runner": "10.1.1",
++    "@tailwindcss/cli": "4.3.4",
++    "@types/node": "24.19.2",
++    "@vitest/coverage-v8": "5.1.0",
++    "chrome-launcher": "1.2.3",
++    "fallow": "3.40.0",
++    "lighthouse": "13.6.0",
++    "oxlint": "1.92.0",
++    "prettier": "3.9.10",
+     "run-local-ci": "0.18.1",
+-    "tailwindcss": "4.3.3",
++    "tailwindcss": "4.3.4",
+     "typescript": "npm:@typescript/typescript6@6.0.2",
+     "typescript-7": "npm:typescript@7.0.2",
+-    "vitest": "4.1.11",
+-    "wrangler": "4.146.0",
++    "vitest": "5.1.0",
++    "wrangler": "4.158.0",
+     "yaml": "2.9.1"
+   }
+ }
+diff --git a/specs/quality-gate/spec.md b/specs/quality-gate/spec.md
+index 1f1874a..5a34bad 100644
+--- a/specs/quality-gate/spec.md
++++ b/specs/quality-gate/spec.md
+@@ -50,9 +50,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
+ - **Affected file helper logic:** `scripts/affected-file-utils.mjs`
+ - **Runtime pin source:** `package.json#engines.node`
+ - **Package manager hint source:** `package.json#packageManager`
+-- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.62.1-noble`
++- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.65.0-noble`
+ - **Browser tracing regression:** `src/browser-tracing.e2e.ts` collects real screenshot trace events from both the bundled headless shell and full Chromium without external network access or saved traces
+-- **Current Vitest compatibility:** `4.1.11` with matching coverage providers; the Room State kit's Cloudflare testing plugin requires `^4.1.0`, so the dependency refresh does not adopt Vitest 5
++- **Current Vitest compatibility:** `5.1.0` with matching coverage providers; the Room State kit's Cloudflare testing plugin and the Stryker Vitest runner must support the selected major
+ - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
+ - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
+ - **Worker Node-import guard:** `scripts/assert-no-worker-node-imports.mjs`
+@@ -132,7 +132,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
+ - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
+ - The browser CI job must use a container image whose version exactly matches the pinned `@playwright/test` version instead of reinstalling Chromium at runtime.
+ - The browser gate must collect screenshot trace events from both the default headless shell and the full Chromium executable used by Lighthouse; a browser disconnect, incomplete trace, or missing screenshot events must fail the gate.
+-- Browser dependency refreshes must also pass full mobile and desktop Lighthouse audits with screenshot collection enabled in Linux ARM64 Local CI before their pins are distributed. [ADR-068](../../docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md) records the verification policy and current rollback.
++- Browser dependency refreshes must also pass full mobile and desktop Lighthouse audits with screenshot collection enabled in Linux ARM64 Local CI before their pins are distributed. [ADR-068](../../docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md) records the verification policy and earlier rollback.
+ - The coverage gate must only require unit tests when runtime `src/` code exists.
+ - The coverage gate must work in both the normal workspace and Local CI's warmed `node_modules` layout.
+ - The Worker client-code guard must allow only empty same-origin `/assets/*.js` module tags independent of attribute order, and must fail on inline, malformed, classic, remote, or non-asset scripts, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files while preserving source locations.

@@ -4,12 +4,12 @@
   "requires": ["typescript-setup"],
   "dependencies": {
     "dev": {
-      "@vitest/coverage-v8": "4.1.11",
-      "prettier": "3.9.9",
-      "vitest": "4.1.11"
+      "@vitest/coverage-v8": "5.1.0",
+      "prettier": "3.9.10",
+      "vitest": "5.1.0"
     },
     "optionalDev": {
-      "@playwright/test": "1.62.1"
+      "@playwright/test": "1.65.0"
     }
   },
   "scripts": {
