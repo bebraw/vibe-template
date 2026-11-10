@@ -103,6 +103,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-068](./implemented/ADR-068-verify-browser-screenshot-tracing.md)                  | Implemented | Verify screenshot tracing and Linux ARM64 Lighthouse audits before distributing browser pins.     |
 | [ADR-069](./implemented/ADR-069-adopt-typescript-7-typechecking.md)                    | Implemented | Use TypeScript 7 for project checks while retaining the TypeScript 6 compiler API for tooling.    |
 | [ADR-070](./implemented/ADR-070-preserve-existing-git-hook-configuration.md)           | Implemented | Preserve existing Git hook configuration and check the tracked tree on a first push.              |
+| [ADR-071](./implemented/ADR-071-define-external-service-latency-contracts.md)          | Implemented | Define latency acceptance, privacy-safe timings, and representative external-service evaluation.  |
 
 ## Creating A New ADR
 

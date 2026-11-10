@@ -1,0 +1,16 @@
+{
+  "id": "2026-11-10-external-service-latency",
+  "title": "Define latency budgets and timing guidance for external-service features",
+  "status": "implemented",
+  "risk": "low",
+  "adrs": ["docs/adrs/implemented/ADR-071-define-external-service-latency-contracts.md"],
+  "touches": [
+    "ARCHITECTURE.md",
+    "specs/README.md",
+    "specs/feature-template/spec.md",
+    "docs/development.md",
+    "docs/adrs/README.md",
+    "docs/adrs/implemented/ADR-071-define-external-service-latency-contracts.md"
+  ],
+  "checks": ["npm run format:check", "node --test scripts/template-update-patches.test.mjs"]
+}

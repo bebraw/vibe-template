@@ -136,6 +136,51 @@ The README includes a committed application screenshot at `docs/screenshots/home
 
 Template update packs live under `.template/updates/`. Use them to port later template maintenance changes into projects that already use this template or one of its capability kits. Each pack has metadata, a migration guide, and a focused patch to try first; when the patch does not apply cleanly, use the guide to adapt the change to the target project's conventions.
 
+## External-Service Evaluation and Timing
+
+Use the [feature spec](../specs/README.md#external-service-features) to set application-specific quality, latency, and reliability criteria before integrating an external service. The template supplies conventions, not a default number of seconds, telemetry service, or shared timing abstraction.
+
+### Evaluate Before Building the Full Interaction
+
+Exercise a small representative set through the intended dependency path early: ordinary requests, larger valid requests, and plausible failure cases. Use synthetic or otherwise approved evaluation inputs. Keep live evaluation deliberate and outside CI; use fake dependencies for repeatable failure and timeout checks without paid calls.
+
+Record a compact summary in the feature spec's verification notes: request classes, environment and relevant non-secret configuration, sample size, output-quality assessment, total and dependency durations, errors, timeouts, and fallback counts. Include slow and failed attempts instead of reporting only successful requests. Report the observed range and median for a small sample; use tail percentiles only with enough observations to support them, recording sample size and limitations. Compare failure/timeout/fallback rates against the stated denominator and target. A handful of fast successes does not establish production reliability.
+
+Use that evidence to decide whether to proceed, adjust the interaction or service configuration, or stop. Successful output that misses the agreed latency budget does not pass acceptance. Recheck the complete user interaction before accepting the feature, including network transfer and rendering when the budget covers them. Keep evaluation summaries free of prompts, responses, credentials, and personal data. Model selection, token limits, streaming, and caching stay application specific.
+
+### Budgets, Timeouts, and Deadlines
+
+An expected latency budget defines acceptable completion time under the spec's workload and measurement rule. It may be shorter than the hard request deadline. Document what the user sees after the target is missed, even if the request can still complete, and do not silently relax the target to match slow observations.
+
+A dependency timeout limits one external operation or attempt. State whether it covers connection, response headers, and body consumption; a headers-only timeout does not bound completion. An overall request deadline limits the complete application request, including input handling, all dependency attempts, retry delays, validation, and response preparation. Give each attempt at most the remaining time and reserve time for finishing the response; retries must not reset the overall deadline.
+
+At a timeout or deadline, stop awaiting the result, request cancellation where supported, and complete the specified fallback/error behavior. Cancellation alone is insufficient if a dependency ignores it. Prevent late results from replacing the completed response or changing a UI that has already timed out. Stopping the wait does not prove remote work or side effects stopped; define retry safety in the feature contract. Specify how loading ends and whether a user can retry. Verify these paths using fake dependencies and controlled time, including slow success, a never-settling dependency, and several individually permitted stages or retries that together exceed the request deadline.
+
+### Privacy-Safe Timing Conventions
+
+Measure elapsed durations with a monotonic clock within one execution context. Record a total-request duration from application entry until response preparation finishes or the request fails/times out, plus meaningful stages such as input validation, each external attempt (through response consumption), output validation, and response rendering. Document the boundaries in the feature spec. Measure client submission-to-usable-result separately when that is the acceptance metric; do not subtract timestamps from different clocks.
+
+Record the clock's resolution and runtime limitations. In deployed Cloudflare Workers, clocks such as `performance.now()` and `Date.now()` advance only after I/O, so CPU-only stages can report zero and request timings can omit final CPU work; see [Cloudflare's Performance documentation](https://developers.cloudflare.com/workers/runtime-apis/performance/). Zero does not prove the absence of application overhead. Use existing platform CPU/invocation evidence or local profiling to investigate CPU stages, and independent end-to-end measurements for the user-facing budget.
+
+Use structured completion records through the application's existing logging or diagnostic path. Emit them for success, error, cancellation, and timeout paths, with these allowlisted fields:
+
+| Field         | Convention                                                                                                                                                                                                                                                    |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `operation`   | Fixed, low-cardinality name such as `request.total`, `dependency.generate`, or `response.validate`; never derived from user input or a URL.                                                                                                                   |
+| `duration_ms` | Non-negative elapsed milliseconds for the named operation, including failed or timed-out attempts up to their termination.                                                                                                                                    |
+| `outcome`     | Bounded value such as `success`, `error`, `timeout`, `cancelled`, or `fallback`; no raw exception text.                                                                                                                                                       |
+| `timed_out`   | Boolean indicating whether this operation's own timeout/deadline fired. A recovered dependency timeout is true on that dependency record; a completed fallback before the request deadline has outcome `fallback` and `timed_out: false` on the total record. |
+
+For example, a synthetic completion record is `{"operation":"dependency.generate","duration_ms":2000,"outcome":"timeout","timed_out":true}`. The duration illustrates the format, not a template timeout default.
+
+Never include prompts, response bodies, credentials, headers, query strings, personal data, user/session identifiers, or raw errors in timing records. Use an existing opaque request correlation mechanism when available to associate stages with their total; never derive correlation values from payloads or identities. During a small local evaluation, collecting stage durations in one per-request summary also avoids mixing concurrent requests. Do not create a new persistent log store or artifact directory for this convention; follow existing documented write boundaries and retention/access settings.
+
+### Distinguish Dependency Time from Application Overhead
+
+Compare total and stage durations from the same request, accounting for the clock limitations above. With a clock that measures the full elapsed interval and sequential, non-overlapping dependency waits, total request time minus those waits shows time outside the dependencies: application work, scheduling, and uninstrumented gaps. Time validation and rendering explicitly where the runtime permits, using profiling when necessary. Dependency duration includes transport and response reading as observed by the application; it is not proof of the provider's internal execution time.
+
+Do not sum nested or overlapping spans and subtract them from the total. With parallel calls, use their covered wall-time intervals or inspect the critical path, counting overlapping time once. Keep retries and backoff visible: attempt durations show dependency waits, while backoff consumes the request budget without being provider execution. If the total is slow while dependency waits are short, inspect application stages and gaps; if waits dominate, investigate the dependency path. Compare server timing with separate end-to-end measurements to locate transfer or browser overhead. Missing or sampled records are unknowns, not zero-duration operations.
+
 ## Write Boundaries
 
 Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Prettier's disposable content cache belongs in `.cache/prettier`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, optional Fallow caches and the generated codebase map belong in ignored `.fallow/`, Local CI caches belong under Local CI's managed cache directory, preflight inspection artifacts belong in its disposable operating-system temporary directory, template update packs belong in `.template/updates/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.local-ci`.

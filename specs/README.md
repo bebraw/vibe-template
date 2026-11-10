@@ -34,6 +34,18 @@ Skip a spec for small fixes, trivial copy changes, or narrow tactical edits.
 - Update the spec whenever the feature's contracts, workflows, architecture, or quality guardrails change.
 - Treat spec creation or update as part of done work for feature delivery, not a later documentation pass.
 
+## External-Service Features
+
+When a feature depends on an external service, make latency and reliability acceptance criteria alongside output quality. Fill in the external-service section of the [feature template](feature-template/spec.md); omit it when the feature has no external dependency. Keep numerical limits and interaction choices application specific.
+
+- Define an expected latency budget with units, measurement start/end boundaries, representative workload, and a pass/fail rule (for example, a chosen percentile over a stated sample size). Distinguish user-perceived completion from server request duration; server timings alone do not measure network transfer or browser rendering.
+- Specify dependency timeouts separately from the overall request deadline. The deadline bounds application work, dependency waits, retries/backoff, and response preparation together. State the user-visible behavior when the expected budget is missed and when a timeout or deadline ends the request, including loading state, fallback/error, retry availability, and treatment of late results.
+- Define acceptable failure, timeout, and fallback rates with a denominator and evaluation sample. A useful result that arrives too slowly, or only after repeated failures, does not satisfy the contract. Count fallback outcomes separately from primary-service successes.
+- Name the total-request and stage timings needed to distinguish dependency latency from application overhead, following the [privacy-safe timing conventions](../docs/development.md#external-service-evaluation-and-timing).
+- Evaluate a small representative request set before building the full interaction. Record quality, latency, failures, environment, sample limitations, and the decision to proceed, adjust, or stop in the feature spec's verification notes. Re-evaluate the complete interaction against its budget before acceptance; unit tests with a fake dependency cannot establish live-service latency.
+
+Keep automated timeout and failure checks deterministic with controlled clocks and fake dependencies. CI must not require paid service calls. This guidance introduces no telemetry service or shared timing helper; model selection, token limits, streaming, and caching remain application decisions.
+
 ## Search Tips
 
 ```bash
