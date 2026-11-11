@@ -105,6 +105,7 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-070](./implemented/ADR-070-preserve-existing-git-hook-configuration.md)           | Implemented | Preserve existing Git hook configuration and check the tracked tree on a first push.              |
 | [ADR-071](./implemented/ADR-071-define-external-service-latency-contracts.md)          | Implemented | Define latency acceptance, privacy-safe timings, and representative external-service evaluation.  |
 | [ADR-072](./implemented/ADR-072-adopt-modern-web-guidance-v1.md)                       | Implemented | Pin Modern Web Guidance 1.0.0 and add an optional, context-verified modernization audit.          |
+| [ADR-073](./implemented/ADR-073-refresh-review-and-debug-guidance.md)                  | Implemented | Refresh test protection, toolchain diagnosis, regression guards, and staged-secret guidance.      |
 
 ## Creating A New ADR
 

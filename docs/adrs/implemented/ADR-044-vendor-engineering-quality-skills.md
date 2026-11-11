@@ -4,6 +4,8 @@
 
 **Date:** 2026-07-22
 
+Current `test-review` and `debug` source coordinates are recorded in [ADR-073](./ADR-073-refresh-review-and-debug-guidance.md). The original `correctness-review` revision and scoped integration decision remain active.
+
 ## Context
 
 The template already includes broad review, security, and simplification guidance, but it lacks dedicated workflows for proving logic defects with concrete triggers, evaluating whether tests guard meaningful regressions, and debugging failures from reproduction through regression coverage.

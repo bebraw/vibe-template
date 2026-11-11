@@ -1,0 +1,22 @@
+{
+  "id": "2026-11-11-dependency-refresh",
+  "title": "Refresh Node 24, npm 11, diagnostics, styling, and Worker tooling",
+  "status": "implemented",
+  "risk": "medium",
+  "touches": [
+    "package.json",
+    "package-lock.json",
+    ".nvmrc",
+    ".github/workflows/ci.yml",
+    ".capabilities/room-state/manifest.json",
+    ".capabilities/room-state/recipes/npm.md",
+    "docs/development.md"
+  ],
+  "checks": [
+    "npm audit",
+    "npm run quality:gate",
+    "npm run diagnostics:codebase",
+    "npm run ci:local",
+    "node --test scripts/template-update-patches.test.mjs"
+  ]
+}

@@ -43,11 +43,13 @@
   "verify": [
     "Confirm each SKILL.md has valid frontmatter and matches its directory name.",
     "Confirm every copied skill retains its LICENSE file and pinned source revision.",
+    "Review weakened-check reporting, negative-test guard reachability, fixture isolation, declared toolchains, and appropriate regression guards.",
     "Run the target repo's normal documentation or quality checks."
   ],
   "notes": [
-    "The skills are vendored from cniska/skills revision 7d79c7754f2b9d656f7db7b9ecefcb7532b6d256.",
-    "The debug skill is adapted to avoid depending on a separate /plan skill.",
+    "correctness-review retains cniska/skills revision 7d79c7754f2b9d656f7db7b9ecefcb7532b6d256.",
+    "test-review and debug selectively adapt cniska/skills revision 2c83858f1d801369355a761ce3ba9b492f5c642f.",
+    "The debug skill returns to explicit planning without depending on upstream companion skills.",
     "Do not overwrite stronger project-local review or debugging guidance."
   ]
 }

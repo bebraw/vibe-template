@@ -22,6 +22,8 @@ copying unrelated starter structure.
 - **Guide role:** manual fallback for diverged target projects
 - **Applied update record:** target project docs or package metadata containing the template source, baseline Git revision, and applied update IDs when local pack history is pruned
 - **Current backfilled updates:**
+  - `2026-11-11-dependency-refresh`
+  - `2026-11-11-skill-quality-refresh`
   - `2026-11-11-modern-web-guidance-v1`
   - `2026-10-02-playwright-tracing-rollback`
   - `2026-10-02-dependency-refresh`

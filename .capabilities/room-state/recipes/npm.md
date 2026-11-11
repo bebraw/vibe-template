@@ -8,10 +8,12 @@ Install exact versions compatible with the kit snapshot:
 
 ```bash
 npm uninstall @cloudflare/vitest-pool-workers @vitest/coverage-v8
-npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.6.0 @vitest/coverage-istanbul@5.1.0 vitest@5.1.0
+npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.7.0 @vitest/coverage-istanbul@5.1.0 vitest@5.1.0
 ```
 
 If the target already uses Vitest, reconcile its pinned version with the plugin's peer dependency instead of installing a second test stack. When the target collects Worker-runtime coverage, set `test.coverage.provider` to `"istanbul"`; native V8 coverage is not supported in the Workers runtime. Preserve its existing include, exclude, reporter, and threshold settings.
+
+The kit declares no Containers. If the adopting project already binds Containers to Durable Objects, plugin `1.7.0` starts them during tests and requires Docker. To test that project without Containers, explicitly set `dev.enable_containers` to `false` in its Wrangler configuration; do not disable a Container that the tests need. See the [plugin release notes](https://github.com/cloudflare/workers-sdk/releases/tag/@cloudflare%2Fvitest-plugin@1.7.0).
 
 ## Wrangler Configuration
 

@@ -3,7 +3,7 @@
   "description": "Add one SQLite-backed Durable Object per room with predefined, replaceable anonymous voting.",
   "dependencies": {
     "dev": {
-      "@cloudflare/vitest-plugin": "1.6.0",
+      "@cloudflare/vitest-plugin": "1.7.0",
       "@vitest/coverage-istanbul": "5.1.0",
       "vitest": "5.1.0"
     },

@@ -23,6 +23,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Copy policy:** keep an intentional distribution copy byte-equivalent to its canonical `.codex/skills/` source unless the target surface requires a documented compatibility adaptation
 - **Composition roots:** `AGENTS.md` for model routing and `README.md` for user discovery
 - **Skill contracts:** each canonical `SKILL.md` plus optional `agents/openai.yaml`
+- **Engineering skill provenance:** `correctness-review` retains `cniska/skills` revision `7d79c7754f2b9d656f7db7b9ecefcb7532b6d256`; `test-review` and `debug` selectively adapt revision `2c83858f1d801369355a761ce3ba9b492f5c642f`, as recorded in [ADR-073](../../docs/adrs/implemented/ADR-073-refresh-review-and-debug-guidance.md)
 - **Agent capability baseline:** repository navigation, tool use, and engineering judgment; [ADR-066](../../docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md) owns contextual reading and authorization policy
 - **Instruction budget:** concise descriptions and entrypoints; version-sensitive manuals stay in current primary documentation rather than the prompt
 - **Dependency direction:** routing and distribution surfaces point to canonical skills; canonical skills do not depend on their copies
@@ -94,6 +95,9 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - [ ] Both skills reuse the existing spec, ADR, test, and quality-gate conventions without companion setup.
 - [ ] The README groups every project-local skill by job and gives each a concise, user-facing purpose.
 - [ ] Skill descriptions remain discriminating and normally fit within 30 words; entrypoints contain only decision-changing guidance.
+- [ ] Test review identifies unexplained weakened checks, negative tests rejected by the wrong guard, and tests coupled to real user state or services; findings name the protection lost or concrete regression.
+- [ ] Debugging checks the declared runtime/toolchain before attributing a failure to source, and verifies an appropriate test, lint rule, or configuration guard against the original failure.
+- [ ] Wrangler guidance distinguishes immediately deployed secret changes from staged version-secret changes while retaining current-documentation and authorization requirements.
 - [ ] The README explains natural matching, named `$skill` invocation, and which workflows require explicit invocation.
 - [ ] The template includes a model-invoked `architecture-review` skill that combines durable capability contracts, deterministic source-shape checks, and advisory Fallow evidence.
 - [ ] The template includes an explicitly invoked `start-project` skill whose behavior is owned by `specs/project-start/spec.md`.
@@ -113,6 +117,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - Explicit specification requests proceed when the domain, destination, and contract are settled; To Spec asks only about material unresolved choices. Project Start retains its approved-plan checkpoint.
 - Read only context relevant to the requested task, and do not repeat approvals already supplied for that scope. Required quality gates remain mandatory, while additional verification needs a change, failure, or unresolved concern.
 - Version-sensitive commands and thresholds must be retrieved or resolved from installed tool help rather than accumulated in skill entrypoints.
+- Review weakened checks against their rationale and replacement evidence; justified changes with adequate retained proof are not findings. Preserve isolated synthetic fixtures and explicitly scoped integration tests.
+- A debugging regression guard must reject the original failure and accept the fix; choosing a lint or configuration guard does not bypass repository approval or verification rules.
 - The Worker and Wrangler skill copies must remain available while this repository is a Cloudflare Worker starter.
 - Removing a baseline skill must not remove its runtime dependency or product implementation implicitly.
 - Wayfinding must remain optional, repository-local, and independent of issue-tracker infrastructure.
@@ -131,6 +137,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Mirror presence:** `test -f .github/skills/workers-best-practices/SKILL.md && test -f .github/skills/wrangler/SKILL.md`
 - **Pruned bundles:** confirm unused Cloudflare product skills, `sandbox-sdk`, and communication-style suites are absent from repository skill roots
 - **Instruction size:** inspect `wc -w $(rg --files .codex/skills -g SKILL.md)` and review any entrypoint whose growth is not justified by a fragile workflow or safety boundary
+- **Engineering skill refresh:** validate `test-review` and `debug`, verify their capability-kit copies are byte-equivalent, and retain `correctness-review`'s distinct source revision and licenses
+- **Wrangler secret guidance:** validate `wrangler`, compare its GitHub copy, and verify immediate-versus-staged behavior against current Cloudflare secrets documentation without changing account state
 - **Documentation check:** `npm run format:check`
 - **Wayfinder structure:** confirm the skill has valid `name` and `description` frontmatter plus valid `agents/openai.yaml`; run `npm run skill:validate -- .codex/skills/wayfinder` for `SKILL.md` and review UI metadata separately
 - **Specification and TDD structure:** apply the same metadata validation to `.codex/skills/to-spec/` and `.codex/skills/tdd/`
@@ -171,6 +179,30 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - Given: an initiative will span multiple sessions and still contains material decision fog
 - When: the user explicitly invokes Wayfinder
 - Then: the agent creates one repository-local map after confirming its destination and initial frontier
+
+**Scenario: A passing suite lost protection**
+
+- Given: a diff skips tests, removes assertions, excludes coverage or mutation targets, lowers thresholds, or stops blocking on a check
+- When: test review evaluates the diff and its stated rationale
+- Then: it reports unexplained lost protection as `Restore`, without treating an adequately justified replacement as a defect
+
+**Scenario: A negative test passes for the wrong reason**
+
+- Given: an earlier guard rejects a fixture before the intended guard runs
+- When: test review traces the input through the public interface
+- Then: it identifies the untested behavior and the fixture correction needed to exercise that guard
+
+**Scenario: A failure depends on the active toolchain**
+
+- Given: a build or test fails under a runtime or tool version different from the project declaration
+- When: debugging localizes the failure
+- Then: it verifies the declared toolchain before changing source and proves the appropriate regression guard detects the original problem
+
+**Scenario: Secret changes must be staged**
+
+- Given: a requested secret change belongs to a workflow with separate version creation and promotion
+- When: the agent selects a Wrangler operation
+- Then: it uses the version-secret operation rather than an immediately deploying secret command, verifies current semantics and the target environment, and preserves the authorized promotion boundary
 
 **Scenario: Wayfinding resolves a lasting decision**
 

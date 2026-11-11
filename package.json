@@ -2,9 +2,9 @@
   "name": "vibe-template",
   "private": true,
   "type": "module",
-  "packageManager": "npm@11.21.0",
+  "packageManager": "npm@11.21.2",
   "engines": {
-    "node": "24.21.0",
+    "node": "24.22.2",
     "npm": ">=11 <12"
   },
   "devEngines": {
@@ -56,20 +56,20 @@
     "@stryker-mutator/core": "10.1.1",
     "@stryker-mutator/typescript-checker": "10.1.1",
     "@stryker-mutator/vitest-runner": "10.1.1",
-    "@tailwindcss/cli": "4.3.4",
+    "@tailwindcss/cli": "4.3.5",
     "@types/node": "24.19.2",
     "@vitest/coverage-v8": "5.1.0",
     "chrome-launcher": "1.2.3",
-    "fallow": "3.40.0",
+    "fallow": "3.42.0",
     "lighthouse": "13.6.0",
-    "oxlint": "1.92.0",
+    "oxlint": "1.93.0",
     "prettier": "3.9.10",
     "run-local-ci": "0.18.1",
-    "tailwindcss": "4.3.4",
+    "tailwindcss": "4.3.5",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
     "vitest": "5.1.0",
-    "wrangler": "4.158.0",
+    "wrangler": "4.160.0",
     "yaml": "2.9.1"
   }
 }

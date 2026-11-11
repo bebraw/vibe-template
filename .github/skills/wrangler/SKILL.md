@@ -20,6 +20,7 @@ Use Wrangler through this repository's pinned dependency and existing npm script
 - After binding changes, regenerate or check types with the installed Wrangler version and run the repository typecheck.
 - Treat `compatibility_date`, flags, environments, and local-versus-remote bindings as deliberate project choices. Verify current semantics before changing them.
 - Never place secret values in command arguments, logs, source, or committed config. Prefer Wrangler's interactive secret input or an approved file/CI source.
+- `wrangler secret put` and `wrangler secret delete` create a version and deploy it immediately. For a staged secret change, use `wrangler versions secret put` or `delete`, then follow the project's authorized promotion workflow. Confirm the target environment and current [secret deployment semantics](https://developers.cloudflare.com/workers/configuration/secrets/) before acting.
 - Resolve unfamiliar subcommands with `npx wrangler <command> --help` or current primary documentation instead of relying on a static command catalog.
 
 ## Verification

@@ -1,0 +1,26 @@
+{
+  "id": "2026-11-11-skill-quality-refresh",
+  "title": "Refresh focused review, debugging, and staged-secret guidance",
+  "status": "implemented",
+  "risk": "low",
+  "adrs": ["docs/adrs/implemented/ADR-073-refresh-review-and-debug-guidance.md"],
+  "touches": [
+    ".codex/skills/test-review/",
+    ".codex/skills/debug/",
+    ".codex/skills/wrangler/",
+    ".github/skills/wrangler/",
+    ".capabilities/engineering-quality-skills/",
+    "specs/agent-skills/spec.md",
+    "docs/adrs/README.md",
+    "docs/adrs/implemented/ADR-044-vendor-engineering-quality-skills.md",
+    "docs/adrs/implemented/ADR-073-refresh-review-and-debug-guidance.md"
+  ],
+  "checks": [
+    "npm run skill:validate -- .codex/skills/test-review",
+    "npm run skill:validate -- .codex/skills/debug",
+    "npm run skill:validate -- .codex/skills/wrangler",
+    "npm run format:check",
+    "node --test scripts/template-update-patches.test.mjs",
+    "npm run quality:gate"
+  ]
+}

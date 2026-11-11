@@ -5,17 +5,17 @@ Use this kit to add focused correctness review, test review, and systematic debu
 ## Adds
 
 - `correctness-review` for logic bugs, edge cases, async failures, and broken contracts backed by concrete triggering inputs
-- `test-review` for meaningful coverage gaps, fragile tests, and low-value or stale tests
-- `debug` for stop-the-line reproduction, localization, minimization, root-cause fixes, regression tests, and end-to-end verification
+- `test-review` for meaningful coverage gaps, weakened checks, isolated fixtures, and tests that exercise the intended behavior
+- `debug` for stop-the-line reproduction, toolchain checks, localization, root-cause fixes, and verified regression guards
 - Source revision metadata and the upstream MIT license for each vendored skill
 
-The skills were reviewed from [`cniska/skills`](https://github.com/cniska/skills) at revision `7d79c7754f2b9d656f7db7b9ecefcb7532b6d256`. The debug skill is adapted to return to explicit planning when the design is wrong instead of assuming a `/plan` skill exists.
+The skills are adapted from [`cniska/skills`](https://github.com/cniska/skills). `correctness-review` retains revision `7d79c7754f2b9d656f7db7b9ecefcb7532b6d256`; `test-review` and `debug` incorporate selected guidance from revision `2c83858f1d801369355a761ce3ba9b492f5c642f`. Keep their per-skill provenance distinct. Debug returns to explicit planning when the design is wrong, without requiring upstream companion skills.
 
 ## Good Fit
 
 - The target repo uses Codex or another agent that supports `SKILL.md` capabilities.
 - Existing review guidance is broad but lacks focused correctness or test-adequacy lenses.
-- Contributors want a disciplined debugging workflow that requires reproduction and regression coverage.
+- Contributors want a disciplined debugging workflow that requires reproduction and a regression guard suited to the failure.
 - The target repo can keep project-specific severity labels and verification commands in its own guidance.
 
 ## Poor Fit
