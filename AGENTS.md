@@ -73,7 +73,7 @@ Ask only when the action is not already authorized in the conversation. Existing
 
 ## Modern Web Platform
 
-- Use the project-local [`modern-web-guidance`](./.codex/skills/modern-web-guidance/SKILL.md) skill when browser-facing work requires choosing an HTML, CSS, or Web API feature, interpreting compatibility, or designing a fallback; skip it for backend-only work, routine changes that apply established repository patterns, and general tooling.
+- Use the project-local [`modern-web-guidance`](./.codex/skills/modern-web-guidance/SKILL.md) skill when browser-facing work requires choosing an HTML, CSS, or Web API feature, interpreting compatibility, or designing a fallback, and for explicitly requested broad modernization or legacy-pattern audits; skip it for backend-only work, routine changes that apply established repository patterns, and general tooling.
 - Keep repository architecture, specs, source conventions, and tests authoritative over retrieved examples.
 - Target Baseline Widely available for core behavior. Use newer features as progressive enhancements unless the project explicitly documents a narrower browser target, and do not treat Chromium-only checks as proof of cross-browser compatibility.
 

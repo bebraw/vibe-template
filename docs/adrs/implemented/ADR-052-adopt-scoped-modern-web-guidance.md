@@ -4,7 +4,7 @@
 
 **Date:** 2026-08-10
 
-Current instruction and executable coordinates are recorded in [ADR-067](./ADR-067-refresh-reviewed-web-guidance.md); the scoped integration decision remains active.
+Current instruction and executable coordinates are recorded in [ADR-072](./ADR-072-adopt-modern-web-guidance-v1.md); the scoped integration decision remains active with its optional modernization audit extension.
 
 ## Context
 

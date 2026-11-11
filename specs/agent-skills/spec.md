@@ -42,8 +42,10 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Capability architecture review skill:** `.codex/skills/architecture-review/`
 - **Architecture-feedback integration:** review-skill behavior is owned here; `specs/architecture-feedback/spec.md` owns its composition with deterministic source-shape evidence
 - **Web-platform implementation skill:** `.codex/skills/modern-web-guidance/`
-- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `84ae7251ee919239d5ea85aef25897983f26601e`, published as `0.0.191`; [ADR-067](../../docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md) records the review
-- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@0.0.191`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v0.0.191` and commit `7b4b980569da01d6e9f4379bd852b903fac0554d`, with npm integrity `sha512-BF3UZQKsA3+Xi3iSkxMn68Nx2xaf6fr+awsVDIg4F9Vqfh8wvzOTTWtHnktOJOxfrr+hzZzWmrBs5vR3MO4dBA==`
+- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `4dd968349e54ca45a05dd5c818fb035c9054b022`, published as `1.0.0`; [ADR-072](../../docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md) records the review
+- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@1.0.0`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v1.0.0` and commit `544c250575f7811d87fef8b1c064bc9571cbfb80`, with npm integrity `sha512-vafIZwC8AS6QjM2yyoflZbnc7n3/TVOMLbEMRdPTwcFy0f9/Tq8s5rJQ8UIqRt2KPl9ixravyaMR4nTGuUrcmg==`
+- **Web-platform modernization:** explicit broad repository/directory audits may use `legacy-scan <path> --json`; contextual verification owns findings, and scan coverage and exit status are not quality gates
+- **Web-platform write boundary:** disable file logging on each command; reuse npm's existing cache and operating-system temporary guide files, without repository reports, configuration, or generated skill installation
 - **Browser-support target:** Baseline Widely available for core behavior, with progressive enhancement for newer features unless a project records a narrower target
 - **Guidance authority:** retrieved guidance informs implementation; repository architecture, specs, source conventions, and verification remain authoritative
 - **Browser verification boundary:** the current Playwright and Lighthouse setup provides Chromium evidence and does not claim cross-browser compatibility
@@ -71,6 +73,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - Do not treat structural metrics as a substitute for reviewing capability ownership and dependency direction.
 - Do not invoke Modern Web Guidance for backend-only work, routine styling or behavior changes that apply established repository patterns, copy changes, CI, or general tooling.
 - Do not replace the pinned Modern Web Guidance CLI with `@latest`, enable its telemetry, or install its full guide corpus as a repository dependency.
+- Do not copy the scanner's unpinned `retrieveCommand`, treat retained fallback matches as mandatory fixes, or infer a complete audit from zero findings.
 - Do not copy retrieved examples across local architecture or security boundaries, including the typed-client rule for browser behavior.
 - Do not infer cross-browser compatibility from Chromium-only automated checks.
 
@@ -95,6 +98,9 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - [ ] The template includes a model-invoked `architecture-review` skill that combines durable capability contracts, deterministic source-shape checks, and advisory Fallow evidence.
 - [ ] The template includes an explicitly invoked `start-project` skill whose behavior is owned by `specs/project-start/spec.md`.
 - [ ] The template includes a narrowly routed `modern-web-guidance` skill with reviewed provenance, an adjacent Apache-2.0 license, valid UI metadata, a pinned CLI version, and telemetry-disabled commands.
+- [ ] Focused retrieval uses one capability per search, rephrases weak results once, avoids unrelated guides, and reads complete temporary guide output when returned.
+- [ ] Explicit broad modernization audits verify scanner candidates against `keepWhen` / `dropWhen`, report only relevant findings, and change code only within the user's authorized scope; authorized refactors retrieve pinned guidance, retain necessary fallbacks, rescan, and run relevant project checks.
+- [ ] Scanner limitations, disabled file logging, and the existing-cache/temporary-file write boundary are explicit; neither scanning nor skill upgrades create repository reports or configuration.
 - [ ] The browser-support target and the Chromium-only verification boundary are explicit in durable architecture and agent guidance.
 - [ ] Modern Web Guidance adds no application dependency, vendored guide corpus, automatic update path, or CI gate.
 - [ ] Missing browser declarations may prompt an opt-in `modern-web-types` recommendation, with dependency approval, version pinning, active-toolchain verification, and unchanged browser-support requirements; Cloudflare runtime types remain outside this recommendation.
@@ -115,6 +121,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - TDD must prove the intended missing behavior with a failing test before changing production code.
 - TDD must allow explicit alternative verification for documentation, prototypes, generated output, and mechanical changes.
 - Modern Web Guidance upgrades must be reviewed deliberately and update the instruction snapshot, package version, source tag and commit, npm integrity, provenance, spec, ADR or successor decision, and portable update path together.
+- Modernization scanning stays opt-in for broad audits; component-specific work uses focused retrieval. Audit-only requests stop after reporting, and retained safe matches do not justify code churn.
 - Features outside Baseline Widely available must preserve a usable core path unless a project explicitly records a narrower browser target.
 - Retrieved guidance must not override repository architecture, user instructions, dependency approval, or deterministic verification.
 
@@ -129,7 +136,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Specification and TDD structure:** apply the same metadata validation to `.codex/skills/to-spec/` and `.codex/skills/tdd/`
 - **Architecture review structure:** validate `.codex/skills/architecture-review/` metadata and confirm its workflow routes lasting outcomes into architecture docs, ADRs, or specs
 - **Project start structure:** validate `.codex/skills/start-project/` metadata and confirm its workflow is read-only until the exact pruning plan is approved
-- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands pin `modern-web-guidance@0.0.191` with `DISABLE_TELEMETRY=1`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
+- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands pin `modern-web-guidance@1.0.0` with `DISABLE_TELEMETRY=1` and `ENABLE_FILE_LOGGING=false`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
+- **Modern web upgrade smoke checks:** exercise search, retrieval (including temporary output), and a scan of both a disposable known-pattern fixture and the intended source directory; confirm the fixture returns contextual rubrics and repository files remain unchanged by CLI invocations
 - **README catalog:** confirm every `.codex/skills/*/SKILL.md` has a corresponding README link and that explicit-only workflows are identified
 
 ### Scenarios
@@ -241,6 +249,24 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - Given: a retrieved example uses an inline handler, an unapproved dependency, or another pattern disallowed by local architecture
 - When: the agent applies the guidance
 - Then: it preserves the underlying platform recommendation while implementing it through the repository's typed, dependency-approved seams
+
+**Scenario: User requests a broad legacy-pattern audit**
+
+- Given: the user asks to audit a repository or directory without requesting code edits
+- When: the agent runs the pinned, telemetry-disabled scanner with file logging disabled
+- Then: it verifies candidates against their contextual rubrics, reports actionable findings and limited coverage, and leaves source files unchanged
+
+**Scenario: User authorizes modernization**
+
+- Given: contextual review confirms a scanner finding within the authorized scope
+- When: the agent implements the change
+- Then: it retrieves the guide with the local pinned command instead of the JSON suggestion, preserves required browser fallbacks, and checks the modified scope with the scanner and relevant project tests
+
+**Scenario: Safe fallback remains a scanner match**
+
+- Given: a finding is a deliberate compatibility fallback or a contextual false positive
+- When: the scan still reports the pattern after review
+- Then: the agent retains the safe code; neither a match nor a successful exit status is treated as a quality-gate result
 
 **Scenario: Feature is newer than the browser target**
 

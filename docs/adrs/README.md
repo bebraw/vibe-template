@@ -99,11 +99,12 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-064](./implemented/ADR-064-use-node-skill-validation.md)                          | Implemented | Validate skill structure through repository-owned Node tooling without PyYAML.                    |
 | [ADR-065](./implemented/ADR-065-offer-security-audit-as-optional-kit.md)               | Implemented | Offer Cloudflare's full security audit as an optional, pinned capability kit.                     |
 | [ADR-066](./implemented/ADR-066-scope-agent-guidance-to-the-task.md)                   | Implemented | Use capability-based, task-scoped agent guidance and honor existing authorization.                |
-| [ADR-067](./implemented/ADR-067-refresh-reviewed-web-guidance.md)                      | Implemented | Review and pin Modern Web Guidance 0.0.191 while retaining local integration boundaries.          |
+| [ADR-067](./implemented/ADR-067-refresh-reviewed-web-guidance.md)                      | Superseded  | Pin Modern Web Guidance 0.0.191; superseded by ADR-072.                                           |
 | [ADR-068](./implemented/ADR-068-verify-browser-screenshot-tracing.md)                  | Implemented | Verify screenshot tracing and Linux ARM64 Lighthouse audits before distributing browser pins.     |
 | [ADR-069](./implemented/ADR-069-adopt-typescript-7-typechecking.md)                    | Implemented | Use TypeScript 7 for project checks while retaining the TypeScript 6 compiler API for tooling.    |
 | [ADR-070](./implemented/ADR-070-preserve-existing-git-hook-configuration.md)           | Implemented | Preserve existing Git hook configuration and check the tracked tree on a first push.              |
 | [ADR-071](./implemented/ADR-071-define-external-service-latency-contracts.md)          | Implemented | Define latency acceptance, privacy-safe timings, and representative external-service evaluation.  |
+| [ADR-072](./implemented/ADR-072-adopt-modern-web-guidance-v1.md)                       | Implemented | Pin Modern Web Guidance 1.0.0 and add an optional, context-verified modernization audit.          |
 
 ## Creating A New ADR
 

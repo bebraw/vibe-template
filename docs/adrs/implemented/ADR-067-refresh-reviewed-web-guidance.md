@@ -1,6 +1,6 @@
 # ADR-067: Refresh Reviewed Web Guidance
 
-**Status:** Implemented
+**Status:** Superseded by [ADR-072](./ADR-072-adopt-modern-web-guidance-v1.md)
 
 **Date:** 2026-10-02
 
