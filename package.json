@@ -51,6 +51,11 @@
     "worker:client-guard": "node ./scripts/assert-no-worker-client-scripts.mjs",
     "worker:node-import-guard": "node ./scripts/assert-no-worker-node-imports.mjs"
   },
+  "overrides": {
+    "run-local-ci@0.18.1": {
+      "dtu-github-actions": "$dtu-github-actions"
+    }
+  },
   "devDependencies": {
     "@playwright/test": "1.65.0",
     "@stryker-mutator/core": "10.1.1",
@@ -60,6 +65,7 @@
     "@types/node": "24.19.2",
     "@vitest/coverage-v8": "5.1.0",
     "chrome-launcher": "1.2.3",
+    "dtu-github-actions": "file:vendor/dtu-github-actions/dtu-github-actions-0.18.1-no-zod.tgz",
     "fallow": "3.42.0",
     "lighthouse": "13.6.0",
     "oxlint": "1.93.0",

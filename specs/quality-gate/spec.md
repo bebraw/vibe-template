@@ -42,6 +42,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Remote expensive-gate classifier:** `scripts/classify-expensive-ci.mjs`
 - **Remote expensive-gate policy:** skip browser and mutation setup/execution only when every changed file is in a documented non-runtime area; run on unknown paths or unavailable ranges
 - **CI dependency install:** plain `npm ci`
+- **Temporary dependency replacement:** Local CI 0.18.1 resolves DTU from the committed archive in `vendor/dtu-github-actions/` using a scoped npm override; [ADR-074](../../docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md) records the decision and removal condition
 - **Action pinning:** every GitHub Actions `uses:` reference must use a full commit SHA
 - **Git hook path:** `.githooks/`
 - **Hook setup script:** `scripts/setup-git-hooks.mjs`
@@ -127,6 +128,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The CI workflow must keep using npm for install and verification steps without depending on one exact npm patch release.
 - The npm release used by CI must stay inside the supported npm range declared in `package.json`.
 - CI jobs must install dependencies with plain `npm ci`.
+- The temporary DTU override must reference the explicit root DTU development dependency using `$dtu-github-actions`. It must apply during npm dependency resolution, including existing-lock migrations and clean CI installs, so DTU's dependency graph contains no Zod. It must retain the published package's license and limit changes to its configuration JavaScript, declarations, and dependency metadata.
+- DTU configuration regression checks must exercise the installed package, preserving absent-value defaults, unnormalized URL strings, existing numeric coercion, and startup rejection of invalid values. Errors identify the first invalid field without including supplied values.
+- Rebuilding the DTU archive must use the integrity-checked published package, the committed patch, and the documented toolchain. Verify the rebuilt checksum before replacing the committed artifact; scratch files belong in an operating-system temporary directory.
 - Local CI must rely on its built-in warm-cache preparation and isolated per-job dependency views instead of repo-local install locking.
 - Local CI must explicitly prewarm through one stable npm install step before parallel jobs start.
 - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
@@ -149,7 +153,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The affected test path must run full unit coverage when affected-file helper logic changes.
 - The affected test path must run full unit coverage when affected runtime files have no related tests and no affected unit test files were supplied.
 - The affected guardrail path may fall back to project-level type checking or coverage when a safe per-file check is not available.
-- The repo's local CI scripts should use the repo-pinned `local-ci` binary directly instead of carrying repo-specific runtime patching or install locking.
+- The repo's local CI scripts should use the repo-pinned `local-ci` binary directly without startup/postinstall patching or install locking. The temporary DTU replacement is resolved by npm before execution.
 - The canonical local CI script should rely on Local CI's managed warm cache and per-job dependency isolation instead of forcing `--jobs 1` to avoid dependency races on macOS-hosted Docker.
 - The explicit Local CI prewarm selector and its workflow install-step id must stay aligned.
 - The canonical local CI script should use pause-on-failure so agents can fix and retry a failed runner without restarting the whole workflow.
@@ -249,6 +253,18 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - Given: a change affects GitHub Actions, dependency installation, build or container setup, browser CI setup, or an explicit full PR or release readiness check
 - When: the contributor runs `npm run quality:gate` and `npm run ci:local`
 - Then: the baseline gates pass and the split workflow is replayed in Local CI, while GitHub supplies the clean full mutation signal for runtime-relevant changes
+
+**Scenario: Fresh install consumes the DTU fix**
+
+- Given: the checkout includes the scoped override, lockfile, and committed DTU archive
+- When: a contributor or CI runner executes `npm ci`
+- Then: Local CI resolves the patched DTU, DTU declares no Zod dependency, and its configuration regression checks pass without an installation patch hook
+
+**Scenario: Upstream replaces the temporary DTU fix**
+
+- Given: a released Local CI/DTU combination removes the affected dependency and preserves the required configuration behavior
+- When: that release passes a clean install, configuration checks, the full quality gate, and Local CI
+- Then: remove the override, explicit DTU development dependency, vendored archive and patch, and temporary DTU checks together, regenerate the lockfile, and update the current documentation
 
 **Scenario: Contributor monitors the full quality gate**
 

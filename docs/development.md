@@ -80,6 +80,16 @@ If Local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
 
 Agents following this repo's RTK requirement should invoke the workflow as `rtk proxy npm run ci:local` and retries as `rtk proxy npm run ci:local:retry -- --name <runner-name>`. RTK's proxy mode passes the NDJSON stream through live; its normal filtered mode may buffer this output until the command finishes.
 
+### Temporary DTU Dependency Fix
+
+Local CI 0.18.1 uses a patched `dtu-github-actions` archive through the scoped npm override in `package.json`. The override references the explicit root DTU development dependency with `$dtu-github-actions`, allowing npm to resolve the archive consistently during existing-install migrations and fresh installs. The archive removes Zod from DTU's four-value environment configuration parser while preserving its defaults and accepted values. Invalid configuration still fails at startup, now with a plain error identifying the first invalid field. This removes the affected dependency from the resolved DTU tree; it does not suppress audit output or remediate separate `minimatch` findings.
+
+Keep `vendor/dtu-github-actions/` available before `npm install` or `npm ci`, including in Docker build contexts and downstream template copies. The archive is committed, so installs do not need a local build or postinstall patching tool. See its [provenance and rebuild instructions](../vendor/dtu-github-actions/README.md) and [ADR-074](adrs/implemented/ADR-074-vendor-dtu-without-zod.md). Run `node --test scripts/vendor-dtu.test.mjs` for focused installed-package checks; the normal tooling tests include them automatically. Removing Local CI from a downstream project should also remove its override, explicit DTU development dependency, this vendor directory, and those temporary checks.
+
+Revisit the override when updating Local CI. Verify a compatible upstream replacement with a clean install, the configuration cases, `npm audit`, `npm run quality:gate`, and `npm run ci:local`, then remove the override, explicit DTU development dependency, vendor directory, and temporary checks together. Keep historical ADRs and update packs as records of the original decision.
+
+### Readiness Checks
+
 Use targeted checks while iterating, then run the checks that match the change before proposing or landing it:
 
 - Docs-only changes: `npm run format:check`
@@ -184,6 +194,8 @@ Do not sum nested or overlapping spans and subtract them from the total. With pa
 ## Write Boundaries
 
 Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Prettier's disposable content cache belongs in `.cache/prettier`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, optional Fallow caches and the generated codebase map belong in ignored `.fallow/`, Local CI caches belong under Local CI's managed cache directory, preflight inspection artifacts belong in its disposable operating-system temporary directory, template update packs belong in `.template/updates/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.local-ci`.
+
+The reviewed DTU archive, patch, and provenance documentation are committed under `vendor/dtu-github-actions/`. Regeneration uses disposable operating-system temporary directories; only the verified replacement archive is copied into this documented vendor target.
 
 When adding a new tool or workflow that writes files, document the target path in the same change and prefer ignored local output unless the artifact is intentionally reviewed.
 

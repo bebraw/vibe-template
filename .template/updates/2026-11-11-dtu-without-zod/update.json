@@ -1,0 +1,24 @@
+{
+  "id": "2026-11-11-dtu-without-zod",
+  "title": "Remove Local CI's Zod dependency with a scoped DTU replacement",
+  "status": "implemented",
+  "risk": "medium",
+  "adrs": ["docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md"],
+  "touches": [
+    "package.json",
+    "package-lock.json",
+    "vendor/dtu-github-actions/",
+    "scripts/vendor-dtu.test.mjs",
+    "ARCHITECTURE.md",
+    "docs/development.md",
+    "specs/quality-gate/spec.md"
+  ],
+  "checks": [
+    "npm ci",
+    "node --test scripts/vendor-dtu.test.mjs",
+    "npm audit",
+    "npm run quality:gate",
+    "npm run ci:local",
+    "node --test scripts/template-update-patches.test.mjs"
+  ]
+}

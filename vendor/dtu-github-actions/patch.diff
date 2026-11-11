@@ -1,0 +1,112 @@
+diff --git a/dist/config.d.ts b/dist/config.d.ts
+index 07041c8..f38e9cc 100644
+--- a/dist/config.d.ts
++++ b/dist/config.d.ts
+@@ -1,39 +1,21 @@
+-import { z } from "zod";
+-declare const configSchema: z.ZodObject<{
++export type Config = {
+     /**
+      * The secret used to sign GitHub webhooks.
+      * Hardcoded for local-only mock usage.
+      */
+-    GITHUB_WEBHOOK_SECRET: z.ZodDefault<z.ZodString>;
++    GITHUB_WEBHOOK_SECRET: string;
+     /**
+      * The internal URL where the DTU Mock Server is reachable.
+      * Simulation scripts seed this server.
+      */
+-    DTU_URL: z.ZodDefault<z.ZodString>;
++    DTU_URL: string;
+     /**
+      * The port the DTU Mock Server listens on.
+      */
+-    DTU_PORT: z.ZodDefault<z.ZodNumber>;
++    DTU_PORT: number;
+     /**
+      * Directory where cache archives should be stored.
+      */
+-    DTU_CACHE_DIR: z.ZodDefault<z.ZodString>;
+-}, "strip", z.ZodTypeAny, {
+-    GITHUB_WEBHOOK_SECRET: string;
+-    DTU_URL: string;
+-    DTU_PORT: number;
+-    DTU_CACHE_DIR: string;
+-}, {
+-    GITHUB_WEBHOOK_SECRET?: string | undefined;
+-    DTU_URL?: string | undefined;
+-    DTU_PORT?: number | undefined;
+-    DTU_CACHE_DIR?: string | undefined;
+-}>;
+-export type Config = z.infer<typeof configSchema>;
+-export declare const config: {
+-    GITHUB_WEBHOOK_SECRET: string;
+-    DTU_URL: string;
+-    DTU_PORT: number;
+     DTU_CACHE_DIR: string;
+ };
+-export {};
++export declare const config: Config;
+diff --git a/dist/config.js b/dist/config.js
+index 5e78a84..ce3e35c 100644
+--- a/dist/config.js
++++ b/dist/config.js
+@@ -1,29 +1,17 @@
+-import { z } from "zod";
+ import path from "node:path";
+ import os from "node:os";
+-const configSchema = z.object({
+-    /**
+-     * The secret used to sign GitHub webhooks.
+-     * Hardcoded for local-only mock usage.
+-     */
+-    GITHUB_WEBHOOK_SECRET: z.string().min(1).default("local-ci-local"),
+-    /**
+-     * The internal URL where the DTU Mock Server is reachable.
+-     * Simulation scripts seed this server.
+-     */
+-    DTU_URL: z.string().url().default("http://localhost:8910"),
+-    /**
+-     * The port the DTU Mock Server listens on.
+-     */
+-    DTU_PORT: z.coerce.number().default(8910),
+-    /**
+-     * Directory where cache archives should be stored.
+-     */
+-    DTU_CACHE_DIR: z.string().default(() => path.join(os.tmpdir(), "dtu_cache")),
+-});
+-export const config = configSchema.parse({
+-    GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET,
+-    DTU_URL: process.env.DTU_URL,
+-    DTU_PORT: process.env.DTU_PORT,
+-    DTU_CACHE_DIR: process.env.DTU_CACHE_DIR,
+-});
++export const config = {
++    GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET ?? "local-ci-local",
++    DTU_URL: process.env.DTU_URL ?? "http://localhost:8910",
++    DTU_PORT: Number(process.env.DTU_PORT ?? 8910),
++    DTU_CACHE_DIR: process.env.DTU_CACHE_DIR ?? path.join(os.tmpdir(), "dtu_cache"),
++};
++if (config.GITHUB_WEBHOOK_SECRET.length === 0) {
++    throw new Error("GITHUB_WEBHOOK_SECRET must not be empty");
++}
++if (!URL.canParse(config.DTU_URL)) {
++    throw new Error("DTU_URL must be a valid URL");
++}
++if (Number.isNaN(config.DTU_PORT)) {
++    throw new Error("DTU_PORT must be a number");
++}
+diff --git a/package.json b/package.json
+index 57b7210..6054f9f 100644
+--- a/package.json
++++ b/package.json
+@@ -33,8 +33,7 @@
+   "dependencies": {
+     "body-parser": "^2.3.0",
+     "minimatch": "^10.2.5",
+-    "polka": "^0.5.2",
+-    "zod": "^3.24.1"
++    "polka": "^0.5.2"
+   },
+   "devDependencies": {
+     "@types/body-parser": "^1.19.6",

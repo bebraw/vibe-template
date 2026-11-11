@@ -1,0 +1,1199 @@
+diff --git a/ARCHITECTURE.md b/ARCHITECTURE.md
+index 5a79423..f1fe9e6 100644
+--- a/ARCHITECTURE.md
++++ b/ARCHITECTURE.md
+@@ -36,6 +36,7 @@ Use this file for global constraints. Use feature specs under `specs/` for domai
+ - Use the scoped `modern-web-guidance` skill as pinned, telemetry-disabled implementation input for substantive web-platform decisions and explicit broad modernization audits. Its optional scanner produces candidates for contextual review, not a CI gate or comprehensive compatibility evidence. Keep file logging disabled and use only the existing npm cache and operating-system temporary guide files; add no repository reports or tool configuration. Repository architecture, specs, source conventions, and verification remain authoritative, and upstream upgrades require deliberate review. See [ADR-072](docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md).
+ - Use a connected Cloudflare MCP as the retrieval and account-operation layer for current Cloudflare product work. Keep only the `workers-best-practices` and `wrangler` skills in the template baseline; add product-specific Cloudflare skills when a project actually adopts those products.
+ - Node is pinned exactly through `package.json`, npm is constrained to a compatible major there instead of an exact patch pin, and `@types/node` stays on the supported Node major.
++- Temporarily replace Local CI 0.18.1's DTU package with the reviewed archive in `vendor/dtu-github-actions/` through a parent-scoped npm override. Keep its published-package provenance, license, patch, checksums, rebuild instructions, and removal condition together; normal installs consume the committed artifact without patch hooks. See [ADR-074](docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md).
+ - Keep the deployed starter Worker Web-standards-only. Compatibility dates on or after 2026-08-04 must explicitly set both `no_nodejs_compat` and `no_nodejs_compat_v2` unless an ADR adopts Node runtime APIs, and the fast and affected quality paths must reject Node built-in imports from production source.
+ - Enable Workers Logs and sampled traces explicitly for the starter; keep sampling rates visible in Wrangler configuration so downstream projects can tune collection volume deliberately.
+ - Keep the npm package explicitly ESM so TypeScript-based Vite configuration has one unambiguous module format.
+diff --git a/docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md b/docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md
+new file mode 100644
+index 0000000..0ee21a6
+--- /dev/null
++++ b/docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md
+@@ -0,0 +1,35 @@
++# ADR-074: Vendor DTU Without Zod
++
++**Status:** Implemented
++
++**Date:** 2026-11-11
++
++**Amends:** [ADR-053](./ADR-053-adopt-local-ci-canonical-interface.md)
++
++## Context
++
++Local CI 0.18.1 is the latest published release reviewed for this update. Its DTU package depends on Zod 3 only to validate four scalar environment variables. That dependency produces the [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5) finding even though the advisory's collection-validation failure path is not demonstrated by these scalar inputs.
++
++A small upstream contribution replaces the schema with equivalent Node validation. Open issues and pull requests contain no duplicate fix, but upstream limits pull request creation to collaborators. A release containing this change is unavailable. The template needs a reproducible way to consume the fix through normal npm installation.
++
++## Decision
++
++Declare the committed DTU archive in `vendor/dtu-github-actions/` as an explicit development dependency. Scope an npm override beneath `run-local-ci@0.18.1` to that root pin using `$dtu-github-actions`. This reference supports both existing-lock migrations and fresh installs: npm 11.21.2 can resolve a relative tarball directly inside a nested override against the installed parent's directory during migration. Reconstruct the archive from the exact published `dtu-github-actions@0.18.1` package, preserve its license and all unrelated files, and apply only the reviewed changes to `dist/config.js`, `dist/config.d.ts`, and its Zod dependency declaration.
++
++Store the patch, source provenance, original integrity, resulting checksum, regeneration instructions, and removal condition next to the archive. Regenerate in an operating-system temporary directory and check reproducibility before updating the committed artifact. Continue using plain `npm ci` and the existing Local CI commands; add no patching dependency or installation hook.
++
++Preserve existing defaults, URL strings, numeric coercion, and startup validation. Invalid inputs now produce a plain `Error` for the first invalid field instead of aggregated `ZodError` issues. Keep configuration regression checks and the resolved dependency invariant in the existing tooling test gate.
++
++## Consequences
++
++- Clean installations resolve the corrected dependency metadata, so Zod is absent from DTU's dependency graph and its advisory path disappears.
++- The template owns a temporary package artifact and must review it whenever Local CI changes. Downstream copies must include the archive before installation.
++- Separate development-tool advisories remain visible; this decision does not authorize unrelated transitive upgrades or audit suppression.
++- Remove the override, explicit DTU development dependency, vendor directory, and temporary DTU tests together once a verified upstream release provides the required behavior. Projects that remove Local CI can prune these pieces immediately.
++
++## Alternatives Considered
++
++- **`patch-package`:** applies runtime edits after dependency resolution, leaving Zod in the lockfile and audit report; also adds a tool and lifecycle hook.
++- **Override Zod to version 4:** keeps an unnecessary dependency and changes some configuration semantics, including URL normalization and infinite-number handling.
++- **Maintain a full Local CI fork:** adds release and synchronization work beyond this three-file DTU fix.
++- **Wait for upstream:** keeps the affected dependency installed despite an available, tested removal.
+diff --git a/docs/development.md b/docs/development.md
+index 44dbd94..b6447d7 100644
+--- a/docs/development.md
++++ b/docs/development.md
+@@ -80,6 +80,16 @@ If Local CI warns with `No such remote 'origin'`, add `GITHUB_REPO=owner/repo` t
+ 
+ Agents following this repo's RTK requirement should invoke the workflow as `rtk proxy npm run ci:local` and retries as `rtk proxy npm run ci:local:retry -- --name <runner-name>`. RTK's proxy mode passes the NDJSON stream through live; its normal filtered mode may buffer this output until the command finishes.
+ 
++### Temporary DTU Dependency Fix
++
++Local CI 0.18.1 uses a patched `dtu-github-actions` archive through the scoped npm override in `package.json`. The override references the explicit root DTU development dependency with `$dtu-github-actions`, allowing npm to resolve the archive consistently during existing-install migrations and fresh installs. The archive removes Zod from DTU's four-value environment configuration parser while preserving its defaults and accepted values. Invalid configuration still fails at startup, now with a plain error identifying the first invalid field. This removes the affected dependency from the resolved DTU tree; it does not suppress audit output or remediate separate `minimatch` findings.
++
++Keep `vendor/dtu-github-actions/` available before `npm install` or `npm ci`, including in Docker build contexts and downstream template copies. The archive is committed, so installs do not need a local build or postinstall patching tool. See its [provenance and rebuild instructions](../vendor/dtu-github-actions/README.md) and [ADR-074](adrs/implemented/ADR-074-vendor-dtu-without-zod.md). Run `node --test scripts/vendor-dtu.test.mjs` for focused installed-package checks; the normal tooling tests include them automatically. Removing Local CI from a downstream project should also remove its override, explicit DTU development dependency, this vendor directory, and those temporary checks.
++
++Revisit the override when updating Local CI. Verify a compatible upstream replacement with a clean install, the configuration cases, `npm audit`, `npm run quality:gate`, and `npm run ci:local`, then remove the override, explicit DTU development dependency, vendor directory, and temporary checks together. Keep historical ADRs and update packs as records of the original decision.
++
++### Readiness Checks
++
+ Use targeted checks while iterating, then run the checks that match the change before proposing or landing it:
+ 
+ - Docs-only changes: `npm run format:check`
+@@ -185,6 +195,8 @@ Do not sum nested or overlapping spans and subtract them from the total. With pa
+ 
+ Keep workflow write targets explicit and documented. Generated CSS belongs in `.generated/`, Prettier's disposable content cache belongs in `.cache/prettier`, Lighthouse reports belong in `reports/lighthouse/`, coverage reports belong in `reports/coverage/`, mutation reports belong in `reports/mutation/`, Stryker temporary sandboxes belong in `.stryker-tmp/`, optional Fallow caches and the generated codebase map belong in ignored `.fallow/`, Local CI caches belong under Local CI's managed cache directory, preflight inspection artifacts belong in its disposable operating-system temporary directory, template update packs belong in `.template/updates/`, the committed README screenshot belongs in `docs/screenshots/`, and local secrets belong in untracked files such as `.dev.vars` or `.env.local-ci`.
+ 
++The reviewed DTU archive, patch, and provenance documentation are committed under `vendor/dtu-github-actions/`. Regeneration uses disposable operating-system temporary directories; only the verified replacement archive is copied into this documented vendor target.
++
+ When adding a new tool or workflow that writes files, document the target path in the same change and prefer ignored local output unless the artifact is intentionally reviewed.
+ 
+ ## Security Baseline
+diff --git a/package.json b/package.json
+index b461f16..4cd01de 100644
+--- a/package.json
++++ b/package.json
+@@ -51,6 +51,11 @@
+     "worker:client-guard": "node ./scripts/assert-no-worker-client-scripts.mjs",
+     "worker:node-import-guard": "node ./scripts/assert-no-worker-node-imports.mjs"
+   },
++  "overrides": {
++    "run-local-ci@0.18.1": {
++      "dtu-github-actions": "$dtu-github-actions"
++    }
++  },
+   "devDependencies": {
+     "@playwright/test": "1.65.0",
+     "@stryker-mutator/core": "10.1.1",
+@@ -60,6 +65,7 @@
+     "@types/node": "24.19.2",
+     "@vitest/coverage-v8": "5.1.0",
+     "chrome-launcher": "1.2.3",
++    "dtu-github-actions": "file:vendor/dtu-github-actions/dtu-github-actions-0.18.1-no-zod.tgz",
+     "fallow": "3.42.0",
+     "lighthouse": "13.6.0",
+     "oxlint": "1.93.0",
+diff --git a/scripts/vendor-dtu.test.mjs b/scripts/vendor-dtu.test.mjs
+new file mode 100644
+index 0000000..b5433ef
+--- /dev/null
++++ b/scripts/vendor-dtu.test.mjs
+@@ -0,0 +1,131 @@
++import assert from "node:assert/strict";
++import { spawnSync } from "node:child_process";
++import { readFileSync } from "node:fs";
++import { createRequire } from "node:module";
++import { tmpdir } from "node:os";
++import { join } from "node:path";
++import test from "node:test";
++import { pathToFileURL } from "node:url";
++import { deserialize } from "node:v8";
++
++const require = createRequire(import.meta.url);
++const localCiRequire = createRequire(require.resolve("run-local-ci/native-launcher"));
++const dtuEntry = pathToFileURL(localCiRequire.resolve("dtu-github-actions"));
++const configUrl = new URL("../config.js", dtuEntry);
++
++function importConfig(overrides = {}) {
++  const env = { ...process.env };
++  for (const key of ["GITHUB_WEBHOOK_SECRET", "DTU_URL", "DTU_PORT", "DTU_CACHE_DIR"]) delete env[key];
++
++  const result = spawnSync(
++    process.execPath,
++    [
++      "--input-type=module",
++      "--eval",
++      'import { serialize } from "node:v8"; const { config } = await import(process.argv[1]); process.stdout.write(serialize(config));',
++      configUrl.href,
++    ],
++    { env: { ...env, ...overrides }, timeout: 10_000 },
++  );
++  assert.ifError(result.error);
++  return result;
++}
++
++function loadConfig(overrides) {
++  const result = importConfig(overrides);
++  assert.equal(result.status, 0, result.stderr.toString());
++  // Unlike JSON, V8 serialization preserves the existing infinite-number behavior.
++  return deserialize(result.stdout);
++}
++
++test("Local CI resolves a DTU package without a Zod dependency", () => {
++  const manifest = JSON.parse(readFileSync(new URL("../../package.json", dtuEntry), "utf8"));
++
++  assert.equal(manifest.name, "dtu-github-actions");
++  assert.equal(manifest.dependencies?.zod, undefined, "DTU must not install Zod");
++});
++
++test("the lockfile retains no DTU dependency on Zod", () => {
++  const lock = JSON.parse(readFileSync(new URL("../package-lock.json", import.meta.url), "utf8"));
++  const entries = Object.entries(lock.packages).filter(([location]) => location.endsWith("/dtu-github-actions"));
++
++  assert.ok(entries.length > 0, "DTU must remain in the locked Local CI dependency tree");
++  for (const [location, entry] of entries) {
++    assert.equal(entry.dependencies?.zod, undefined, `${location} must not resolve Zod`);
++  }
++});
++
++test("DTU uses defaults when environment variables are absent", () => {
++  assert.deepEqual(loadConfig(), {
++    GITHUB_WEBHOOK_SECRET: "local-ci-local",
++    DTU_URL: "http://localhost:8910",
++    DTU_PORT: 8910,
++    DTU_CACHE_DIR: join(tmpdir(), "dtu_cache"),
++  });
++});
++
++test("DTU uses explicit values without normalizing strings", () => {
++  assert.deepEqual(
++    loadConfig({
++      GITHUB_WEBHOOK_SECRET: " custom-secret ",
++      DTU_URL: " https://example.com/mock ",
++      DTU_PORT: "9123",
++      DTU_CACHE_DIR: "./custom-cache",
++    }),
++    {
++      GITHUB_WEBHOOK_SECRET: " custom-secret ",
++      DTU_URL: " https://example.com/mock ",
++      DTU_PORT: 9123,
++      DTU_CACHE_DIR: "./custom-cache",
++    },
++  );
++});
++
++test("DTU preserves empty cache paths and whitespace-only secrets", () => {
++  const config = loadConfig({ DTU_CACHE_DIR: "", GITHUB_WEBHOOK_SECRET: " " });
++
++  assert.equal(config.DTU_CACHE_DIR, "");
++  assert.equal(config.GITHUB_WEBHOOK_SECRET, " ");
++});
++
++for (const [value, expected] of [
++  ["", 0],
++  [" ", 0],
++  ["0", 0],
++  [" 9123 ", 9123],
++  ["1e3", 1000],
++  ["0x10", 16],
++  ["-1", -1],
++  ["1.5", 1.5],
++  ["65536", 65536],
++  ["Infinity", Infinity],
++  ["-Infinity", -Infinity],
++]) {
++  test(`DTU preserves numeric coercion for DTU_PORT=${JSON.stringify(value)}`, () => {
++    assert.equal(loadConfig({ DTU_PORT: value }).DTU_PORT, expected);
++  });
++}
++
++for (const value of ["http://[::1]:8910", "mailto:local@example.com"]) {
++  test(`DTU accepts the URL ${value} unchanged`, () => {
++    assert.equal(loadConfig({ DTU_URL: value }).DTU_URL, value);
++  });
++}
++
++for (const [key, value] of [
++  ["GITHUB_WEBHOOK_SECRET", ""],
++  ["DTU_URL", ""],
++  ["DTU_URL", "not a url"],
++  ["DTU_URL", "/relative"],
++  ["DTU_URL", "http://"],
++  ["DTU_PORT", "not-a-number"],
++  ["DTU_PORT", "8910junk"],
++  ["DTU_PORT", "NaN"],
++]) {
++  test(`DTU rejects invalid ${key}=${JSON.stringify(value)} at startup`, () => {
++    const result = importConfig({ [key]: value });
++
++    assert.equal(result.status, 1, result.stderr.toString());
++    assert.match(result.stderr.toString(), new RegExp(key));
++  });
++}
+diff --git a/specs/quality-gate/spec.md b/specs/quality-gate/spec.md
+index 72a62c2..69955ae 100644
+--- a/specs/quality-gate/spec.md
++++ b/specs/quality-gate/spec.md
+@@ -42,6 +42,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
+ - **Remote expensive-gate classifier:** `scripts/classify-expensive-ci.mjs`
+ - **Remote expensive-gate policy:** skip browser and mutation setup/execution only when every changed file is in a documented non-runtime area; run on unknown paths or unavailable ranges
+ - **CI dependency install:** plain `npm ci`
++- **Temporary dependency replacement:** Local CI 0.18.1 resolves DTU from the committed archive in `vendor/dtu-github-actions/` using a scoped npm override; [ADR-074](../../docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md) records the decision and removal condition
+ - **Action pinning:** every GitHub Actions `uses:` reference must use a full commit SHA
+ - **Git hook path:** `.githooks/`
+ - **Hook setup script:** `scripts/setup-git-hooks.mjs`
+@@ -127,6 +128,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
+ - The CI workflow must keep using npm for install and verification steps without depending on one exact npm patch release.
+ - The npm release used by CI must stay inside the supported npm range declared in `package.json`.
+ - CI jobs must install dependencies with plain `npm ci`.
++- The temporary DTU override must reference the explicit root DTU development dependency using `$dtu-github-actions`. It must apply during npm dependency resolution, including existing-lock migrations and clean CI installs, so DTU's dependency graph contains no Zod. It must retain the published package's license and limit changes to its configuration JavaScript, declarations, and dependency metadata.
++- DTU configuration regression checks must exercise the installed package, preserving absent-value defaults, unnormalized URL strings, existing numeric coercion, and startup rejection of invalid values. Errors identify the first invalid field without including supplied values.
++- Rebuilding the DTU archive must use the integrity-checked published package, the committed patch, and the documented toolchain. Verify the rebuilt checksum before replacing the committed artifact; scratch files belong in an operating-system temporary directory.
+ - Local CI must rely on its built-in warm-cache preparation and isolated per-job dependency views instead of repo-local install locking.
+ - Local CI must explicitly prewarm through one stable npm install step before parallel jobs start.
+ - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
+@@ -149,7 +153,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
+ - The affected test path must run full unit coverage when affected-file helper logic changes.
+ - The affected test path must run full unit coverage when affected runtime files have no related tests and no affected unit test files were supplied.
+ - The affected guardrail path may fall back to project-level type checking or coverage when a safe per-file check is not available.
+-- The repo's local CI scripts should use the repo-pinned `local-ci` binary directly instead of carrying repo-specific runtime patching or install locking.
++- The repo's local CI scripts should use the repo-pinned `local-ci` binary directly without startup/postinstall patching or install locking. The temporary DTU replacement is resolved by npm before execution.
+ - The canonical local CI script should rely on Local CI's managed warm cache and per-job dependency isolation instead of forcing `--jobs 1` to avoid dependency races on macOS-hosted Docker.
+ - The explicit Local CI prewarm selector and its workflow install-step id must stay aligned.
+ - The canonical local CI script should use pause-on-failure so agents can fix and retry a failed runner without restarting the whole workflow.
+@@ -250,6 +254,18 @@ The template needs a verification baseline that stays strict enough for end-to-e
+ - When: the contributor runs `npm run quality:gate` and `npm run ci:local`
+ - Then: the baseline gates pass and the split workflow is replayed in Local CI, while GitHub supplies the clean full mutation signal for runtime-relevant changes
+ 
++**Scenario: Fresh install consumes the DTU fix**
++
++- Given: the checkout includes the scoped override, lockfile, and committed DTU archive
++- When: a contributor or CI runner executes `npm ci`
++- Then: Local CI resolves the patched DTU, DTU declares no Zod dependency, and its configuration regression checks pass without an installation patch hook
++
++**Scenario: Upstream replaces the temporary DTU fix**
++
++- Given: a released Local CI/DTU combination removes the affected dependency and preserves the required configuration behavior
++- When: that release passes a clean install, configuration checks, the full quality gate, and Local CI
++- Then: remove the override, explicit DTU development dependency, vendored archive and patch, and temporary DTU checks together, regenerate the lockfile, and update the current documentation
++
+ **Scenario: Contributor monitors the full quality gate**
+ 
+ - Given: a full quality-gate phase takes long enough to appear idle
+diff --git a/vendor/dtu-github-actions/README.md b/vendor/dtu-github-actions/README.md
+new file mode 100644
+index 0000000..16ab209
+--- /dev/null
++++ b/vendor/dtu-github-actions/README.md
+@@ -0,0 +1,89 @@
++# Patched DTU package
++
++`dtu-github-actions-0.18.1-no-zod.tgz` is a temporary replacement for the DTU dependency of `run-local-ci@0.18.1`. The package keeps its upstream name and version; the filename and lockfile integrity identify the local patch. A root development dependency anchors the relative tarball path, and a scoped override makes Local CI use that same package:
++
++```json
++{
++  "devDependencies": {
++    "dtu-github-actions": "file:vendor/dtu-github-actions/dtu-github-actions-0.18.1-no-zod.tgz"
++  },
++  "overrides": {
++    "run-local-ci@0.18.1": {
++      "dtu-github-actions": "$dtu-github-actions"
++    }
++  }
++}
++```
++
++The reference avoids an npm 11.21.2 path-resolution issue when a nested `file:` override replaces an existing registry dependency. Local CI and the root pin resolve to one installed DTU package; downstream projects can use ordinary installs without manually editing lockfile entries.
++
++[patch.diff](./patch.diff) changes exactly three published files:
++
++- `dist/config.js`: replace Zod with scalar environment checks, preserving defaults, URL validation, and numeric coercion. Invalid values now throw ordinary field-specific errors.
++- `dist/config.d.ts`: describe the same configuration fields without Zod types.
++- `package.json`: remove the Zod dependency.
++
++All other published files, including `LICENSE`, remain byte-identical. This removes the Local CI → DTU → Zod dependency path reported by [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5). DTU uses Zod only for scalar startup configuration, not collection validation. This patch does not address the separate Minimatch advisory or change DTU's network behavior.
++
++## Provenance
++
++Prepared on 2026-11-11 from the published package, not a rebuild of upstream main:
++
++- Original: [npm tarball for `dtu-github-actions@0.18.1`](https://registry.npmjs.org/dtu-github-actions/-/dtu-github-actions-0.18.1.tgz).
++- Published release tag: [`dtu-github-actions@0.18.1`](https://github.com/redwoodjs/local-ci/releases/tag/dtu-github-actions%400.18.1), resolving to [`a8db59493b883d642c07c89be537c7572d3ff965`](https://github.com/redwoodjs/local-ci/tree/a8db59493b883d642c07c89be537c7572d3ff965/packages/dtu-github-actions).
++- Reviewed upstream source base: [`c8597bb695a4cab84002f5977dd22ec56156cbab`](https://github.com/redwoodjs/local-ci/tree/c8597bb695a4cab84002f5977dd22ec56156cbab/packages/dtu-github-actions). The source contribution was prepared and tested but remains unsubmitted; the included patch is authoritative for this artifact.
++- Original npm integrity: `sha512-BoK1sWdcOMKq58aGaChMbEMhrOJ+2ZPvlvASFXFkduq++6k/ZYi5c9RXaeLXcuTRZDOj/5lvJR4+j93+BXepSw==`.
++- Original SHA-256: `c7f47336e6c7caf4411699df4d7f42f8a3806b0770b51178499bdf3a30328928`.
++- Patched SHA-256: `2fbeca1fac1432b0a1d1e314521cdf4456a398a084e43b939c1f70a1cdf9f97b`.
++- Patched npm integrity: `sha512-pC77pO6nw0n6wsTScZoDLW2fm1H/urLQKmSs8rEFTNJYIlwDlgiBf8cJHiiNraIdYEen5c4tGgjEmERtvXMgxg==`.
++- License: upstream `FSL-1.1-MIT`; the complete published `LICENSE` remains inside the tarball.
++
++## Reproduce
++
++Use Node **24.22.2** and npm **11.21.2**, and run from the repository root. The commands download the original package, verify its checksum, apply the reviewable patch, and compare the regenerated archive with the committed artifact. All generated files and the npm cache stay in the temporary directory printed at the end. No lifecycle scripts run.
++
++```sh
++set -eu
++dtu_vendor_dir="$PWD/vendor/dtu-github-actions"
++dtu_build_dir="$(rtk proxy mktemp -d "${TMPDIR:-/tmp}/dtu-no-zod.XXXXXX")"
++rtk proxy mkdir "$dtu_build_dir/download" "$dtu_build_dir/package" "$dtu_build_dir/output"
++
++rtk proxy npm pack dtu-github-actions@0.18.1 --ignore-scripts \
++  --pack-destination "$dtu_build_dir/download" --cache "$dtu_build_dir/npm-cache"
++rtk proxy shasum -a 256 -c <<EOF
++c7f47336e6c7caf4411699df4d7f42f8a3806b0770b51178499bdf3a30328928  $dtu_build_dir/download/dtu-github-actions-0.18.1.tgz
++EOF
++rtk proxy tar -xzf "$dtu_build_dir/download/dtu-github-actions-0.18.1.tgz" \
++  -C "$dtu_build_dir/package" --strip-components=1
++rtk proxy git -C "$dtu_build_dir/package" apply --check "$dtu_vendor_dir/patch.diff"
++rtk proxy git -C "$dtu_build_dir/package" apply "$dtu_vendor_dir/patch.diff"
++(
++  cd "$dtu_build_dir/package"
++  rtk proxy npm pack --ignore-scripts --pack-destination "$dtu_build_dir/output" \
++    --cache "$dtu_build_dir/npm-cache"
++)
++rtk proxy cmp "$dtu_build_dir/output/dtu-github-actions-0.18.1.tgz" \
++  "$dtu_vendor_dir/dtu-github-actions-0.18.1-no-zod.tgz"
++rtk proxy shasum -a 256 "$dtu_build_dir/output/dtu-github-actions-0.18.1.tgz"
++rtk proxy printf '%s\n' "$dtu_build_dir"
++```
++
++Regeneration is byte-identical with that toolchain. Both archives contain the same 31 files; only the three files listed above differ in content. The patched runtime passed an isolated production install and public ephemeral-server smoke check without Zod. The root tarball pin and scoped reference passed existing-install migration, repeated `npm install`, and `npm ci`, including relocation to a different directory.
++
++## Adopt or refresh
++
++When changing the artifact, review its patch and provenance, use a new descriptive archive filename, and update the root development dependency to that path. This gives npm a fresh cache identity. Run `npm install` to update the committed lockfile and its tarball integrity before testing `npm ci`; do not replace the bytes of an existing archive while keeping a stale lockfile.
++
++```sh
++rtk proxy npm install
++rtk proxy npm ci
++rtk proxy node --test scripts/vendor-dtu.test.mjs
++rtk proxy npm run quality:gate
++rtk proxy npm run ci:local
++```
++
++Use the repository's [Local CI skill](../../.codex/skills/local-ci/SKILL.md) for workflow execution and paused-runner retries. Keep the tarball, patch, provenance, dependency declarations, and lockfile in the same change.
++
++## Remove when upstream catches up
++
++Once a released Local CI/DTU combination removes the Zod dependency while preserving compatible configuration behavior, upgrade to it and remove the root DTU pin, scoped override, this directory, and temporary patch-specific verification. Regenerate the lockfile, verify a clean `npm ci` and the Local CI workflow, and confirm the DTU → Zod audit path remains absent. Do not carry this patch forward to another upstream version without reviewing that release.
+diff --git a/vendor/dtu-github-actions/dtu-github-actions-0.18.1-no-zod.tgz b/vendor/dtu-github-actions/dtu-github-actions-0.18.1-no-zod.tgz
+new file mode 100644
+index 0000000000000000000000000000000000000000..55b5014b15f45ca9def8d75b233e63d8b899fbe8
+GIT binary patch
+literal 35446
+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
+C>+;9|
+
+literal 0
+HcmV?d00001
+
+diff --git a/vendor/dtu-github-actions/patch.diff b/vendor/dtu-github-actions/patch.diff
+new file mode 100644
+index 0000000..3cf788f
+--- /dev/null
++++ b/vendor/dtu-github-actions/patch.diff
+@@ -0,0 +1,112 @@
++diff --git a/dist/config.d.ts b/dist/config.d.ts
++index 07041c8..f38e9cc 100644
++--- a/dist/config.d.ts
+++++ b/dist/config.d.ts
++@@ -1,39 +1,21 @@
++-import { z } from "zod";
++-declare const configSchema: z.ZodObject<{
+++export type Config = {
++     /**
++      * The secret used to sign GitHub webhooks.
++      * Hardcoded for local-only mock usage.
++      */
++-    GITHUB_WEBHOOK_SECRET: z.ZodDefault<z.ZodString>;
+++    GITHUB_WEBHOOK_SECRET: string;
++     /**
++      * The internal URL where the DTU Mock Server is reachable.
++      * Simulation scripts seed this server.
++      */
++-    DTU_URL: z.ZodDefault<z.ZodString>;
+++    DTU_URL: string;
++     /**
++      * The port the DTU Mock Server listens on.
++      */
++-    DTU_PORT: z.ZodDefault<z.ZodNumber>;
+++    DTU_PORT: number;
++     /**
++      * Directory where cache archives should be stored.
++      */
++-    DTU_CACHE_DIR: z.ZodDefault<z.ZodString>;
++-}, "strip", z.ZodTypeAny, {
++-    GITHUB_WEBHOOK_SECRET: string;
++-    DTU_URL: string;
++-    DTU_PORT: number;
++-    DTU_CACHE_DIR: string;
++-}, {
++-    GITHUB_WEBHOOK_SECRET?: string | undefined;
++-    DTU_URL?: string | undefined;
++-    DTU_PORT?: number | undefined;
++-    DTU_CACHE_DIR?: string | undefined;
++-}>;
++-export type Config = z.infer<typeof configSchema>;
++-export declare const config: {
++-    GITHUB_WEBHOOK_SECRET: string;
++-    DTU_URL: string;
++-    DTU_PORT: number;
++     DTU_CACHE_DIR: string;
++ };
++-export {};
+++export declare const config: Config;
++diff --git a/dist/config.js b/dist/config.js
++index 5e78a84..ce3e35c 100644
++--- a/dist/config.js
+++++ b/dist/config.js
++@@ -1,29 +1,17 @@
++-import { z } from "zod";
++ import path from "node:path";
++ import os from "node:os";
++-const configSchema = z.object({
++-    /**
++-     * The secret used to sign GitHub webhooks.
++-     * Hardcoded for local-only mock usage.
++-     */
++-    GITHUB_WEBHOOK_SECRET: z.string().min(1).default("local-ci-local"),
++-    /**
++-     * The internal URL where the DTU Mock Server is reachable.
++-     * Simulation scripts seed this server.
++-     */
++-    DTU_URL: z.string().url().default("http://localhost:8910"),
++-    /**
++-     * The port the DTU Mock Server listens on.
++-     */
++-    DTU_PORT: z.coerce.number().default(8910),
++-    /**
++-     * Directory where cache archives should be stored.
++-     */
++-    DTU_CACHE_DIR: z.string().default(() => path.join(os.tmpdir(), "dtu_cache")),
++-});
++-export const config = configSchema.parse({
++-    GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET,
++-    DTU_URL: process.env.DTU_URL,
++-    DTU_PORT: process.env.DTU_PORT,
++-    DTU_CACHE_DIR: process.env.DTU_CACHE_DIR,
++-});
+++export const config = {
+++    GITHUB_WEBHOOK_SECRET: process.env.GITHUB_WEBHOOK_SECRET ?? "local-ci-local",
+++    DTU_URL: process.env.DTU_URL ?? "http://localhost:8910",
+++    DTU_PORT: Number(process.env.DTU_PORT ?? 8910),
+++    DTU_CACHE_DIR: process.env.DTU_CACHE_DIR ?? path.join(os.tmpdir(), "dtu_cache"),
+++};
+++if (config.GITHUB_WEBHOOK_SECRET.length === 0) {
+++    throw new Error("GITHUB_WEBHOOK_SECRET must not be empty");
+++}
+++if (!URL.canParse(config.DTU_URL)) {
+++    throw new Error("DTU_URL must be a valid URL");
+++}
+++if (Number.isNaN(config.DTU_PORT)) {
+++    throw new Error("DTU_PORT must be a number");
+++}
++diff --git a/package.json b/package.json
++index 57b7210..6054f9f 100644
++--- a/package.json
+++++ b/package.json
++@@ -33,8 +33,7 @@
++   "dependencies": {
++     "body-parser": "^2.3.0",
++     "minimatch": "^10.2.5",
++-    "polka": "^0.5.2",
++-    "zod": "^3.24.1"
+++    "polka": "^0.5.2"
++   },
++   "devDependencies": {
++     "@types/body-parser": "^1.19.6",
