@@ -132,6 +132,7 @@ test("explains the current commands and traces earlier decisions back to their r
   assert.match(result, /Current decision.*ADR-043/);
   assert.match(result, /baseline-local-gate — npm run quality:gate skips mutation testing/);
   assert.match(result, /deep-local-gate — npm run quality:gate:deep runs incremental mutation testing/);
+  assert.match(result, /deep-local-gate[^\n]*\n[^\n]*The explicit local depth check\./);
   assert.match(result, /ADR-022 → ADR-043/);
   assert.match(result, /npm run quality:gate runs full mutation testing/);
   assert.match(result, /docs\/adrs\/implemented\/ADR-022-add-mutation-testing-gate\.md#context/);

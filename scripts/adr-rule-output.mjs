@@ -20,6 +20,7 @@ function decisionRows(decision, definition, markdown) {
     if (term.script) {
       const prefix = markdown ? "" : `${key} — `;
       rows.push(`${prefix}${command(term.script)} ${action}.`);
+      if (!markdown) rows.push(`  Scope  ${term.definition}`);
     } else {
       rows.push(`${term.definition} — ${action}.`);
     }

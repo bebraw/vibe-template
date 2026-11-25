@@ -11,10 +11,12 @@
     "specs/adr-rules/",
     "specs/quality-gate/spec.md",
     "docs/adrs/",
+    "AGENTS.md",
     "ARCHITECTURE.md"
   ],
   "checks": [
     "npm ci",
+    "node scripts/adr-rules.mjs local-mutation-testing",
     "node scripts/adr-rules.mjs local-ci-readiness",
     "node scripts/adr-rules.mjs --check",
     "node --test scripts/adr-rule*.test.mjs scripts/run-quality-gate.test.mjs",

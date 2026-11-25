@@ -30,7 +30,8 @@
         "required": ["script", "definition"],
         "properties": {
           "script": { "type": "string", "pattern": "^[a-z][a-z0-9:-]*$" },
-          "definition": { "$ref": "#/definitions/description" }
+          "definition": { "$ref": "#/definitions/description" },
+          "retired": { "const": true, "description": "Keep this gate term for historical revisions only." }
         }
       }
     }

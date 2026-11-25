@@ -6,6 +6,10 @@ rules:
     cases:
       documentation-only: may-skip
       otherwise: required
+  - id: local-mutation-testing
+    replaces: ADR-022
+    gates:
+      baseline-local-gate: full
 ---
 
 # ADR-025: Skip Agent CI for Docs-Only Changes

@@ -34,15 +34,20 @@ function assertSchema(validate, value, path) {
   if (!validate(value)) throw new Error(`${path}: ${ajv.errorsText(validate.errors)}`);
 }
 
+function recordGateCommand(seen, script, source) {
+  if (seen.has(script)) throw new Error(`${source}: duplicate gate command ${script}`);
+  seen.add(script);
+}
+
 function readGlossary() {
   const header = frontmatter(readFileSync(glossaryPath, "utf8"), glossaryPath);
   assertSchema(validateTerms, header, glossaryPath);
   const { scripts } = JSON.parse(readFileSync("package.json", "utf8"));
   const seen = new Set();
-  for (const { script } of Object.values(header.gateTerms)) {
+  for (const { script, retired } of Object.values(header.gateTerms)) {
+    if (retired) continue;
     if (!Object.hasOwn(scripts, script)) throw new Error(`${glossaryPath}: unknown npm script ${script}`);
-    if (seen.has(script)) throw new Error(`${glossaryPath}: duplicate gate command ${script}`);
-    seen.add(script);
+    recordGateCommand(seen, script, glossaryPath);
   }
   if (header.localCi && !Object.hasOwn(scripts, header.localCi.script))
     throw new Error(`${glossaryPath}: unknown npm script ${header.localCi.script}`);
@@ -91,8 +96,10 @@ function checkEvidence(reference, source) {
 function validateRevision(rule, definitions, source) {
   const vocabulary = definitions[rule.id];
   if (!vocabulary) throw new Error(`${source}: missing glossary for ${rule.id}`);
+  const commands = new Set();
   for (const key of Object.keys(rule.gates ?? rule.cases)) {
     if (!Object.hasOwn(vocabulary.cases, key)) throw new Error(`${source}: unknown ${rule.gates ? "gate term" : "case"} ${key}`);
+    if (rule.gates) recordGateCommand(commands, vocabulary.cases[key].script, source);
   }
   if (rule.cases) {
     const { otherwise: _fallback, ...specific } = rule.cases;
@@ -139,8 +146,12 @@ function readDecisions(definitions) {
     const current = history.at(-1);
     if (superseded.has(current.adr)) throw new Error(`Current rule in superseded ${current.adr} needs a successor.`);
     if (!current.gates) continue;
-    for (const term of Object.keys(definitions[current.id].cases)) {
-      if (!Object.hasOwn(current.gates, term)) throw new Error(`${current.source}: current rule omits ${term}`);
+    const terms = definitions[current.id].cases;
+    for (const term of Object.keys(current.gates)) {
+      if (terms[term].retired) throw new Error(`${current.source}: current rule uses retired gate ${term}`);
+    }
+    for (const [term, { retired }] of Object.entries(terms)) {
+      if (!retired && !Object.hasOwn(current.gates, term)) throw new Error(`${current.source}: current rule omits ${term}`);
     }
   }
   return histories;

@@ -1,5 +1,9 @@
 ---
 gateTerms:
+  all-changes-local-gate:
+    script: quality:gate
+    definition: The local quality gate required before any change was ready, including documentation-only edits.
+    retired: true
   baseline-local-gate:
     script: quality:gate
     definition: The local readiness check for ordinary non-documentation changes.

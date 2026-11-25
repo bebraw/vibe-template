@@ -56,7 +56,7 @@ Current decision [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md) ·
 - `npm run quality:gate` skips mutation testing.
 - `npm run quality:gate:deep` runs incremental mutation testing.
 
-History [ADR-022](implemented/ADR-022-add-mutation-testing-gate.md) → [ADR-028](implemented/ADR-028-use-incremental-local-mutation-gate.md) → [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md)
+History [ADR-022](implemented/ADR-022-add-mutation-testing-gate.md) → [ADR-025](implemented/ADR-025-skip-agent-ci-for-docs-only-changes.md) → [ADR-028](implemented/ADR-028-use-incremental-local-mutation-gate.md) → [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md)
 
 <!-- adr-rules:end -->
 

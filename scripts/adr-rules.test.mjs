@@ -20,19 +20,28 @@ test("the typed local mutation history ends at the policy exercised by the gate 
   assert.equal(result.status, 0, result.stderr);
   const { rules, terms } = JSON.parse(result.stdout);
   const history = rules.find((rule) => rule.id === id).history;
-  assert.deepEqual(history.map((r) => r.adr).slice(0, 3), ["ADR-022", "ADR-028", "ADR-043"]);
+  assert.deepEqual(
+    history.slice(0, 4).map((r) => [r.adr, r.gates]),
+    [
+      ["ADR-022", { "all-changes-local-gate": "full" }],
+      ["ADR-025", { "baseline-local-gate": "full" }],
+      ["ADR-028", { "baseline-local-gate": "incremental" }],
+      ["ADR-043", { "baseline-local-gate": "none", "deep-local-gate": "incremental" }],
+    ],
+  );
   const current = history.at(-1);
+  assert.equal(terms["all-changes-local-gate"].script, "quality:gate");
   assert.equal(terms["baseline-local-gate"].script, "quality:gate");
   assert.equal(terms["deep-local-gate"].script, "quality:gate:deep");
   const scripts = JSON.parse(readFileSync(join(repo, "package.json"), "utf8")).scripts;
   assert.equal(scripts.mutation, "stryker run");
   assert.equal(scripts["mutation:incremental"], "stryker run --incremental");
-  for (const [term, definition] of Object.entries(terms)) {
-    const [node, runner, ...args] = scripts[definition.script].split(" ");
+  for (const [term, mode] of Object.entries(current.gates)) {
+    const [node, runner, ...args] = scripts[terms[term].script].split(" ");
     assert.equal(node, "node");
     assert.equal(runner, "./scripts/run-quality-gate.mjs");
     const phases = selectQualityGateSteps(args).map((phase) => phase.script);
-    const expected = { none: [], incremental: ["mutation:incremental"], full: ["mutation"] }[current.gates[term]];
+    const expected = { none: [], incremental: ["mutation:incremental"], full: ["mutation"] }[mode];
     assert.deepEqual(
       phases.filter((phase) => phase === "mutation" || phase === "mutation:incremental"),
       expected,
@@ -91,6 +100,40 @@ function fixture(t) {
   writeFileSync(path, text);
   return { root, index, path, text };
 }
+
+test("a retired gate keeps its meaning when a successor reuses or removes its command", (t) => {
+  const { root, path, text } = fixture(t);
+  const glossary = join(root, "specs/quality-gate/spec.md");
+  const original = readFileSync(glossary, "utf8");
+  writeFileSync(path, text.replace("baseline: none", "all-edits: full"));
+  const next = text.replace("ADR-001:", "ADR-002:").replace("    gates:", "    replaces: ADR-001\n    gates:");
+  const successor = join(root, "docs/adrs/implemented/ADR-002-successor.md");
+  writeFileSync(successor, next);
+
+  for (const script of ["old-verify", "verify"]) {
+    const retired = `  all-edits: { script: ${script}, definition: Every edit., retired: true }\n`;
+    writeFileSync(glossary, original.replace("gateTerms:\n", "gateTerms:\n" + retired));
+    const answer = run(root, id);
+    assert.equal(answer.status, 0, answer.stderr);
+    const [current, previous] = answer.stdout.split("\n\nADR-001\n");
+    assert.match(current, /baseline — npm run verify skips mutation testing/);
+    assert.match(current, /Local readiness\./);
+    assert.doesNotMatch(current, /all-edits/);
+    assert.ok(previous.includes(`all-edits — npm run ${script} runs full mutation testing`));
+    assert.match(previous, /Every edit\./);
+    assert.doesNotMatch(previous, /Local readiness\./);
+  }
+  writeFileSync(successor, next.replace("baseline: none", "all-edits: none"));
+  const retiredHead = run(root, "--check");
+  assert.equal(retiredHead.status, 1);
+  assert.match(retiredHead.stderr, /retired.*all-edits|all-edits.*retired/);
+
+  writeFileSync(successor, next);
+  writeFileSync(path, text.replace("baseline: none", "all-edits: full, baseline: none"));
+  const ambiguous = run(root, "--check");
+  assert.equal(ambiguous.status, 1);
+  assert.match(ambiguous.stderr, /duplicate.*verify|verify.*twice/);
+});
 
 test("an invalid readiness snapshot cannot overwrite the published index", (t) => {
   const { root, index, path, text } = fixture(t);

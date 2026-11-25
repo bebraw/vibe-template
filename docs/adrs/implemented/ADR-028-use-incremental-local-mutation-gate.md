@@ -2,7 +2,7 @@
 ruleSchema: 1
 rules:
   - id: local-mutation-testing
-    replaces: ADR-022
+    replaces: ADR-025
     gates:
       baseline-local-gate: incremental
 ---
