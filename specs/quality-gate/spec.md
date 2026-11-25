@@ -51,9 +51,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Affected file helper logic:** `scripts/affected-file-utils.mjs`
 - **Runtime pin source:** `package.json#engines.node`
 - **Package manager hint source:** `package.json#packageManager`
-- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.65.0-noble`
+- **Browser runtime image:** `mcr.microsoft.com/playwright:v1.65.1-noble`
 - **Browser tracing regression:** `src/browser-tracing.e2e.ts` collects real screenshot trace events from both the bundled headless shell and full Chromium without external network access or saved traces
-- **Current Vitest compatibility:** `5.1.0` with matching coverage providers; the Room State kit's Cloudflare testing plugin and the Stryker Vitest runner must support the selected major
+- **Current Vitest compatibility:** `5.1.2` with matching coverage providers; the Room State kit's Cloudflare testing plugin and the Stryker Vitest runner must support the selected major
 - **Coverage gate logic:** `scripts/run-coverage-gate.mjs`
 - **Worker client-code guard:** `scripts/assert-no-worker-client-scripts.mjs`
 - **Worker Node-import guard:** `scripts/assert-no-worker-node-imports.mjs`

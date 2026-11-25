@@ -31,6 +31,12 @@ This supersedes ADR-067's reviewed coordinates and preserves ADR-052's integrati
 - A disposable HTML fixture with premature `input:invalid` error styling returned the expected guide and contextual verification rubric.
 - Scanning `src` returned zero findings across 35 rules covering 33 guides, with five docs/test files skipped. This establishes scanner operation, not comprehensive browser or accessibility coverage.
 
+### Patch review on 2026-11-25
+
+Pin search, retrieval, and scanning to `modern-web-guidance@1.0.2`. The downloaded tarball matched the SHA-512 integrity in the [agent skills spec](../../../specs/agent-skills/spec.md). Its bundled instructions matched the published snapshot byte for byte. The updated instructions specify English search terms. The reviewed CLI still honors the telemetry and file-logging controls. [Published instructions](https://github.com/GoogleChrome/modern-web-guidance/blob/2b4aa13a72dd47cd135b06ce5abfccd92e19b24f/skills/modern-web-guidance/SKILL.md) · [CLI source at v1.0.2](https://github.com/GoogleChrome/modern-web-guidance-src/tree/f6d9fc30aff7e177e05a555762808b12eee2c950)
+
+In a disposable npm cache, searching for “light dismiss dialog” returned `light-dismiss-a-dialog` first. Retrieval of that guide with `html` produced a complete 522-line temporary file. The scanner reported the expected `validate-input-after-interaction` match and contextual rubric for the CSS fixture. It checked nine files in `src` against 52 rules covering 38 guides and found zero matches. It skipped five documentation or test files.
+
 ## Consequences
 
 - **Positive:** existing retrieval gains the stable guide catalog, and explicit audits gain a focused way to identify modernization opportunities.

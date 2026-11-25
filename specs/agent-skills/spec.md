@@ -43,8 +43,8 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Capability architecture review skill:** `.codex/skills/architecture-review/`
 - **Architecture-feedback integration:** review-skill behavior is owned here; `specs/architecture-feedback/spec.md` owns its composition with deterministic source-shape evidence
 - **Web-platform implementation skill:** `.codex/skills/modern-web-guidance/`
-- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `4dd968349e54ca45a05dd5c818fb035c9054b022`, published as `1.0.0`; [ADR-072](../../docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md) records the review
-- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@1.0.0`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v1.0.0` and commit `544c250575f7811d87fef8b1c064bc9571cbfb80`, with npm integrity `sha512-vafIZwC8AS6QjM2yyoflZbnc7n3/TVOMLbEMRdPTwcFy0f9/Tq8s5rJQ8UIqRt2KPl9ixravyaMR4nTGuUrcmg==`
+- **Web-platform instruction snapshot:** `GoogleChrome/modern-web-guidance` revision `2b4aa13a72dd47cd135b06ce5abfccd92e19b24f`, published as `1.0.2`. [ADR-072](../../docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md) records the review.
+- **Web-platform CLI artifact:** telemetry-disabled `modern-web-guidance@1.0.2`, sourced from `GoogleChrome/modern-web-guidance-src` tag `v1.0.2` and commit `f6d9fc30aff7e177e05a555762808b12eee2c950`, with npm integrity `sha512-ksFBCdzMl5xxf7wuF7XQbudQ6El1e2VrO0WzcH/U29NYGNzu0EZjtojkfwzFBSnmenDyl7QIwPCgYvfEmZHr+w==`
 - **Web-platform modernization:** explicit broad repository/directory audits may use `legacy-scan <path> --json`; contextual verification owns findings, and scan coverage and exit status are not quality gates
 - **Web-platform write boundary:** disable file logging on each command; reuse npm's existing cache and operating-system temporary guide files, without repository reports, configuration, or generated skill installation
 - **Browser-support target:** Baseline Widely available for core behavior, with progressive enhancement for newer features unless a project records a narrower target
@@ -144,7 +144,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Specification and TDD structure:** apply the same metadata validation to `.codex/skills/to-spec/` and `.codex/skills/tdd/`
 - **Architecture review structure:** validate `.codex/skills/architecture-review/` metadata and confirm its workflow routes lasting outcomes into architecture docs, ADRs, or specs
 - **Project start structure:** validate `.codex/skills/start-project/` metadata and confirm its workflow is read-only until the exact pruning plan is approved
-- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands pin `modern-web-guidance@1.0.0` with `DISABLE_TELEMETRY=1` and `ENABLE_FILE_LOGGING=false`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
+- **Modern web structure:** validate `.codex/skills/modern-web-guidance/`, confirm its commands use the CLI artifact pinned above with `DISABLE_TELEMETRY=1` and `ENABLE_FILE_LOGGING=false`, confirm `@latest` is absent, and verify the recorded npm source commit and integrity against registry metadata
 - **Modern web upgrade smoke checks:** exercise search, retrieval (including temporary output), and a scan of both a disposable known-pattern fixture and the intended source directory; confirm the fixture returns contextual rubrics and repository files remain unchanged by CLI invocations
 - **README catalog:** confirm every `.codex/skills/*/SKILL.md` has a corresponding README link and that explicit-only workflows are identified
 

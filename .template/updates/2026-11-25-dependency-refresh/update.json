@@ -1,0 +1,32 @@
+{
+  "id": "2026-11-25-dependency-refresh",
+  "title": "Refresh Node 24, browser and Worker test tooling, and development dependencies",
+  "status": "implemented",
+  "risk": "medium",
+  "adrs": [
+    "docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md",
+    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md",
+    "docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md"
+  ],
+  "touches": [
+    "package.json",
+    "package-lock.json",
+    ".nvmrc",
+    ".github/workflows/ci.yml",
+    ".capabilities/",
+    ".codex/skills/modern-web-guidance/SKILL.md",
+    "docs/development.md",
+    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md",
+    "specs/quality-gate/spec.md",
+    "specs/agent-skills/spec.md"
+  ],
+  "checks": [
+    "npm audit",
+    "npm run quality:gate",
+    "npm run ci:local",
+    "npm run diagnostics:codebase",
+    "npm run lighthouse",
+    "npm run skill:validate -- .codex/skills/modern-web-guidance",
+    "node --test scripts/template-update-patches.test.mjs"
+  ]
+}

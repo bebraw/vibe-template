@@ -3,7 +3,7 @@
   "description": "Add a typed Workers AI binding boundary with validated structured output and deterministic fallback behavior.",
   "dependencies": {
     "dev": {
-      "vitest": "5.1.0"
+      "vitest": "5.1.2"
     }
   },
   "scripts": {

@@ -1,0 +1,347 @@
+diff --git a/.capabilities/browser-static-assets/manifest.json b/.capabilities/browser-static-assets/manifest.json
+index 472f4d0..d9fe9b9 100644
+--- a/.capabilities/browser-static-assets/manifest.json
++++ b/.capabilities/browser-static-assets/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add a typed native browser-module build and a Cloudflare Workers static-assets path.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.65.0",
++      "@playwright/test": "1.65.1",
+       "typescript": "npm:@typescript/typescript6@6.0.2",
+       "typescript-7": "npm:typescript@7.0.2"
+     }
+diff --git a/.capabilities/browser-static-assets/recipes/npm.md b/.capabilities/browser-static-assets/recipes/npm.md
+index 51e0279..f2d523e 100644
+--- a/.capabilities/browser-static-assets/recipes/npm.md
++++ b/.capabilities/browser-static-assets/recipes/npm.md
+@@ -5,7 +5,7 @@ This kit uses the target's TypeScript and Playwright toolchain. Reconcile existi
+ If either tool is absent, install the exact versions after approval:
+
+ ```bash
+-npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.65.0
++npm install --save-dev --save-exact typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2 @playwright/test@1.65.1
+ ```
+
+ ## Package Scripts
+diff --git a/.capabilities/lighthouse-performance/manifest.json b/.capabilities/lighthouse-performance/manifest.json
+index bab70e7..b8c65d7 100644
+--- a/.capabilities/lighthouse-performance/manifest.json
++++ b/.capabilities/lighthouse-performance/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add local Lighthouse web-quality reports and configurable category budgets.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.65.0",
++      "@playwright/test": "1.65.1",
+       "chrome-launcher": "1.2.3",
+       "lighthouse": "13.6.0"
+     }
+diff --git a/.capabilities/lighthouse-performance/recipes/npm.md b/.capabilities/lighthouse-performance/recipes/npm.md
+index 7744147..8ab572f 100644
+--- a/.capabilities/lighthouse-performance/recipes/npm.md
++++ b/.capabilities/lighthouse-performance/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.65.0 chrome-launcher@1.2.3 lighthouse@13.6.0
++npm install --save-dev --save-exact @playwright/test@1.65.1 chrome-launcher@1.2.3 lighthouse@13.6.0
+ ```
+
+ Add or merge:
+diff --git a/.capabilities/progressive-interaction/manifest.json b/.capabilities/progressive-interaction/manifest.json
+index d43afbf..6db156a 100644
+--- a/.capabilities/progressive-interaction/manifest.json
++++ b/.capabilities/progressive-interaction/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Enhance conventional HTML forms with background submission and declared fragment replacement.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.65.0",
++      "@playwright/test": "1.65.1",
+       "typescript": "npm:@typescript/typescript6@6.0.2"
+     }
+   },
+diff --git a/.capabilities/progressive-interaction/recipes/npm.md b/.capabilities/progressive-interaction/recipes/npm.md
+index 5700af9..b11a549 100644
+--- a/.capabilities/progressive-interaction/recipes/npm.md
++++ b/.capabilities/progressive-interaction/recipes/npm.md
+@@ -7,7 +7,7 @@ Use the target repo's existing client build and static-asset serving path. This
+ If the target does not already use the test dependencies and the user approves adding them:
+
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.65.0 typescript@npm:@typescript/typescript6@6.0.2
++npm install --save-dev --save-exact @playwright/test@1.65.1 typescript@npm:@typescript/typescript6@6.0.2
+ ```
+
+ If Playwright or TypeScript is already pinned, adapt the test to compatible versions rather than installing second copies.
+diff --git a/.capabilities/quality-gate/manifest.json b/.capabilities/quality-gate/manifest.json
+index 251944e..5821a32 100644
+--- a/.capabilities/quality-gate/manifest.json
++++ b/.capabilities/quality-gate/manifest.json
+@@ -4,12 +4,12 @@
+   "requires": ["typescript-setup"],
+   "dependencies": {
+     "dev": {
+-      "@vitest/coverage-v8": "5.1.0",
+-      "prettier": "3.9.10",
+-      "vitest": "5.1.0"
++      "@vitest/coverage-v8": "5.1.2",
++      "prettier": "3.10.1",
++      "vitest": "5.1.2"
+     },
+     "optionalDev": {
+-      "@playwright/test": "1.65.0"
++      "@playwright/test": "1.65.1"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/quality-gate/recipes/npm.md b/.capabilities/quality-gate/recipes/npm.md
+index 5f52792..827bba5 100644
+--- a/.capabilities/quality-gate/recipes/npm.md
++++ b/.capabilities/quality-gate/recipes/npm.md
+@@ -9,7 +9,7 @@ Apply `.capabilities/typescript-setup/` first unless the target repo already has
+ Add the fast-gate dependencies:
+
+ ```bash
+-npm install --save-dev --save-exact prettier@3.9.10 vitest@5.1.0 @vitest/coverage-v8@5.1.0
++npm install --save-dev --save-exact prettier@3.10.1 vitest@5.1.2 @vitest/coverage-v8@5.1.2
+ ```
+
+ Add or merge these scripts:
+diff --git a/.capabilities/quality-gate/recipes/playwright.md b/.capabilities/quality-gate/recipes/playwright.md
+index 8354336..6b1a757 100644
+--- a/.capabilities/quality-gate/recipes/playwright.md
++++ b/.capabilities/quality-gate/recipes/playwright.md
+@@ -5,7 +5,7 @@ Use this recipe only after the user approves adding a browser gate.
+ ## Package Changes
+
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.65.0
++npm install --save-dev --save-exact @playwright/test@1.65.1
+ ```
+
+ Add or merge:
+diff --git a/.capabilities/readme-screenshot/manifest.json b/.capabilities/readme-screenshot/manifest.json
+index c1fb8a6..1b54ee2 100644
+--- a/.capabilities/readme-screenshot/manifest.json
++++ b/.capabilities/readme-screenshot/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add local-only Playwright screenshot capture for README images.",
+   "dependencies": {
+     "dev": {
+-      "@playwright/test": "1.65.0"
++      "@playwright/test": "1.65.1"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/readme-screenshot/recipes/npm.md b/.capabilities/readme-screenshot/recipes/npm.md
+index 9e85c19..0d471c4 100644
+--- a/.capabilities/readme-screenshot/recipes/npm.md
++++ b/.capabilities/readme-screenshot/recipes/npm.md
+@@ -5,7 +5,7 @@ Apply this recipe when the target repo uses npm.
+ ## Package Changes
+
+ ```bash
+-npm install --save-dev --save-exact @playwright/test@1.65.0
++npm install --save-dev --save-exact @playwright/test@1.65.1
+ ```
+
+ Add or merge:
+diff --git a/.capabilities/room-state/manifest.json b/.capabilities/room-state/manifest.json
+index eb253eb..620de3f 100644
+--- a/.capabilities/room-state/manifest.json
++++ b/.capabilities/room-state/manifest.json
+@@ -3,9 +3,9 @@
+   "description": "Add one SQLite-backed Durable Object per room with predefined, replaceable anonymous voting.",
+   "dependencies": {
+     "dev": {
+-      "@cloudflare/vitest-plugin": "1.7.0",
+-      "@vitest/coverage-istanbul": "5.1.0",
+-      "vitest": "5.1.0"
++      "@cloudflare/vitest-plugin": "1.9.2",
++      "@vitest/coverage-istanbul": "5.1.2",
++      "vitest": "5.1.2"
+     },
+     "removeDev": ["@cloudflare/vitest-pool-workers", "@vitest/coverage-v8"]
+   },
+diff --git a/.capabilities/room-state/recipes/npm.md b/.capabilities/room-state/recipes/npm.md
+index 0d4a2af..6b7a050 100644
+--- a/.capabilities/room-state/recipes/npm.md
++++ b/.capabilities/room-state/recipes/npm.md
+@@ -8,12 +8,12 @@ Install exact versions compatible with the kit snapshot:
+
+ ```bash
+ npm uninstall @cloudflare/vitest-pool-workers @vitest/coverage-v8
+-npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.7.0 @vitest/coverage-istanbul@5.1.0 vitest@5.1.0
++npm install --save-dev --save-exact @cloudflare/vitest-plugin@1.9.2 @vitest/coverage-istanbul@5.1.2 vitest@5.1.2
+ ```
+
+ If the target already uses Vitest, reconcile its pinned version with the plugin's peer dependency instead of installing a second test stack. When the target collects Worker-runtime coverage, set `test.coverage.provider` to `"istanbul"`; native V8 coverage is not supported in the Workers runtime. Preserve its existing include, exclude, reporter, and threshold settings.
+
+-The kit declares no Containers. If the adopting project already binds Containers to Durable Objects, plugin `1.7.0` starts them during tests and requires Docker. To test that project without Containers, explicitly set `dev.enable_containers` to `false` in its Wrangler configuration; do not disable a Container that the tests need. See the [plugin release notes](https://github.com/cloudflare/workers-sdk/releases/tag/@cloudflare%2Fvitest-plugin@1.7.0).
++The kit declares no Containers. If the adopting project already binds Containers to Durable Objects, the plugin starts them during tests and requires Docker. To test that project without Containers, explicitly set `dev.enable_containers` to `false` in its Wrangler configuration; do not disable a Container that the tests need. See the [plugin release notes](https://github.com/cloudflare/workers-sdk/releases/tag/@cloudflare%2Fvitest-plugin@1.7.0).
+
+ ## Wrangler Configuration
+
+diff --git a/.capabilities/typescript-setup/manifest.json b/.capabilities/typescript-setup/manifest.json
+index 23c5c1c..f51d749 100644
+--- a/.capabilities/typescript-setup/manifest.json
++++ b/.capabilities/typescript-setup/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add strict no-emit TypeScript checking for npm projects.",
+   "dependencies": {
+     "dev": {
+-      "@types/node": "24.19.2",
++      "@types/node": "24.19.4",
+       "typescript": "npm:@typescript/typescript6@6.0.2",
+       "typescript-7": "npm:typescript@7.0.2"
+     }
+diff --git a/.capabilities/typescript-setup/recipes/npm.md b/.capabilities/typescript-setup/recipes/npm.md
+index 2d6c420..6bbe590 100644
+--- a/.capabilities/typescript-setup/recipes/npm.md
++++ b/.capabilities/typescript-setup/recipes/npm.md
+@@ -7,7 +7,7 @@ Apply this recipe when the target repo uses npm.
+ Add the TypeScript dependencies:
+
+ ```bash
+-npm install --save-dev --save-exact @types/node@24.19.2 typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2
++npm install --save-dev --save-exact @types/node@24.19.4 typescript@npm:@typescript/typescript6@6.0.2 typescript-7@npm:typescript@7.0.2
+ ```
+
+ This keeps the TypeScript 6 compatibility package under the canonical
+diff --git a/.capabilities/workers-ai/manifest.json b/.capabilities/workers-ai/manifest.json
+index decc713..a024a7a 100644
+--- a/.capabilities/workers-ai/manifest.json
++++ b/.capabilities/workers-ai/manifest.json
+@@ -3,7 +3,7 @@
+   "description": "Add a typed Workers AI binding boundary with validated structured output and deterministic fallback behavior.",
+   "dependencies": {
+     "dev": {
+-      "vitest": "5.1.0"
++      "vitest": "5.1.2"
+     }
+   },
+   "scripts": {
+diff --git a/.capabilities/workers-ai/recipes/npm.md b/.capabilities/workers-ai/recipes/npm.md
+index 866aa61..f9ea504 100644
+--- a/.capabilities/workers-ai/recipes/npm.md
++++ b/.capabilities/workers-ai/recipes/npm.md
+@@ -1,11 +1,11 @@
+ # npm Recipe
+
+-This kit adds no application dependency. Its network-free tests require Vitest `5.1.0`; reconcile that exact version with the target's test stack before installing it. The kit also assumes Wrangler is already pinned in the target project; ask before installing or upgrading either tool.
++This kit adds no application dependency. Its network-free tests require Vitest `5.1.2`; reconcile that exact version with the target's test stack before installing it. The kit also assumes Wrangler is already pinned in the target project; ask before installing or upgrading either tool.
+
+ If the target does not already provide the compatible Vitest version, install it after approval:
+
+ ```bash
+-npm install --save-dev --save-exact vitest@5.1.0
++npm install --save-dev --save-exact vitest@5.1.2
+ ```
+
+ ## Wrangler Configuration
+diff --git a/.codex/skills/modern-web-guidance/SKILL.md b/.codex/skills/modern-web-guidance/SKILL.md
+index 494033a..92908a0 100644
+--- a/.codex/skills/modern-web-guidance/SKILL.md
++++ b/.codex/skills/modern-web-guidance/SKILL.md
+@@ -9,16 +9,16 @@ Use focused web-platform guidance as implementation input while keeping reposito
+
+ ## Retrieve
+
+-Search for one browser capability with a short action-oriented query (for example, "light dismiss dialog"). Omit framework and application names; split distinct concerns into separate queries. If results are weak, rephrase once with the concrete UI or platform term.
++Search for one browser capability with a short action-oriented English query (for example, "light dismiss dialog"). Omit framework and application names; split distinct concerns into separate queries. If results are weak, rephrase once with the concrete UI or platform term.
+
+ ```bash
+-DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.0 search "<query>"
++DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.2 search "<query>"
+ ```
+
+ Retrieve only the most relevant guide IDs:
+
+ ```bash
+-DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.0 retrieve "<id>"
++DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.2 retrieve "<id>"
+ ```
+
+ Multiple IDs are appropriate only when the task crosses distinct concerns. Do not retrieve unrelated guides to fill a search gap. When retrieval returns an operating-system temporary file path, read the complete guide there before applying it.
+@@ -30,7 +30,7 @@ If the pinned package is unavailable or the topic is uncovered, use current prim
+ Use the scanner only for an explicit broad modernization or legacy-pattern audit of a repository or directory. For a specific feature or component, use focused retrieval instead.
+
+ ```bash
+-DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.0 legacy-scan "<path>" --json
++DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.2 legacy-scan "<path>" --json
+ ```
+
+ Inspect each candidate in context against its `keepWhen` / `dropWhen` rubric. Drop false positives, vendor code, and intentional fallbacks. Report verified findings and the intended changes; an audit-only request stops at the report. When modernization is authorized, retrieve the finding's guide with the pinned command above (not the unpinned `retrieveCommand` emitted in JSON), preserve browser fallbacks, implement within scope, and rerun the scan plus relevant project checks.
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 3891d2c..b91f433 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -61,7 +61,7 @@ jobs:
+   quality-browser:
+     runs-on: ubuntu-latest
+     container:
+-      image: mcr.microsoft.com/playwright:v1.65.0-noble
++      image: mcr.microsoft.com/playwright:v1.65.1-noble
+       options: --ipc=host
+     steps:
+       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+diff --git a/.nvmrc b/.nvmrc
+index 86456dd..22fbfc0 100644
+--- a/.nvmrc
++++ b/.nvmrc
+@@ -1 +1 @@
+-v24.22.2
++v24.22.3
+diff --git a/package.json b/package.json
+index 4cd01de..3988b48 100644
+--- a/package.json
++++ b/package.json
+@@ -2,9 +2,9 @@
+   "name": "vibe-template",
+   "private": true,
+   "type": "module",
+-  "packageManager": "npm@11.21.2",
++  "packageManager": "npm@11.21.3",
+   "engines": {
+-    "node": "24.22.2",
++    "node": "24.22.3",
+     "npm": ">=11 <12"
+   },
+   "devEngines": {
+@@ -57,25 +57,25 @@
+     }
+   },
+   "devDependencies": {
+-    "@playwright/test": "1.65.0",
++    "@playwright/test": "1.65.1",
+     "@stryker-mutator/core": "10.1.1",
+     "@stryker-mutator/typescript-checker": "10.1.1",
+     "@stryker-mutator/vitest-runner": "10.1.1",
+     "@tailwindcss/cli": "4.3.5",
+-    "@types/node": "24.19.2",
+-    "@vitest/coverage-v8": "5.1.0",
++    "@types/node": "24.19.4",
++    "@vitest/coverage-v8": "5.1.2",
+     "chrome-launcher": "1.2.3",
+     "dtu-github-actions": "file:vendor/dtu-github-actions/dtu-github-actions-0.18.1-no-zod.tgz",
+-    "fallow": "3.42.0",
++    "fallow": "3.48.0",
+     "lighthouse": "13.6.0",
+-    "oxlint": "1.93.0",
+-    "prettier": "3.9.10",
++    "oxlint": "1.95.0",
++    "prettier": "3.10.1",
+     "run-local-ci": "0.18.1",
+     "tailwindcss": "4.3.5",
+     "typescript": "npm:@typescript/typescript6@6.0.2",
+     "typescript-7": "npm:typescript@7.0.2",
+-    "vitest": "5.1.0",
+-    "wrangler": "4.160.0",
++    "vitest": "5.1.2",
++    "wrangler": "4.168.0",
+     "yaml": "2.9.1"
+   }
+ }

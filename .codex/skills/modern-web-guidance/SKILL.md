@@ -9,16 +9,16 @@ Use focused web-platform guidance as implementation input while keeping reposito
 
 ## Retrieve
 
-Search for one browser capability with a short action-oriented query (for example, "light dismiss dialog"). Omit framework and application names; split distinct concerns into separate queries. If results are weak, rephrase once with the concrete UI or platform term.
+Search for one browser capability with a short action-oriented English query (for example, "light dismiss dialog"). Omit framework and application names; split distinct concerns into separate queries. If results are weak, rephrase once with the concrete UI or platform term.
 
 ```bash
-DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.0 search "<query>"
+DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.2 search "<query>"
 ```
 
 Retrieve only the most relevant guide IDs:
 
 ```bash
-DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.0 retrieve "<id>"
+DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.2 retrieve "<id>"
 ```
 
 Multiple IDs are appropriate only when the task crosses distinct concerns. Do not retrieve unrelated guides to fill a search gap. When retrieval returns an operating-system temporary file path, read the complete guide there before applying it.
@@ -30,7 +30,7 @@ If the pinned package is unavailable or the topic is uncovered, use current prim
 Use the scanner only for an explicit broad modernization or legacy-pattern audit of a repository or directory. For a specific feature or component, use focused retrieval instead.
 
 ```bash
-DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.0 legacy-scan "<path>" --json
+DISABLE_TELEMETRY=1 ENABLE_FILE_LOGGING=false npx -y modern-web-guidance@1.0.2 legacy-scan "<path>" --json
 ```
 
 Inspect each candidate in context against its `keepWhen` / `dropWhen` rubric. Drop false positives, vendor code, and intentional fallbacks. Report verified findings and the intended changes; an audit-only request stops at the report. When modernization is authorized, retrieve the finding's guide with the pinned command above (not the unpinned `retrieveCommand` emitted in JSON), preserve browser fallbacks, implement within scope, and rerun the scan plus relevant project checks.
