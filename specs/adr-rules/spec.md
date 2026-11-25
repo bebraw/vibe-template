@@ -26,6 +26,12 @@ An omitted historical gate has no declaration in that revision. Every historical
 
 **Local CI readiness.** Each `cases` key resolves in `localCi.cases`. A revision may assign one common outcome, `required` or `may-skip`, to any number of named cases. Matching any one of those cases selects that outcome. The mandatory `otherwise` gives the outcome when none matches. ADR-019 documented Local CI as the readiness baseline. ADR-025 allowed qualifying documentation-only edits to skip it. ADR-046 requires Local CI for GitHub Actions workflows, package metadata or installation, build or container setup, browser CI setup, or an explicit request for full PR or release readiness. Other changes may skip Local CI. Its evidence links a plain-text heading in the written contributor instructions, such as `AGENTS.md#verification`. Contributors judge which cases apply to their change. [Verification policy](../../AGENTS.md#verification)
 
+### Reviewing a proposal
+
+Run `node scripts/adr-rules.mjs --check-draft <file>` with one typed ADR under `docs/adrs/proposed/`. For each rule it declares, the command validates the draft against the existing schema and glossary and compares it with that rule's latest implemented revision. A successor must name that revision in `replaces`. A supported rule with no implemented history can start without a predecessor. The review reports missing proposal evidence as pending and validates any evidence reference supplied. Evidence is required when the revision becomes current.
+
+For mutation testing, the draft and the implemented head both use the active gate IDs in the repository's glossary. A draft can change the mutation mode assigned to each. For Local CI, the report shows additions and removals of named cases separately from changes to the `otherwise` fallback. A named match takes precedence even for mixed work. An ordinary source edit that also changes browser CI meets the named browser CI condition. Draft review is read-only. The generated index and `--json` continue to describe implemented rules.
+
 ### Query and verification
 
 | Command                                             | Result                                                                                                                                                                |

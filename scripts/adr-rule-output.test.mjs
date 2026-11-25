@@ -149,3 +149,58 @@ test("prints the current decision's rationale verbatim with its Context link bef
     ),
   );
 });
+
+test("draft comparisons distinguish gate meanings sharing a command and distinguish a missing declaration from an explicit skip", () => {
+  const id = "local-mutation-testing";
+  const previous = { id, adr: "ADR-022", gates: { original: "full" } };
+  const draft = { id, adr: "ADR-025", gates: { replacement: "none" } };
+  const definition = {
+    ...definitions[id],
+    cases: {
+      original: { script: "quality:gate", definition: "Every change." },
+      replacement: { script: "quality:gate", definition: "Source changes." },
+    },
+  };
+  const answer = output.describeDraftRule(draft, previous, definition);
+  assert.match(answer, /Draft ADR-025 · local-mutation-testing/);
+  assert.match(answer, /Implemented head ADR-022/);
+  assert.match(answer, /Removed gate original · npm run quality:gate — Every change\.\n\s+runs full mutation testing → no declaration/);
+  assert.match(answer, /Added gate replacement · npm run quality:gate — Source changes\.\n\s+no declaration → skips mutation testing/);
+});
+
+test("a Local CI draft shows removed and added conditions even when the outcomes for isolated cases stay the same", () => {
+  const id = "local-ci-readiness";
+  const previous = { id, adr: "ADR-019", cases: { workflow: "required", otherwise: "may-skip" } };
+  const draft = { id, adr: "ADR-025", cases: { otherwise: "required", documentation: "may-skip" } };
+  const definition = {
+    ...definitions[id],
+    cases: { ...definitions[id].cases, documentation: { definition: "A documentation change" } },
+  };
+  const answer = output.describeDraftRule(draft, previous, definition);
+  assert.match(answer, /npm run ci:local/);
+  assert.match(answer, /Removed condition workflow — A GitHub Actions workflow change\n\s+requires Local CI → no explicit condition/);
+  assert.match(answer, /Added condition documentation — A documentation change\n\s+no explicit condition → may skip Local CI/);
+  assert.match(answer, /Fallback when no named condition matches\n\s+may skip Local CI → requires Local CI/);
+  assert.match(answer, /Any matching named condition takes precedence/);
+});
+
+test("an evidence-only draft identifies both references and reports unchanged settings", () => {
+  const id = "local-ci-readiness";
+  const previous = { id, adr: "ADR-046", cases: { otherwise: "required" }, evidence: "AGENTS.md#verification" };
+  const draft = { ...previous, adr: "ADR-077", evidence: "docs/development.md#checks" };
+  const answer = output.describeDraftRule(draft, previous, definitions[id]);
+  assert.match(answer, /No changed settings\./);
+  assert.match(answer, /Fallback when no named condition matches\n\s+requires Local CI \(unchanged\)/);
+  assert.match(answer, /Implemented policy guidance {2}AGENTS\.md#verification/);
+  assert.match(answer, /Proposed policy guidance {2}docs\/development\.md#checks/);
+});
+
+test("a new rule reports the proposed settings and pending evidence before implementation", () => {
+  const id = "local-ci-readiness";
+  const draft = { id, adr: "ADR-019", cases: { otherwise: "required" } };
+  const answer = output.describeDraftRule(draft, undefined, definitions[id]);
+  assert.match(answer, /Implemented head none/);
+  assert.match(answer, /Fallback when no named condition matches\n\s+no implemented rule → requires Local CI/);
+  assert.match(answer, /Proposed policy guidance {2}pending/);
+  assert.doesNotMatch(answer, /No changed settings/);
+});

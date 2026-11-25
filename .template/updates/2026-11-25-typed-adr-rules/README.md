@@ -13,6 +13,7 @@ Use this pack to trace which local quality gates run mutation tests and when con
 
 ## Verify
 
+- To review a proposed change, run `node scripts/adr-rules.mjs --check-draft <file>` with its path under `docs/adrs/proposed/`. Compare the reported changes with the proposal's intent. Omitted evidence appears as pending. The current index and JSON still represent the implemented decisions.
 - Run `node scripts/adr-rules.mjs local-mutation-testing` and `node scripts/adr-rules.mjs local-ci-readiness` to trace both decisions. Check that the mutation history shows the scope and command used at each revision. With `--json`, check active and retired definitions under `terms`, the ordered histories under `rules`, and the Local CI glossary under `localCi` when present.
 - Run `node scripts/adr-rules.mjs --write-index`. Review the generated section, run `node scripts/adr-rules.mjs --check`, and confirm a second generation produces the same file.
 - Run `node --test scripts/adr-rule*.test.mjs scripts/run-quality-gate.test.mjs` or the target's equivalent tests. Check which mutation command each gate schedules and compare the Local CI outcomes with the cited contributor instructions. Run the mutation command itself when you need its score.

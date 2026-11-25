@@ -1,18 +1,19 @@
 import { mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { basename, dirname, join, relative } from "node:path";
 import Ajv from "ajv";
 import { parsers } from "prettier/plugins/markdown";
 import { parseDocument } from "yaml";
 import rulesSchema from "../specs/adr-rules/rules.schema.json" with { type: "json" };
 import termsSchema from "../specs/adr-rules/gate-terms.schema.json" with { type: "json" };
 import { resolveRuleHistories } from "./adr-rule-history.mjs";
-import { describeRule, renderRuleIndex, updateRuleIndex } from "./adr-rule-output.mjs";
+import { describeDraftRule, describeRule, renderRuleIndex, updateRuleIndex } from "./adr-rule-output.mjs";
 
 const ajv = new Ajv({ strict: true, ownProperties: true });
 const validateRules = ajv.compile(rulesSchema);
 const validateTerms = ajv.compile(termsSchema);
 const indexPath = "docs/adrs/README.md";
 const decisionsDir = "docs/adrs/implemented";
+const draftsDir = "docs/adrs/proposed";
 const glossaryPath = "specs/quality-gate/spec.md";
 
 function frontmatter(text, path, optInKeys) {
@@ -108,14 +109,17 @@ function validateRevision(rule, definitions, source) {
   if (rule.evidence) checkEvidence(rule.evidence, source);
 }
 
-function readDecision(name, definitions) {
-  const source = join(decisionsDir, name);
+function adrId(name) {
+  return /^(ADR-\d{3,})-.+\.md$/.exec(name)?.[1];
+}
+
+function readDecision(source, definitions) {
   const text = readFileSync(source, "utf8");
   const header = frontmatter(text, source, ["ruleSchema", "rules"]);
   if (!header) return undefined;
   assertSchema(validateRules, header, source);
 
-  const adr = /^(ADR-\d{3,})-.+\.md$/.exec(name)?.[1];
+  const adr = adrId(basename(source));
   if (!adr || !text.split(/\r?\n/).some((line) => line.startsWith(`# ${adr}: `))) {
     throw new Error(`${source}: ADR title must match filename`);
   }
@@ -130,31 +134,60 @@ function readDecision(name, definitions) {
   return { adr, revisions, superseded: /^\*\*Status:\*\* Superseded\b/m.test(text) };
 }
 
+function validateHeadGates(revision, definitions) {
+  if (!revision.gates) return;
+  const terms = definitions[revision.id].cases;
+  for (const term of Object.keys(revision.gates)) {
+    if (terms[term].retired) throw new Error(`${revision.source}: current rule uses retired gate ${term}`);
+  }
+  for (const [term, { retired }] of Object.entries(terms)) {
+    if (!retired && !Object.hasOwn(revision.gates, term)) throw new Error(`${revision.source}: current rule omits ${term}`);
+  }
+}
+
 function readDecisions(definitions) {
   const revisions = [];
   const superseded = new Set();
+  const implementedIds = new Set();
   for (const entry of readdirSync(decisionsDir, { withFileTypes: true })) {
     if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
-    const decision = readDecision(entry.name, definitions);
+    const id = adrId(entry.name);
+    if (id) implementedIds.add(id);
+    const decision = readDecision(join(decisionsDir, entry.name), definitions);
     if (!decision) continue;
     if (decision.superseded) superseded.add(decision.adr);
     revisions.push(...decision.revisions);
   }
   const histories = resolveRuleHistories(revisions);
-  if (!histories.length) throw new Error("No implemented typed rules found.");
   for (const { history } of histories) {
     const current = history.at(-1);
     if (superseded.has(current.adr)) throw new Error(`Current rule in superseded ${current.adr} needs a successor.`);
-    if (!current.gates) continue;
-    const terms = definitions[current.id].cases;
-    for (const term of Object.keys(current.gates)) {
-      if (terms[term].retired) throw new Error(`${current.source}: current rule uses retired gate ${term}`);
-    }
-    for (const [term, { retired }] of Object.entries(terms)) {
-      if (!retired && !Object.hasOwn(current.gates, term)) throw new Error(`${current.source}: current rule omits ${term}`);
-    }
+    validateHeadGates(current, definitions);
   }
-  return histories;
+  return { histories, implementedIds };
+}
+
+function checkDraft(file, { histories, implementedIds }, definitions) {
+  const source = relative(realpathSync("."), realpathSync(file));
+  if (dirname(source) !== draftsDir) throw new Error(`Expected a proposal in ${draftsDir}: ${file}`);
+  const draft = readDecision(source, definitions);
+  if (!draft) throw new Error(`${source}: no typed rule revisions to review`);
+  if (implementedIds.has(draft.adr)) throw new Error(`${source}: ${draft.adr} is already implemented`);
+  if (draft.superseded) throw new Error(`${source}: proposal is marked superseded`);
+  const seen = new Set();
+  return draft.revisions
+    .map((revision) => {
+      if (seen.has(revision.id)) throw new Error(`${source}: duplicate draft revision of ${revision.id}`);
+      seen.add(revision.id);
+      const previous = histories.find(({ id }) => id === revision.id)?.history.at(-1);
+      if (revision.replaces !== previous?.adr) {
+        const expected = previous ? `must replace the implemented head ${previous.adr}` : "has no implemented predecessor";
+        throw new Error(`${source}: ${revision.id} ${expected}`);
+      }
+      validateHeadGates(revision, definitions);
+      return describeDraftRule(revision, previous, definitions[revision.id]);
+    })
+    .join("\n\n");
 }
 
 function writeIndex(text) {
@@ -170,12 +203,18 @@ function writeIndex(text) {
 
 function main(args) {
   const [option] = args;
-  if (args.length > 1 || (option?.startsWith("-") && !["--json", "--check", "--write-index"].includes(option))) {
-    throw new Error("Usage: node scripts/adr-rules.mjs [rule-id | --json | --check | --write-index]");
+  const checkingDraft = option === "--check-draft";
+  const knownOption = !option?.startsWith("-") || ["--json", "--check", "--write-index", "--check-draft"].includes(option);
+  const validArity = checkingDraft ? args.length === 2 : args.length <= 1;
+  if (!knownOption || !validArity) {
+    throw new Error("Usage: node scripts/adr-rules.mjs [rule-id | --json | --check | --write-index | --check-draft <file>]");
   }
   const { gateTerms: terms, localCi } = readGlossary();
   const definitions = ruleDefinitions({ gateTerms: terms, localCi });
-  const rules = readDecisions(definitions);
+  const implemented = readDecisions(definitions);
+  if (checkingDraft) return console.log(checkDraft(args[1], implemented, definitions));
+  const rules = implemented.histories;
+  if (!rules.length) throw new Error("No implemented typed rules found.");
   if (option === "--json") return console.log(JSON.stringify({ terms, localCi, rules }, null, 2));
   if (option === "--check" || option === "--write-index") {
     const before = readFileSync(indexPath, "utf8");

@@ -101,6 +101,103 @@ function fixture(t) {
   return { root, index, path, text };
 }
 
+function draftFixture(t) {
+  const files = fixture(t);
+  const { root, text } = files;
+  const directory = join(root, "docs/adrs/proposed");
+  mkdirSync(directory);
+  const draft = join(directory, "ADR-002-review.md");
+  const proposal = text
+    .replace("ADR-001:", "ADR-002:")
+    .replace("    gates:", "    replaces: ADR-001\n    gates:")
+    .replace("baseline: none", "baseline: incremental")
+    .replace("    evidence: checks/local.test.mjs\n", "");
+  writeFileSync(draft, proposal);
+  return { ...files, draft, proposal };
+}
+
+test("reviewing a typed proposal compares it to the implemented rule without publishing it", (t) => {
+  const { root, index, draft, proposal } = draftFixture(t);
+  writeFileSync(join(root, "docs/adrs/proposed/ADR-003-unrelated.md"), "---\nruleSchema: 99\n---\n");
+  const published = run(root, "--write-index");
+  assert.equal(published.status, 0, published.stderr);
+  const before = readFileSync(index);
+  const rules = run(root, "--json").stdout;
+  const review = run(root, "--check-draft", draft);
+  assert.equal(review.status, 0, review.stderr);
+  for (const detail of [/ADR-002/, /ADR-001/, /local-mutation-testing/, /incremental/, /pending/i]) assert.match(review.stdout, detail);
+  assert.deepEqual(readFileSync(index), before);
+  assert.equal(readFileSync(draft, "utf8"), proposal);
+  assert.equal(run(root, "--json").stdout, rules);
+  assert.doesNotMatch(rules, /ADR-002/);
+});
+
+test("draft errors identify the offending proposal without printing a partial review", (t) => {
+  const { root, index, path, draft, proposal } = draftFixture(t);
+  const before = readFileSync(index);
+  const firstRule = proposal.split("rules:\n")[1].split("---\n")[0];
+  for (const [invalid, problem] of [
+    [proposal.replace("baseline:", "typo:"), /unknown gate term typo/],
+    [proposal.replace("incremental", "always"), /allowed values/],
+    [proposal.replace("replaces: ADR-001", "replaces: ADR-099"), /must replace.*ADR-001/],
+    [proposal.replace("    replaces: ADR-001\n", ""), /must replace.*ADR-001/],
+    [proposal.replace(firstRule, firstRule + firstRule), /duplicate draft revision/],
+    [proposal.replace("    gates:", "    evidence: checks/missing.test.mjs\n    gates:"), /evidence/],
+    ["# ADR-002: Ordinary proposal\n", /no typed rule/],
+  ]) {
+    writeFileSync(draft, invalid);
+    const result = run(root, "--check-draft", draft);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, problem);
+    assert.equal(result.stdout, "");
+    assert.deepEqual(readFileSync(index), before);
+  }
+  writeFileSync(draft, proposal);
+  writeFileSync(join(root, "docs/adrs/implemented/ADR-002-prose.md"), "# ADR-002: Published prose\n");
+  assert.match(run(root, "--check-draft", draft).stderr, /ADR-002 is already implemented/);
+  assert.match(run(root, "--check-draft", path).stderr, /expected a proposal/i);
+  assert.match(run(root, "--check-draft").stderr, /usage/i);
+});
+
+test("the first typed proposal starts without a predecessor", (t) => {
+  const { root, path, draft, proposal } = draftFixture(t);
+  writeFileSync(path, "# ADR-001: Legacy prose\n");
+  const dangling = run(root, "--check-draft", draft);
+  assert.equal(dangling.status, 1);
+  assert.match(dangling.stderr, /no implemented predecessor/);
+  writeFileSync(draft, proposal.replace("    replaces: ADR-001\n", ""));
+  const first = run(root, "--check-draft", draft);
+  assert.equal(first.status, 0, first.stderr);
+  assert.match(first.stdout, /ADR-002/);
+});
+
+test("a proposal amending two rules must replace the implemented head of each", (t) => {
+  const { root, draft, proposal, text } = draftFixture(t);
+  const glossary = join(root, "specs/quality-gate/spec.md");
+  writeFileSync(
+    glossary,
+    readFileSync(glossary, "utf8").replace(/---\n$/, "localCi:\n  script: verify\n  cases: { otherwise: Other work }\n---\n"),
+  );
+  writeFileSync(join(root, "AGENTS.md"), "## Verification\nRun the workflow.\n");
+  const record = "  - id: local-ci-readiness\n    cases: { otherwise: required }\n    evidence: AGENTS.md#verification\n";
+  const implemented = text.replace(/rules:\n[^]*?---\n/, "rules:\n" + record + "---\n").replace("ADR-001:", "ADR-003:");
+  writeFileSync(join(root, "docs/adrs/implemented/ADR-003-workflow.md"), implemented);
+  const candidate = proposal.replace(
+    /---\n\n# ADR-002:/,
+    record.replace("    cases:", "    replaces: ADR-003\n    cases:") + "---\n\n# ADR-002:",
+  );
+  writeFileSync(draft, candidate);
+  const review = run(root, "--check-draft", draft);
+  assert.equal(review.status, 0, review.stderr);
+  assert.match(review.stdout, /local-mutation-testing\nImplemented head ADR-001/);
+  assert.match(review.stdout, /local-ci-readiness\nImplemented head ADR-003/);
+  writeFileSync(draft, candidate.replace("replaces: ADR-003", "replaces: ADR-001"));
+  const stale = run(root, "--check-draft", draft);
+  assert.equal(stale.status, 1);
+  assert.match(stale.stderr, /local-ci-readiness must replace the implemented head ADR-003/);
+  assert.equal(stale.stdout, "");
+});
+
 test("a retired gate keeps its meaning when a successor reuses or removes its command", (t) => {
   const { root, path, text } = fixture(t);
   const glossary = join(root, "specs/quality-gate/spec.md");

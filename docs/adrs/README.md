@@ -21,6 +21,8 @@ ADRs are grouped by lifecycle status:
 
 ## Proposed ADRs
 
+Review a typed proposal with `node scripts/adr-rules.mjs --check-draft <file>` to see what it would change in the implemented rules. [Draft review](../../specs/adr-rules/spec.md#reviewing-a-proposal)
+
 | ADR                                       | Status   | Summary                            |
 | ----------------------------------------- | -------- | ---------------------------------- |
 | [ADR-000](./proposed/ADR-000-template.md) | Proposed | Template for drafting future ADRs. |
