@@ -1,3 +1,12 @@
+---
+ruleSchema: 1
+rules:
+  - id: local-mutation-testing
+    replaces: ADR-022
+    gates:
+      baseline-local-gate: incremental
+---
+
 # ADR-028: Use Incremental Local Mutation Gate
 
 **Status:** Superseded by [ADR-043](./ADR-043-make-local-mutation-opt-in.md)

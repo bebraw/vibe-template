@@ -1,3 +1,11 @@
+---
+ruleSchema: 1
+rules:
+  - id: local-mutation-testing
+    gates:
+      baseline-local-gate: full
+---
+
 # ADR-022: Add Mutation Testing Gate
 
 **Status:** Accepted

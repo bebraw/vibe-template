@@ -1,0 +1,23 @@
+{
+  "id": "2026-11-25-typed-adr-rules",
+  "title": "Query the mutation-testing rule across architecture decisions",
+  "status": "implemented",
+  "risk": "low",
+  "adrs": ["docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.md"],
+  "touches": [
+    "package.json",
+    "package-lock.json",
+    "scripts/adr-rule*.mjs",
+    "specs/adr-rules/",
+    "specs/quality-gate/spec.md",
+    "docs/adrs/",
+    "ARCHITECTURE.md"
+  ],
+  "checks": [
+    "npm ci",
+    "node scripts/adr-rules.mjs --check",
+    "node --test scripts/adr-rule*.test.mjs scripts/run-quality-gate.test.mjs",
+    "npm run quality:gate",
+    "npm run ci:local"
+  ]
+}

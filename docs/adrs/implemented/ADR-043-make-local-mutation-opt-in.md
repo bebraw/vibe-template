@@ -1,3 +1,14 @@
+---
+ruleSchema: 1
+rules:
+  - id: local-mutation-testing
+    replaces: ADR-028
+    gates:
+      baseline-local-gate: none
+      deep-local-gate: incremental
+    evidence: scripts/run-quality-gate.test.mjs
+---
+
 # ADR-043: Make Local Mutation Testing Opt-In
 
 **Status:** Implemented

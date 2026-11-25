@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index 3988b48..547f355 100644
+--- a/package.json
++++ b/package.json
+@@ -64,6 +64,7 @@
+     "@tailwindcss/cli": "4.3.5",
+     "@types/node": "24.19.4",
+     "@vitest/coverage-v8": "5.1.2",
++    "ajv": "8.20.0",
+     "chrome-launcher": "1.2.3",
+     "dtu-github-actions": "file:vendor/dtu-github-actions/dtu-github-actions-0.18.1-no-zod.tgz",
+     "fallow": "3.48.0",

@@ -1,3 +1,13 @@
+---
+gateTerms:
+  baseline-local-gate:
+    script: quality:gate
+    definition: The local readiness check for ordinary non-documentation changes.
+  deep-local-gate:
+    script: quality:gate:deep
+    definition: The extended local readiness check a contributor explicitly requests.
+---
+
 # Feature: Quality Gate
 
 ## Blueprint
@@ -31,9 +41,8 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Fallow semantic policy:** best-effort type-aware analysis with exact-version packaged companion
 - **Full mutation gate:** `npm run mutation`
 - **Incremental mutation gate:** `npm run mutation:incremental`
-- **Full gate:** `npm run quality:gate`
-- **Deep local gate:** `npm run quality:gate:deep`
-- **Full gate progress:** named phase transitions plus a 30-second elapsed-time heartbeat while a phase is running
+- **Local gate names:** the `gateTerms` glossary above pairs the baseline and deep local gates with their npm scripts. The [typed ADR rules](../adr-rules/spec.md) use these identifiers to describe mutation-test scheduling.
+- **Local gate progress:** named phase transitions plus a 30-second elapsed-time heartbeat while a phase is running
 - **Local workflow:** `npm run ci:local`
 - **Local workflow concurrency:** Local CI job auto-concurrency
 - **Local workflow failure mode:** pause failed Local CI runners for retry
@@ -93,9 +102,9 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - [ ] The browser gate covers the root Playwright baseline and the synthetic standard-adopter Playwright flow.
 - [ ] The full mutation gate covers runtime `src/**/*.ts` files with Stryker, Vitest, and TypeScript checking.
 - [ ] The incremental mutation gate reuses prior Stryker results for explicit deep local runs while preserving a complete mutation report.
-- [ ] The full gate runs the fast and browser gates in order without unconditionally running mutation testing.
-- [ ] The deep local gate runs the fast, browser, and incremental mutation gates in order.
-- [ ] The full and deep local gates report phase starts, completions, failures, and periodic elapsed-time heartbeats.
+- [ ] The baseline local gate runs the fast gate, browser tests, and capability-kit verification in order.
+- [ ] The deep local gate runs the baseline phases followed by incremental mutation testing.
+- [ ] Both local gates report phase starts, completions, failures, and periodic elapsed-time heartbeats.
 - [ ] When enabled, the repo-managed `pre-push` hook runs affected-file guardrails before a push leaves the machine.
 - [ ] Local and remote CI use the same split verification model for non-documentation changes.
 - [ ] Remote browser and mutation jobs avoid dependency installation and gate execution for known non-runtime-only changes.
@@ -104,7 +113,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 
 ### Regression Guardrails
 
-- `npm run quality:gate:fast` must remain a useful faster signal than the full gate.
+- `npm run quality:gate:fast` must remain a useful faster signal than the baseline local gate.
 - `npm run quality:structure` must scan configured production roots without adding a runtime dependency or counting tests, end-to-end tests, and declarations.
 - Source-shape limits must stay configurable in `.architecture-check.json`, and exact exceptions must include rationales.
 - Prettier must ignore `.github/skills/` and `.codex/skills/**/references/` while continuing to check project-owned skill entry points, specs, ADRs, and documentation.
@@ -263,10 +272,10 @@ The template needs a verification baseline that stays strict enough for end-to-e
 **Scenario: Upstream replaces the temporary DTU fix**
 
 - Given: a released Local CI/DTU combination removes the affected dependency and preserves the required configuration behavior
-- When: that release passes a clean install, configuration checks, the full quality gate, and Local CI
+- When: that release passes a clean install, configuration checks, the baseline local gate, and Local CI
 - Then: remove the override, explicit DTU development dependency, vendored archive and patch, and temporary DTU checks together, regenerate the lockfile, and update the current documentation
 
-**Scenario: Contributor monitors the full quality gate**
+**Scenario: Contributor monitors the baseline local gate**
 
 - Given: a full quality-gate phase takes long enough to appear idle
 - When: the contributor runs `npm run quality:gate`

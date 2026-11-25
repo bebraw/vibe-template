@@ -29,6 +29,23 @@ ADRs are grouped by lifecycle status:
 
 No accepted-only ADRs are currently pending implementation.
 
+## Current Typed Rules
+
+This generated section covers the decisions that opt into the [typed rules pilot](../../specs/adr-rules/spec.md). Run `node scripts/adr-rules.mjs local-mutation-testing` to trace the local mutation rule through its revisions. The implemented ADR table below preserves the original decision summaries.
+
+<!-- adr-rules:start -->
+
+### `local-mutation-testing`
+
+Current decision [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md) · [Rationale](implemented/ADR-043-make-local-mutation-opt-in.md#context) · [Verification](../../scripts/run-quality-gate.test.mjs)
+
+- `npm run quality:gate` skips mutation testing.
+- `npm run quality:gate:deep` runs incremental mutation testing.
+
+History [ADR-022](implemented/ADR-022-add-mutation-testing-gate.md) → [ADR-028](implemented/ADR-028-use-incremental-local-mutation-gate.md) → [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md)
+
+<!-- adr-rules:end -->
+
 ## Implemented ADRs
 
 | ADR                                                                                    | Status      | Summary                                                                                           |
@@ -106,7 +123,9 @@ No accepted-only ADRs are currently pending implementation.
 | [ADR-071](./implemented/ADR-071-define-external-service-latency-contracts.md)          | Implemented | Define latency acceptance, privacy-safe timings, and representative external-service evaluation.  |
 | [ADR-072](./implemented/ADR-072-adopt-modern-web-guidance-v1.md)                       | Implemented | Pin Modern Web Guidance 1.0.0 and add an optional, context-verified modernization audit.          |
 | [ADR-073](./implemented/ADR-073-refresh-review-and-debug-guidance.md)                  | Implemented | Refresh test protection, toolchain diagnosis, regression guards, and staged-secret guidance.      |
+| [ADR-074](./implemented/ADR-074-vendor-dtu-without-zod.md)                             | Implemented | Vendor the patched DTU package and verify its configuration and resolved dependencies.            |
 | [ADR-075](./implemented/ADR-075-consolidate-local-skill-routing.md)                    | Implemented | Retire the simplify shortcut and move starter visual guidance into frontend-design.               |
+| [ADR-076](./implemented/ADR-076-pilot-typed-adr-rules.md)                              | Implemented | Track local mutation-test scheduling as a versioned rule across three implemented decisions.      |
 
 ## Creating A New ADR
 

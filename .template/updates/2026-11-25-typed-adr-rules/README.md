@@ -1,0 +1,17 @@
+# Query the local mutation-testing decision
+
+Use this pack when your project wants to trace which local quality gates run mutation tests. The pilot gives one rule an explicit revision history and generates a current-rule section in the ADR index. The [opt-in local mutation pack](../2026-07-16-opt-in-local-mutation/README.md) documents the scheduling change that prompted the pilot. [Architecture decision](../../../docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.md) · [Query contract and schemas](../../../specs/adr-rules/spec.md)
+
+## Apply
+
+1. Inspect `patch.diff` and run `git apply --check <path-to-pack>/patch.diff` from the destination. The patch promotes Ajv 8.20.0 to a direct development dependency. If it applies, run `git apply <path-to-pack>/patch.diff`. If the manifest has diverged, add the exact Ajv pin to its development dependencies manually. The template also uses its existing `yaml` 2.9.1 dependency. Use the project's pinned Node/npm to run `npm install`, review and commit the resulting lockfile, and verify a clean `npm ci`.
+2. From the template revision containing this pack, copy the CLI and its helper modules and tests. List their exact paths in the template checkout with `git ls-files 'scripts/adr-rule*.mjs'`. Copy the two JSON Schema files and the feature contract under `specs/adr-rules/`. Review links and repository paths against the destination's existing layout.
+3. In the destination's quality-gate spec, adapt the template's [gate glossary](../../../specs/quality-gate/spec.md) to the npm scripts that actually select local gate phases. For each implemented decision that changed the rule, add its complete gate settings to its own YAML frontmatter. The template chain runs from [ADR-022](../../../docs/adrs/implemented/ADR-022-add-mutation-testing-gate.md) through [ADR-028](../../../docs/adrs/implemented/ADR-028-use-incremental-local-mutation-gate.md) to [ADR-043](../../../docs/adrs/implemented/ADR-043-make-local-mutation-opt-in.md). Use the destination's ADR numbers in `replaces`, its real gate identifiers in `gates`, and its gate-selection test in the current revision's `evidence`. If only the current policy is documented locally, start with that decision as the first revision.
+4. Preserve existing ADR prose, lifecycle locations, supersession notes, and index summaries. Add the two comment markers `<!-- adr-rules:start -->` and `<!-- adr-rules:end -->` on separate lines in the destination ADR index. Adapt the [CLI integration test](../../../scripts/adr-rules.test.mjs) to its decision history, npm scripts, and gate runner. Record the pilot in the destination's architecture and feature documentation under its own decision number.
+
+## Verify
+
+- Run `node scripts/adr-rules.mjs local-mutation-testing` to follow the chain, and `node scripts/adr-rules.mjs --json` to inspect the current settings and glossary.
+- Run `node scripts/adr-rules.mjs --write-index`. Review the generated section, run `node scripts/adr-rules.mjs --check`, and confirm a second generation produces the same file.
+- Run `node --test scripts/adr-rule*.test.mjs scripts/run-quality-gate.test.mjs` or the equivalent tests for the target runner. These tests verify which mutation command each gate schedules. Run the mutation command itself when you need its score.
+- Run `npm run quality:gate` and `npm run ci:local`, or the target's equivalent quality and installation checks. Record `2026-11-25-typed-adr-rules` in the destination's applied update history after verification.
