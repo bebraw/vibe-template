@@ -1,3 +1,18 @@
+---
+ruleSchema: 1
+rules:
+  - id: local-ci-readiness
+    replaces: ADR-025
+    cases:
+      github-actions-workflows: required
+      package-or-installation: required
+      build-or-container: required
+      browser-ci: required
+      explicit-full-readiness: required
+      otherwise: may-skip
+    evidence: AGENTS.md#verification
+---
+
 # ADR-046: Scope Local Agent CI to Workflow-Sensitive Changes
 
 **Status:** Implemented

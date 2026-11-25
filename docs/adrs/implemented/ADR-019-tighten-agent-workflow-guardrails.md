@@ -1,3 +1,11 @@
+---
+ruleSchema: 1
+rules:
+  - id: local-ci-readiness
+    cases:
+      otherwise: required
+---
+
 # ADR-019: Tighten Agent Workflow Guardrails
 
 **Status:** Accepted

@@ -35,6 +35,20 @@ This generated section covers the decisions that opt into the [typed rules pilot
 
 <!-- adr-rules:start -->
 
+### `local-ci-readiness`
+
+Current decision [ADR-046](implemented/ADR-046-scope-local-agent-ci-to-workflow-sensitive-changes.md) · [Rationale](implemented/ADR-046-scope-local-agent-ci-to-workflow-sensitive-changes.md#context) · [Policy guidance](../../AGENTS.md#verification)
+
+- Command `npm run ci:local`
+- GitHub Actions workflow changes — Local CI required.
+- Package metadata or dependency installation changes — Local CI required.
+- Build or container setup changes — Local CI required.
+- Browser CI setup changes — Local CI required.
+- An explicit request for full PR or release readiness — Local CI required.
+- All other changes and requests, including routine source, test, tooling, or documentation work outside the listed cases — Local CI optional.
+
+History [ADR-019](implemented/ADR-019-tighten-agent-workflow-guardrails.md) → [ADR-025](implemented/ADR-025-skip-agent-ci-for-docs-only-changes.md) → [ADR-046](implemented/ADR-046-scope-local-agent-ci-to-workflow-sensitive-changes.md)
+
 ### `local-mutation-testing`
 
 Current decision [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md) · [Rationale](implemented/ADR-043-make-local-mutation-opt-in.md#context) · [Verification](../../scripts/run-quality-gate.test.mjs)

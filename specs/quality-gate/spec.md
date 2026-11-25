@@ -6,6 +6,16 @@ gateTerms:
   deep-local-gate:
     script: quality:gate:deep
     definition: The extended local readiness check a contributor explicitly requests.
+localCi:
+  script: ci:local
+  cases:
+    github-actions-workflows: GitHub Actions workflow changes
+    package-or-installation: Package metadata or dependency installation changes
+    build-or-container: Build or container setup changes
+    browser-ci: Browser CI setup changes
+    explicit-full-readiness: An explicit request for full PR or release readiness
+    documentation-only: Documentation-only edits that preserve executable configuration, generated artifacts, package metadata, source code, and tests
+    otherwise: All other changes and requests, including routine source, test, tooling, or documentation work outside the listed cases
 ---
 
 # Feature: Quality Gate
@@ -41,7 +51,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Fallow semantic policy:** best-effort type-aware analysis with exact-version packaged companion
 - **Full mutation gate:** `npm run mutation`
 - **Incremental mutation gate:** `npm run mutation:incremental`
-- **Local gate names:** the `gateTerms` glossary above pairs the baseline and deep local gates with their npm scripts. The [typed ADR rules](../adr-rules/spec.md) use these identifiers to describe mutation-test scheduling.
+- **Local verification vocabulary:** `gateTerms` names the baseline and deep gates. `localCi` names the workflow replay command and the cases used to decide when it is required. Both feed the [typed ADR rules](../adr-rules/spec.md).
 - **Local gate progress:** named phase transitions plus a 30-second elapsed-time heartbeat while a phase is running
 - **Local workflow:** `npm run ci:local`
 - **Local workflow concurrency:** Local CI job auto-concurrency

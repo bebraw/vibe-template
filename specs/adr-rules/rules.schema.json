@@ -12,24 +12,46 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "gates"],
+        "required": ["id"],
         "properties": {
-          "id": { "const": "local-mutation-testing" },
+          "id": { "enum": ["local-mutation-testing", "local-ci-readiness"] },
           "replaces": { "type": "string", "pattern": "^ADR-[0-9]{3,}$" },
-          "gates": {
-            "description": "Complete snapshot of local gates covered by this decision. Names resolve in the quality-gate glossary.",
-            "type": "object",
-            "minProperties": 1,
-            "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
-            "additionalProperties": { "enum": ["none", "full", "incremental"] }
-          },
-          "evidence": {
-            "description": "Repository-relative path to executable evidence.",
-            "type": "string",
-            "pattern": "^([A-Za-z0-9_-]+/)+[A-Za-z0-9_.-]+\\.test\\.(mjs|js|ts)$"
+          "gates": true,
+          "cases": true,
+          "evidence": { "type": "string" }
+        },
+        "if": { "properties": { "id": { "const": "local-mutation-testing" } } },
+        "then": {
+          "required": ["gates"],
+          "properties": {
+            "gates": {
+              "description": "Complete snapshot of gates covered by this revision.",
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+              "additionalProperties": { "enum": ["none", "full", "incremental"] }
+            },
+            "cases": false,
+            "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)+[A-Za-z0-9_.-]+\\.test\\.(mjs|js|ts)$" }
+          }
+        },
+        "else": {
+          "required": ["cases"],
+          "properties": {
+            "cases": {
+              "description": "Use a matching named condition, falling back to otherwise when none match.",
+              "type": "object",
+              "required": ["otherwise"],
+              "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+              "properties": { "otherwise": { "$ref": "#/definitions/readiness" } },
+              "additionalProperties": { "$ref": "#/definitions/readiness" }
+            },
+            "gates": false,
+            "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.md#[a-z0-9]+(-[a-z0-9]+)*$" }
           }
         }
       }
     }
-  }
+  },
+  "definitions": { "readiness": { "enum": ["required", "may-skip"] } }
 }

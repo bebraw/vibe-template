@@ -1,6 +1,7 @@
 import { mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import Ajv from "ajv";
+import { parsers } from "prettier/plugins/markdown";
 import { parseDocument } from "yaml";
 import rulesSchema from "../specs/adr-rules/rules.schema.json" with { type: "json" };
 import termsSchema from "../specs/adr-rules/gate-terms.schema.json" with { type: "json" };
@@ -33,7 +34,7 @@ function assertSchema(validate, value, path) {
   if (!validate(value)) throw new Error(`${path}: ${ajv.errorsText(validate.errors)}`);
 }
 
-function readTerms() {
+function readGlossary() {
   const header = frontmatter(readFileSync(glossaryPath, "utf8"), glossaryPath);
   assertSchema(validateTerms, header, glossaryPath);
   const { scripts } = JSON.parse(readFileSync("package.json", "utf8"));
@@ -43,18 +44,64 @@ function readTerms() {
     if (seen.has(script)) throw new Error(`${glossaryPath}: duplicate gate command ${script}`);
     seen.add(script);
   }
-  return header.gateTerms;
+  if (header.localCi && !Object.hasOwn(scripts, header.localCi.script))
+    throw new Error(`${glossaryPath}: unknown npm script ${header.localCi.script}`);
+  return header;
 }
 
-function checkEvidence(path, source) {
+function ruleDefinitions({ gateTerms, localCi }) {
+  const definitions = {
+    "local-mutation-testing": {
+      cases: gateTerms,
+      outcomes: { none: "skips mutation testing", full: "runs full mutation testing", incremental: "runs incremental mutation testing" },
+      evidenceLabel: "Verification",
+    },
+  };
+  if (localCi) {
+    definitions["local-ci-readiness"] = {
+      script: localCi.script,
+      cases: Object.fromEntries(Object.entries(localCi.cases).map(([key, definition]) => [key, { definition }])),
+      outcomes: { required: "Local CI required", "may-skip": "Local CI optional" },
+      evidenceLabel: "Policy guidance",
+    };
+  }
+  return definitions;
+}
+
+function checkEvidence(reference, source) {
+  const [path, fragment] = reference.split("#");
   // Resolve symlinks before accepting a repository-relative evidence reference.
   const target = statSync(path, { throwIfNoEntry: false });
   if (!target?.isFile() || relative(realpathSync("."), realpathSync(path)).split("/")[0] === "..") {
     throw new Error(`${source}: evidence must be a file inside the repository: ${path}`);
   }
+  if (fragment) {
+    const document = parsers.markdown.parse(readFileSync(path, "utf8"), {});
+    const hasHeading = document.children.some((node) => {
+      if (node.type !== "heading" || node.children.length !== 1) return false;
+      const [label] = node.children;
+      return label.type === "text" && label.value.toLowerCase().replaceAll(" ", "-") === fragment;
+    });
+    if (!hasHeading) {
+      throw new Error(`${source}: missing policy guidance heading ${reference}`);
+    }
+  }
 }
 
-function readDecision(name, terms) {
+function validateRevision(rule, definitions, source) {
+  const vocabulary = definitions[rule.id];
+  if (!vocabulary) throw new Error(`${source}: missing glossary for ${rule.id}`);
+  for (const key of Object.keys(rule.gates ?? rule.cases)) {
+    if (!Object.hasOwn(vocabulary.cases, key)) throw new Error(`${source}: unknown ${rule.gates ? "gate term" : "case"} ${key}`);
+  }
+  if (rule.cases) {
+    const { otherwise: _fallback, ...specific } = rule.cases;
+    if (new Set(Object.values(specific)).size > 1) throw new Error(`${source}: overlapping cases must have the same outcome`);
+  }
+  if (rule.evidence) checkEvidence(rule.evidence, source);
+}
+
+function readDecision(name, definitions) {
   const source = join(decisionsDir, name);
   const text = readFileSync(source, "utf8");
   const header = frontmatter(text, source, ["ruleSchema", "rules"]);
@@ -70,21 +117,18 @@ function readDecision(name, terms) {
   if (!rationale) throw new Error(`${source}: missing rationale in Context section`);
 
   const revisions = header.rules.map((rule) => {
-    for (const term of Object.keys(rule.gates)) {
-      if (!Object.hasOwn(terms, term)) throw new Error(`${source}: unknown gate term ${term}`);
-    }
-    if (rule.evidence) checkEvidence(rule.evidence, source);
+    validateRevision(rule, definitions, source);
     return { ...rule, adr, source, rationale };
   });
   return { adr, revisions, superseded: /^\*\*Status:\*\* Superseded\b/m.test(text) };
 }
 
-function readDecisions(terms) {
+function readDecisions(definitions) {
   const revisions = [];
   const superseded = new Set();
   for (const entry of readdirSync(decisionsDir, { withFileTypes: true })) {
     if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
-    const decision = readDecision(entry.name, terms);
+    const decision = readDecision(entry.name, definitions);
     if (!decision) continue;
     if (decision.superseded) superseded.add(decision.adr);
     revisions.push(...decision.revisions);
@@ -94,7 +138,8 @@ function readDecisions(terms) {
   for (const { history } of histories) {
     const current = history.at(-1);
     if (superseded.has(current.adr)) throw new Error(`Current rule in superseded ${current.adr} needs a successor.`);
-    for (const term of Object.keys(terms)) {
+    if (!current.gates) continue;
+    for (const term of Object.keys(definitions[current.id].cases)) {
       if (!Object.hasOwn(current.gates, term)) throw new Error(`${current.source}: current rule omits ${term}`);
     }
   }
@@ -117,12 +162,13 @@ function main(args) {
   if (args.length > 1 || (option?.startsWith("-") && !["--json", "--check", "--write-index"].includes(option))) {
     throw new Error("Usage: node scripts/adr-rules.mjs [rule-id | --json | --check | --write-index]");
   }
-  const terms = readTerms();
-  const rules = readDecisions(terms);
-  if (option === "--json") return console.log(JSON.stringify({ terms, rules }, null, 2));
+  const { gateTerms: terms, localCi } = readGlossary();
+  const definitions = ruleDefinitions({ gateTerms: terms, localCi });
+  const rules = readDecisions(definitions);
+  if (option === "--json") return console.log(JSON.stringify({ terms, localCi, rules }, null, 2));
   if (option === "--check" || option === "--write-index") {
     const before = readFileSync(indexPath, "utf8");
-    const after = updateRuleIndex(before, renderRuleIndex(rules, terms));
+    const after = updateRuleIndex(before, renderRuleIndex(rules, definitions));
     if (before === after) return console.log("Typed ADR rules and index are current.");
     if (option === "--check") throw new Error("Stale ADR index. Run node scripts/adr-rules.mjs --write-index.");
     writeIndex(after);
@@ -130,7 +176,7 @@ function main(args) {
   }
   const matches = option ? rules.filter((rule) => rule.id === option) : rules;
   if (!matches.length) throw new Error(`Unknown rule: ${option}`);
-  console.log(matches.map((rule) => describeRule(rule, terms)).join("\n\n"));
+  console.log(matches.map((rule) => describeRule(rule, definitions)).join("\n\n"));
 }
 
 try {

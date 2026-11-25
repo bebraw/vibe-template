@@ -1,10 +1,25 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Local quality gate glossary",
+  "title": "Quality gate and Local CI glossary",
   "type": "object",
   "required": ["gateTerms"],
   "additionalProperties": false,
   "properties": {
+    "localCi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["script", "cases"],
+      "properties": {
+        "script": { "type": "string", "pattern": "^[a-z][a-z0-9:-]*$" },
+        "cases": {
+          "type": "object",
+          "required": ["otherwise"],
+          "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+          "properties": { "otherwise": { "$ref": "#/definitions/description" } },
+          "additionalProperties": { "$ref": "#/definitions/description" }
+        }
+      }
+    },
     "gateTerms": {
       "type": "object",
       "minProperties": 1,
@@ -15,9 +30,10 @@
         "required": ["script", "definition"],
         "properties": {
           "script": { "type": "string", "pattern": "^[a-z][a-z0-9:-]*$" },
-          "definition": { "type": "string", "pattern": "\\S" }
+          "definition": { "$ref": "#/definitions/description" }
         }
       }
     }
-  }
+  },
+  "definitions": { "description": { "type": "string", "pattern": "\\S" } }
 }

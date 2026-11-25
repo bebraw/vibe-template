@@ -1,3 +1,13 @@
+---
+ruleSchema: 1
+rules:
+  - id: local-ci-readiness
+    replaces: ADR-019
+    cases:
+      documentation-only: may-skip
+      otherwise: required
+---
+
 # ADR-025: Skip Agent CI for Docs-Only Changes
 
 **Status:** Superseded by [ADR-046](./ADR-046-scope-local-agent-ci-to-workflow-sensitive-changes.md)

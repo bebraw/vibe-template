@@ -46,6 +46,33 @@ test("the committed current-rule index is reproducible", () => {
   assert.equal(result.status, 0, result.stderr);
 });
 
+test("Local CI history distinguishes change scope, explicit readiness and the fallback", () => {
+  const result = run(repo, "--json");
+  assert.equal(result.status, 0, result.stderr);
+  const { rules, localCi } = JSON.parse(result.stdout);
+  const rule = rules.find(({ id }) => id === "local-ci-readiness");
+  assert.ok(rule, "missing Local CI rule");
+  const [baseline, docsException, scoped] = rule.history;
+  assert.deepEqual([baseline.adr, docsException.adr, scoped.adr], ["ADR-019", "ADR-025", "ADR-046"]);
+  assert.deepEqual(baseline.cases, { otherwise: "required" });
+  assert.deepEqual(docsException.cases, { "documentation-only": "may-skip", otherwise: "required" });
+  assert.deepEqual(scoped.cases, {
+    "github-actions-workflows": "required",
+    "package-or-installation": "required",
+    "build-or-container": "required",
+    "browser-ci": "required",
+    "explicit-full-readiness": "required",
+    otherwise: "may-skip",
+  });
+  assert.equal(scoped.evidence, "AGENTS.md#verification");
+  assert.equal(localCi.script, "ci:local");
+  const answer = run(repo, rule.id);
+  assert.equal(answer.status, 0, answer.stderr);
+  assert.match(answer.stdout, /npm run ci:local/);
+  assert.match(answer.stdout, /ADR-019 → ADR-025 → ADR-046/);
+  assert.match(answer.stdout, /Policy guidance.*AGENTS\.md#verification/);
+});
+
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), "adr-rule-pilot-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
@@ -64,6 +91,45 @@ function fixture(t) {
   writeFileSync(path, text);
   return { root, index, path, text };
 }
+
+test("an invalid readiness snapshot cannot overwrite the published index", (t) => {
+  const { root, index, path, text } = fixture(t);
+  const glossary = join(root, "specs/quality-gate/spec.md");
+  const original = readFileSync(glossary, "utf8");
+  writeFileSync(
+    glossary,
+    original.replace(
+      /---\n$/,
+      "localCi:\n  script: replay\n  cases: { build: Build changes, docs: Documentation edits, otherwise: Other work }\n---\n",
+    ),
+  );
+  writeFileSync(join(root, "package.json"), JSON.stringify({ scripts: { verify: "node --test", replay: "local-ci run" } }));
+  writeFileSync(join(root, "AGENTS.md"), "## Verification\n\nReplay the workflow for build changes.\n\n~~~md\n## Example\n~~~\n");
+  const snapshot = text
+    .replace("local-mutation-testing", "local-ci-readiness")
+    .replace("gates: { baseline: none }", "cases: { build: required, otherwise: may-skip }")
+    .replace("checks/local.test.mjs", "AGENTS.md#verification");
+  writeFileSync(path, snapshot);
+  const publish = run(root, "--write-index");
+  assert.equal(publish.status, 0, publish.stderr);
+  const before = readFileSync(index, "utf8");
+  for (const [from, to, diagnostic] of [
+    ["otherwise: may-skip", "docs: required", /otherwise/],
+    ["build: required", "build: sometimes", /allowed values/],
+    ["build: required", "buid: required", /unknown case buid/],
+    ["build: required", "build: required, docs: may-skip", /same outcome/],
+    ["cases: {", "gates: {", /cases/],
+    ["AGENTS.md#verification", "checks/local.test.mjs", /pattern/],
+    ["AGENTS.md#verification", "AGENTS.md#removed", /heading/],
+    ["AGENTS.md#verification", "AGENTS.md#example", /heading/],
+  ]) {
+    writeFileSync(path, snapshot.replace(from, to));
+    const result = run(root, "--write-index");
+    assert.equal(result.status, 1, to);
+    assert.match(result.stderr, diagnostic, to);
+    assert.equal(readFileSync(index, "utf8"), before);
+  }
+});
 
 test("query, freshness check and explicit index update work in a mixed legacy corpus", (t) => {
   const { root, index } = fixture(t);
