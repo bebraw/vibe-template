@@ -1,0 +1,119 @@
+diff --git a/.codex/skills/frontend-design/SKILL.md b/.codex/skills/frontend-design/SKILL.md
+index 69ec6aa..861cfd3 100644
+--- a/.codex/skills/frontend-design/SKILL.md
++++ b/.codex/skills/frontend-design/SKILL.md
+@@ -1,12 +1,12 @@
+ ---
+ name: frontend-design
+-description: Design or substantially restyle frontend pages, app shells, components, and experiments while preserving the template's lightweight, reusable shape.
++description: Design or substantially restyle frontend pages, components, and app shells, extend the starter Worker’s editorial UI, or refresh its README screenshot.
+ ---
+
+ # Frontend Design
+
+-Inspect the existing stack and surrounding UI before choosing a clear visual direction. Build on repository patterns; do not add dependencies, build steps, or a parallel design system without approval.
++Build on the surrounding UI and existing tooling. A new dependency, build step, or parallel design system needs user approval.
+
+-Favor deliberate typography, spacing, hierarchy, and responsive composition over generic SaaS cards, default styling, or decorative effects without a concept. Keep reusable pieces small, understandable, and easy to prune. Use motion only when it improves comprehension or character.
++For the [starter Worker](../../../specs/stub-worker/spec.md), follow the narrow layout and serif typography in the [home view](../../../src/views/home.ts) and reuse the [single-accent theme tokens](../../../src/tailwind-input.css). Extend the route rows to new capabilities, match new inputs to the links’ rounded edges and visible focus rings, and keep status text inline. Introduce a new visual identity when the user requests one.
+
+-For changes that should continue the current starter aesthetic, use `minimal-visual-style`. Push toward a stronger brand or showcase direction only when the user requests it.
++Use the verified rendered page as the source for the README image. Refresh the screenshot manually after a material UI change, following the [README screenshot contract](../../../specs/readme-docs/spec.md).
+diff --git a/.codex/skills/minimal-visual-style/SKILL.md b/.codex/skills/minimal-visual-style/SKILL.md
+deleted file mode 100644
+index fea2e91..0000000
+--- a/.codex/skills/minimal-visual-style/SKILL.md
++++ /dev/null
+@@ -1,20 +0,0 @@
+----
+-name: minimal-visual-style
+-description: Extend the starter Worker UI and screenshots without departing from its minimal, editorial, token-driven visual language.
+----
+-
+-# Minimal Visual Style
+-
+-Inspect `src/tailwind-input.css`, `src/views/home.ts`, `specs/stub-worker/spec.md`, and `specs/readme-docs/spec.md`. Code is authoritative over `docs/screenshots/home.png`.
+-
+-## Contract
+-
+-- Keep a narrow, centered, single-purpose composition with generous outer space and one clear anchor.
+-- Continue the serif-first typography and `app-*` tokens unless the user requests a new identity.
+-- Use tight large headings, calm supporting text, and restrained uppercase labels.
+-- Limit the palette to quiet canvas, surface, text, soft text, line, and one accent.
+-- Keep inputs and links soft and precise: rounded corners, subtle tint, thin rings, and a clear focus state.
+-- Render routes and capabilities as editorial rows rather than dense cards or dashboards.
+-- Keep status text quiet and inline.
+-
+-Avoid gradient-heavy heroes, glossy marketing sections, busy app shells, multiple accents, and decorative illustration without an explicit new direction. Update screenshots after source behavior and styling are verified; never use a stale screenshot to justify a regression.
+diff --git a/.codex/skills/modern-web-guidance/SKILL.md b/.codex/skills/modern-web-guidance/SKILL.md
+index 92908a0..fe6a699 100644
+--- a/.codex/skills/modern-web-guidance/SKILL.md
++++ b/.codex/skills/modern-web-guidance/SKILL.md
+@@ -49,5 +49,5 @@ When a justified browser API lacks TypeScript declarations, consider [modern-web
+ - Adapt retrieved examples to the typed-client boundary in `ARCHITECTURE.md`; never restore inline handlers or scripts.
+ - Treat Chromium Playwright or Lighthouse output as Chromium evidence, not cross-browser proof.
+-- Use `frontend-design` for visual direction, `minimal-visual-style` for the starter's visual language, and `web-perf` for measured performance diagnosis.
++- Use `frontend-design` for visual direction and `web-perf` for measured performance diagnosis.
+
+ Skip this skill for copy-only work, routine changes that apply established repository patterns, backend-only Worker code, CI, and general tooling.
+diff --git a/.codex/skills/simplify/SKILL.md b/.codex/skills/simplify/SKILL.md
+deleted file mode 100644
+index f30fe40..0000000
+--- a/.codex/skills/simplify/SKILL.md
++++ /dev/null
+@@ -1,15 +0,0 @@
+----
+-name: simplify
+-description: Simplify recently changed code for clarity and consistency without changing behavior or expanding scope.
+----
+-
+-# Simplify
+-
+-Review the user-specified changes. Preserve behavior and public contracts while reducing conceptual overhead:
+-
+-- shorten mechanical names without losing domain meaning;
+-- merge substantially overlapping types, helpers, or constants;
+-- derive values instead of passing or storing duplicate state;
+-- remove indirection that has no distinct responsibility.
+-
+-Touch only the requested scope and run relevant verification after editing.
+diff --git a/AGENTS.md b/AGENTS.md
+index e8a0509..2e298bb 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -69,6 +69,5 @@ Ask only when the action is not already authorized in the conversation. Existing
+ ## Frontend Design
+
+-- Use the project-local [`frontend-design`](./.codex/skills/frontend-design/SKILL.md) skill for substantial UI work such as page redesigns, component styling, app shells, and frontend experiments.
+-- Treat the skill as guidance for producing distinctive frontend work without compromising the template's lightweight and reusable nature unless the user explicitly asks for a more opinionated direction.
++- Use the project-local [`frontend-design`](./.codex/skills/frontend-design/SKILL.md) skill for substantial UI design, extensions to the starter Worker's visual style, and its README screenshot.
+
+ ## Modern Web Platform
+@@ -141,9 +140,4 @@ Ask only when the action is not already authorized in the conversation. Existing
+ - Treat the skill as guidance for prioritizing concrete security risks and proportionate mitigations over generic checklists.
+
+-## Simplify
+-
+-- Use the project-local [`simplify`](./.codex/skills/simplify/SKILL.md) skill after implementation when the user wants code simplified without changing behavior.
+-- Treat the skill as guidance for reducing naming, state, and conceptual overhead inside the requested scope.
+-
+ ## Skill Validation
+
+diff --git a/README.md b/README.md
+index 58a18c0..d6c85b3 100644
+--- a/README.md
++++ b/README.md
+@@ -47,5 +47,4 @@ The repository includes compact instructions under `.codex/skills/` that help ca
+ - [`$tdd`](.codex/skills/tdd/SKILL.md) — implement observable runtime behavior through focused red-green slices when a stable test seam exists.
+ - [`$debug`](.codex/skills/debug/SKILL.md) — reproduce and localize failures, fix their root cause, add a regression guard, and verify the result.
+-- [`$simplify`](.codex/skills/simplify/SKILL.md) — reduce incidental complexity in recently changed code without altering behavior.
+
+ ### Review and Risk
+@@ -59,6 +58,5 @@ The repository includes compact instructions under `.codex/skills/` that help ca
+ ### Frontend and Performance
+
+-- [`$frontend-design`](.codex/skills/frontend-design/SKILL.md) — design or substantially revise production-quality UI while preserving the starter's reusable nature.
+-- [`$minimal-visual-style`](.codex/skills/minimal-visual-style/SKILL.md) — extend the existing minimal, editorial, token-driven visual language.
++- [`$frontend-design`](.codex/skills/frontend-design/SKILL.md) — extend the starter's visual style, update its screenshots, or design a new interface.
+ - [`$modern-web-guidance`](.codex/skills/modern-web-guidance/SKILL.md) — retrieve pinned, Baseline-aware browser guidance or explicitly audit a directory for legacy web patterns.
+ - [`$web-perf`](.codex/skills/web-perf/SKILL.md) — measure Core Web Vitals, loading behavior, interaction responsiveness, and network costs.

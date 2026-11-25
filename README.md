@@ -46,7 +46,6 @@ The repository includes compact instructions under `.codex/skills/` that help ca
 - [`$to-spec`](.codex/skills/to-spec/SKILL.md) — turn settled discussion or wayfinding results into the repository's living `specs/<feature-domain>/spec.md`. Explicit request required.
 - [`$tdd`](.codex/skills/tdd/SKILL.md) — implement observable runtime behavior through focused red-green slices when a stable test seam exists.
 - [`$debug`](.codex/skills/debug/SKILL.md) — reproduce and localize failures, fix their root cause, add a regression guard, and verify the result.
-- [`$simplify`](.codex/skills/simplify/SKILL.md) — reduce incidental complexity in recently changed code without altering behavior.
 
 ### Review and Risk
 
@@ -58,8 +57,7 @@ The repository includes compact instructions under `.codex/skills/` that help ca
 
 ### Frontend and Performance
 
-- [`$frontend-design`](.codex/skills/frontend-design/SKILL.md) — design or substantially revise production-quality UI while preserving the starter's reusable nature.
-- [`$minimal-visual-style`](.codex/skills/minimal-visual-style/SKILL.md) — extend the existing minimal, editorial, token-driven visual language.
+- [`$frontend-design`](.codex/skills/frontend-design/SKILL.md) — extend the starter's visual style, update its screenshots, or design a new interface.
 - [`$modern-web-guidance`](.codex/skills/modern-web-guidance/SKILL.md) — retrieve pinned, Baseline-aware browser guidance or explicitly audit a directory for legacy web patterns.
 - [`$web-perf`](.codex/skills/web-perf/SKILL.md) — measure Core Web Vitals, loading behavior, interaction responsiveness, and network costs.
 

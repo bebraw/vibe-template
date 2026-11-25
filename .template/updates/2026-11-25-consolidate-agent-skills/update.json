@@ -1,0 +1,23 @@
+{
+  "id": "2026-11-25-consolidate-agent-skills",
+  "title": "Retire the simplify skill and consolidate frontend guidance",
+  "status": "implemented",
+  "risk": "low",
+  "adrs": ["docs/adrs/implemented/ADR-075-consolidate-local-skill-routing.md"],
+  "touches": [
+    ".codex/skills/simplify/SKILL.md",
+    ".codex/skills/minimal-visual-style/SKILL.md",
+    ".codex/skills/frontend-design/SKILL.md",
+    ".codex/skills/modern-web-guidance/SKILL.md",
+    "AGENTS.md",
+    "README.md",
+    "ARCHITECTURE.md",
+    "specs/agent-skills/spec.md",
+    "docs/adrs/"
+  ],
+  "checks": [
+    "npm run skill:validate -- .codex/skills/frontend-design",
+    "npm run skill:validate -- .codex/skills/modern-web-guidance",
+    "npm run quality:gate"
+  ]
+}

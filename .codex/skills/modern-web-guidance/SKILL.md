@@ -48,7 +48,7 @@ When a justified browser API lacks TypeScript declarations, consider [modern-web
 - Prefer feature detection and small local fallbacks; ask before adding a polyfill or dependency.
 - Adapt retrieved examples to the typed-client boundary in `ARCHITECTURE.md`; never restore inline handlers or scripts.
 - Treat Chromium Playwright or Lighthouse output as Chromium evidence, not cross-browser proof.
-- Use `frontend-design` for visual direction, `minimal-visual-style` for the starter's visual language, and `web-perf` for measured performance diagnosis.
+- Use `frontend-design` for visual direction and `web-perf` for measured performance diagnosis.
 
 Skip this skill for copy-only work, routine changes that apply established repository patterns, backend-only Worker code, CI, and general tooling.
 

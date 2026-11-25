@@ -68,8 +68,7 @@ Ask only when the action is not already authorized in the conversation. Existing
 
 ## Frontend Design
 
-- Use the project-local [`frontend-design`](./.codex/skills/frontend-design/SKILL.md) skill for substantial UI work such as page redesigns, component styling, app shells, and frontend experiments.
-- Treat the skill as guidance for producing distinctive frontend work without compromising the template's lightweight and reusable nature unless the user explicitly asks for a more opinionated direction.
+- Use the project-local [`frontend-design`](./.codex/skills/frontend-design/SKILL.md) skill for substantial UI design, extensions to the starter Worker's visual style, and its README screenshot.
 
 ## Modern Web Platform
 
@@ -139,11 +138,6 @@ Ask only when the action is not already authorized in the conversation. Existing
 
 - Use the project-local [`security`](./.codex/skills/security/SKILL.md) skill when the user is working on auth, secrets, access control, sensitive data handling, or security hardening.
 - Treat the skill as guidance for prioritizing concrete security risks and proportionate mitigations over generic checklists.
-
-## Simplify
-
-- Use the project-local [`simplify`](./.codex/skills/simplify/SKILL.md) skill after implementation when the user wants code simplified without changing behavior.
-- Treat the skill as guidance for reducing naming, state, and conceptual overhead inside the requested scope.
 
 ## Skill Validation
 

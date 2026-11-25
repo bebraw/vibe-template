@@ -23,6 +23,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - **Copy policy:** keep an intentional distribution copy byte-equivalent to its canonical `.codex/skills/` source unless the target surface requires a documented compatibility adaptation
 - **Composition roots:** `AGENTS.md` for model routing and `README.md` for user discovery
 - **Skill contracts:** each canonical `SKILL.md` plus optional `agents/openai.yaml`
+- **Starter visual guidance:** `frontend-design` owns both substantial UI work and changes that continue the starter's existing style. It points to the live stylesheet, Worker view, [starter UI contract](../stub-worker/spec.md), and [README screenshot contract](../readme-docs/spec.md).
 - **Engineering skill provenance:** `correctness-review` retains `cniska/skills` revision `7d79c7754f2b9d656f7db7b9ecefcb7532b6d256`; `test-review` and `debug` selectively adapt revision `2c83858f1d801369355a761ce3ba9b492f5c642f`, as recorded in [ADR-073](../../docs/adrs/implemented/ADR-073-refresh-review-and-debug-guidance.md)
 - **Agent capability baseline:** repository navigation, tool use, and engineering judgment; [ADR-066](../../docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md) owns contextual reading and authorization policy
 - **Instruction budget:** concise descriptions and entrypoints; version-sensitive manuals stay in current primary documentation rather than the prompt
@@ -95,6 +96,7 @@ Browser-facing implementation needs current web-platform and compatibility guida
 - [ ] Both skills reuse the existing spec, ADR, test, and quality-gate conventions without companion setup.
 - [ ] The README groups every project-local skill by job and gives each a concise, user-facing purpose.
 - [ ] Skill descriptions remain discriminating and normally fit within 30 words; entrypoints contain only decision-changing guidance.
+- [ ] Requests to simplify code use ordinary editing and verification within the requested scope. Users can request the starter's visual conventions through `frontend-design`, including when updating its screenshot.
 - [ ] Test review identifies unexplained weakened checks, negative tests rejected by the wrong guard, and tests coupled to real user state or services; findings name the protection lost or concrete regression.
 - [ ] Debugging checks the declared runtime/toolchain before attributing a failure to source, and verifies an appropriate test, lint rule, or configuration guard against the original failure.
 - [ ] Wrangler guidance distinguishes immediately deployed secret changes from staged version-secret changes while retaining current-documentation and authorization requirements.
