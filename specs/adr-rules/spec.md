@@ -10,7 +10,7 @@ Start from the [proposal template](../../docs/adrs/proposed/ADR-000-template.yam
 
 Use separate fields for the trigger, consequences, alternatives, or a preamble when they exist. Use `extraSections` for named sections specific to a decision. Markdown lists, code blocks, and links can appear in prose fields. Relative paths resolve from the record's directory. YAML source files have no Markdown section anchors.
 
-The optional `amends`, `amendedBy`, `supersedes`, and `supersededBy` fields contain ADR IDs. The validator checks each target exists and differs from the source. Record each direction explicitly when warranted. Historical records can describe partial amendments in prose, and an incoming edge can exist without its inverse.
+The optional `amends`, `amendedBy`, `supersedes`, `supersededBy`, `partiallySupersedes`, and `partiallySupersededBy` fields contain ADR IDs. The validator checks each target exists and differs from the source. Record each direction explicitly when warranted. Keep the specific clauses affected in the prose. A partial replacement retains the applicable lifecycle status. An incoming relationship can exist without its inverse.
 
 The CLI in `scripts/adr-rules.mjs` assembles the record reader, rule histories, and index renderer. The shared reader in `scripts/adr-record.mjs` applies the same schema to authoring, queries, and migration. Only the one-time migration command imports the legacy Markdown reader. A normal query reads the log and glossary. An explicit index refresh writes the generated block in `docs/adrs/README.md`.
 
@@ -27,11 +27,19 @@ Add `rules` when contributors repeatedly need a policy's current answer and amen
 
 Projects can publish either rule independently. The glossary needs only the vocabulary for the policies the project uses. Each term keeps its meaning across revisions. Introduce a new identifier when a gate's scope or meaning changes, even if its npm command keeps the same name. Retain the previous definition with `retired: true` when the gate leaves current use. It may name a removed script or a name later reused by another gate. The CLI checks vocabulary references. Reviewers check that revised wording preserves each term's meaning.
 
+### Project-owned questions
+
+For a product rule, add `project-rules.yaml` to the YAML log directory. Its keys are project-owned rule IDs. Each rule defines `questions`. Each question has a stable ID, a one-line `question`, and an `options` map from answer IDs to plain-language meanings. The template reserves its two existing policy IDs. [Vocabulary schema](project-rules.schema.json) · [Ownership decision](../../docs/adrs/implemented/ADR-078-keep-product-rules-with-the-project.yaml)
+
+A decision selects one option per question in its revision's `answers` map. Older revisions may omit questions added later. The current revision and a reviewed proposal answer every defined question. Introduce a new question and its implemented answer together. To rehearse them before promotion, use a separate pilot log. Draft review compares answers within the published vocabulary. The current revision cites a repository-relative test file in `evidence`. Shared tooling validates the IDs, vocabulary, and history. The project's tests establish whether the selected answers match behavior. Use a fresh option ID when its meaning changes. Historical answers resolve against the checked-in vocabulary, so definition edits need review.
+
+To query an isolated pilot, run `node scripts/adr-rules.mjs --records <directory> <rule-id>` from the project root. The directory must exist inside the project and contain the lifecycle directories used by the pilot. Its own `README.md` holds the generated rule section. The same option works with `--json`, `--check`, `--write-index`, and `--check-draft`. An omitted `--records` selects `docs/adrs/`. Evidence always resolves from the project root. When the selected log contains a project vocabulary, JSON includes it in `projectRules` alongside the ordered revisions.
+
 ## Contract
 
 For each rule ID, the predecessor links must form a single chain. The first revision has no predecessor. Each successor points to an existing revision of the same rule, and each revision has at most one successor. Reject duplicate revisions, missing predecessors, disconnected histories, forks, and cycles. The terminal revision supplies the current rule regardless of file order.
 
-Each revision replaces the preceding settings for its rule in full. A current revision must cite evidence and belong to a decision that has not been superseded. Other rules in that ADR retain their own histories. Both rule kinds share the same history traversal, CLI queries, and index generation.
+Each revision replaces the preceding settings for its rule in full. A current revision must cite evidence and belong to a decision that has not been superseded. Other rules in that ADR retain their own histories. These rule kinds share the same history traversal, CLI queries, and index generation.
 
 **Mutation scheduling.** ADR-022 scheduled full mutation testing in the `all-changes-local-gate`. ADR-025 kept the full run but narrowed the readiness baseline to non-documentation changes, introducing `baseline-local-gate` for the same command. ADR-028 made the run incremental. ADR-043 moved it to the explicit deep gate. Gate values are `full`, `incremental`, or `none`.
 
@@ -47,11 +55,11 @@ For Local CI, the report shows additions and removals of named cases separately 
 
 Mutation proposals normally use the active gate IDs in the quality-gate glossary. To preview a new meaning for an existing npm command, add the optional top-level `gateTermReplacements` map. Give the proposed term a fresh ID, identify the active term it would replace, and define the new scope. The proposed term inherits its predecessor's npm script. Include the new ID and the other active gates in the draft's complete mutation revision. [Record schema](record.schema.json)
 
-To try the example against ADR-043, save it as `docs/adrs/proposed/ADR-078-narrow-local-gate.yaml` and pass that path to `--check-draft`.
+To try the example against ADR-043, save it as `docs/adrs/proposed/ADR-079-narrow-local-gate.yaml` and pass that path to `--check-draft`.
 
 ```yaml
 adrSchema: 1
-id: ADR-078
+id: ADR-079
 title: Narrow the local readiness gate
 status: proposed
 context: The ordinary readiness gate currently covers tooling changes as well as deployed Worker source.

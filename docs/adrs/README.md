@@ -145,6 +145,7 @@ History [ADR-022](implemented/ADR-022-add-mutation-testing-gate.yaml) → [ADR-0
 | [ADR-075](./implemented/ADR-075-consolidate-local-skill-routing.yaml)                    | Implemented | Retire the simplify shortcut and move starter visual guidance into frontend-design.               |
 | [ADR-076](./implemented/ADR-076-pilot-typed-adr-rules.yaml)                              | Implemented | Track local mutation-test scheduling as a versioned rule across implemented decisions.            |
 | [ADR-077](./implemented/ADR-077-store-decisions-in-yaml.yaml)                            | Implemented | Store decisions in standalone YAML and provide a one-time Markdown migration.                     |
+| [ADR-078](./implemented/ADR-078-keep-product-rules-with-the-project.yaml)                | Implemented | Keep project-specific rule questions and answers in the project that owns the policy.             |
 
 ## Creating A New ADR
 
@@ -154,7 +155,7 @@ History [ADR-022](implemented/ADR-022-add-mutation-testing-gate.yaml) → [ADR-0
 4. Fill in the context and decision. Record the trade-offs and alternatives where they help explain the choice.
 5. When the ADR is accepted but implementation is still pending, set `status: accepted`, add the date, and move it to `accepted/`.
 6. Once implemented, set `status: implemented` and move the record to `implemented/`.
-7. If the change supersedes an earlier ADR, mark the previous record `superseded` and identify its successor in `supersededBy`.
+7. For a full replacement, mark the previous record `superseded` and identify its successor in `supersededBy`. For a partial replacement, keep the applicable lifecycle status, record `partiallySupersededBy`, and identify the affected clauses in the decision.
 8. Update the ADR table in this file.
 
 ## Search Tips

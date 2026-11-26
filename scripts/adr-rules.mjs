@@ -1,13 +1,22 @@
-import { existsSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import {
+  existsSync,
+  lstatSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { basename, dirname, join, relative } from "node:path";
 import { parsers } from "prettier/plugins/markdown";
-import { parseAdrRecord, parseGlossary, validateAdrRelations } from "./adr-record.mjs";
+import { parseAdrRecord, parseGlossary, parseProjectRules, validateAdrRelations } from "./adr-record.mjs";
 import { resolveRuleHistories } from "./adr-rule-history.mjs";
 import { describeDraftRule, describeRule, renderRuleIndex, updateRuleIndex } from "./adr-rule-output.mjs";
 
-const indexPath = "docs/adrs/README.md";
 const stages = ["implemented", "accepted", "proposed"];
-const draftsDir = "docs/adrs/proposed";
 const glossaryPath = "specs/quality-gate/spec.md";
 
 function recordGateCommand(seen, script, source) {
@@ -28,8 +37,14 @@ function readGlossary() {
   return { gateTerms, localCi };
 }
 
-function ruleDefinitions({ gateTerms, localCi }) {
+function readProjectRules(recordsDir) {
+  const path = join(recordsDir, "project-rules.yaml");
+  if (existsSync(path)) return parseProjectRules(readFileSync(path, "utf8"), path);
+}
+
+function ruleDefinitions({ gateTerms, localCi }, projectRules) {
   const definitions = {
+    __proto__: null,
     "local-mutation-testing": {
       cases: gateTerms,
       outcomes: { none: "skips mutation testing", full: "runs full mutation testing", incremental: "runs incremental mutation testing" },
@@ -44,6 +59,7 @@ function ruleDefinitions({ gateTerms, localCi }) {
       evidenceLabel: "Policy guidance",
     };
   }
+  for (const [id, { questions }] of Object.entries(projectRules ?? {})) definitions[id] = { questions, evidenceLabel: "Verification" };
   return definitions;
 }
 
@@ -70,6 +86,14 @@ function checkEvidence(reference, source) {
 function validateRevision(rule, vocabulary) {
   const { source } = rule;
   if (!vocabulary) throw new Error(`${source}: missing glossary for ${rule.id}`);
+  if (rule.evidence) checkEvidence(rule.evidence, source);
+  if (rule.answers) {
+    for (const [key, choice] of Object.entries(rule.answers)) {
+      if (!Object.hasOwn(vocabulary.questions, key)) throw new Error(`${source}: unknown question ${key} for ${rule.id}`);
+      if (!Object.hasOwn(vocabulary.questions[key].options, choice)) throw new Error(`${source}: unknown answer ${choice} for ${key}`);
+    }
+    return;
+  }
   const commands = new Set();
   for (const key of Object.keys(rule.gates ?? rule.cases)) {
     if (!Object.hasOwn(vocabulary.cases, key)) throw new Error(`${source}: unknown ${rule.gates ? "gate term" : "case"} ${key}`);
@@ -79,7 +103,6 @@ function validateRevision(rule, vocabulary) {
     const { otherwise: _fallback, ...specific } = rule.cases;
     if (new Set(Object.values(specific)).size > 1) throw new Error(`${source}: overlapping cases must have the same outcome`);
   }
-  if (rule.evidence) checkEvidence(rule.evidence, source);
 }
 
 function readDecision(source, ids) {
@@ -87,13 +110,16 @@ function readDecision(source, ids) {
   validateAdrRelations(record, ids, source);
   const adr = record.id;
   const rationale = record.context.trim().split(/\r?\n[ \t]*\r?\n/, 1)[0];
-  const revisions = (record.rules ?? []).map((rule) => ({ ...rule, adr, source, rationale }));
+  const { partiallySupersedes, partiallySupersededBy } = record;
+  const revisions = (record.rules ?? []).map((rule) => ({ ...rule, adr, source, rationale, partiallySupersedes, partiallySupersededBy }));
   return { adr, revisions, source, status: record.status, gateTermReplacements: record.gateTermReplacements };
 }
 
-function decisionFiles(stage, draftFile) {
-  const dir = join("docs/adrs", stage);
-  if (!existsSync(dir)) return [];
+function decisionFiles(recordsDir, stage, draftFile) {
+  const dir = join(recordsDir, stage);
+  const entry = lstatSync(dir, { throwIfNoEntry: false });
+  if (!entry) return [];
+  if (!entry.isDirectory()) throw new Error(`${dir}: expected a lifecycle directory`);
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     if (!/\.(md|ya?ml)$/i.test(entry.name)) return [];
     const source = join(dir, entry.name);
@@ -107,12 +133,12 @@ function decisionFiles(stage, draftFile) {
   });
 }
 
-function readRecords(draftFile) {
-  const files = stages.flatMap((stage) => decisionFiles(stage, draftFile));
-  const inScope = (path) => !draftFile || dirname(path) === "docs/adrs/implemented" || path === draftFile;
+function readRecords(recordsDir, draftFile) {
+  const files = stages.flatMap((stage) => decisionFiles(recordsDir, stage, draftFile));
+  const inScope = (path) => !draftFile || dirname(path) === join(recordsDir, "implemented") || path === draftFile;
   const ids = new Map();
   for (const source of files) {
-    const id = /\/(ADR-\d{3,})-/.exec(source)?.[1];
+    const id = /^(ADR-\d{3,})-/.exec(basename(source))?.[1];
     if (!id) throw new Error(`${source}: expected ADR-<number>-<name>.yaml`);
     if (ids.has(id) && (inScope(source) || inScope(ids.get(id))))
       throw new Error(`${source}: duplicate ${id}, already present in ${ids.get(id)}`);
@@ -121,7 +147,13 @@ function readRecords(draftFile) {
   return files.filter(inScope).map((source) => readDecision(source, ids));
 }
 
-function validateHeadGates(revision, vocabulary) {
+function validateCurrentRevision(revision, vocabulary) {
+  if (revision.answers) {
+    for (const key of Object.keys(vocabulary.questions)) {
+      if (!Object.hasOwn(revision.answers, key)) throw new Error(`${revision.source}: ${revision.id} omits question ${key}`);
+    }
+    return;
+  }
   if (!revision.gates) return;
   const terms = vocabulary.cases;
   for (const term of Object.keys(revision.gates)) {
@@ -147,7 +179,7 @@ function implementedHistories(records, definitions) {
   for (const { history } of histories) {
     const current = history.at(-1);
     if (superseded.has(current.adr)) throw new Error(`Current rule in superseded ${current.adr} needs a successor.`);
-    validateHeadGates(current, definitions[current.id]);
+    validateCurrentRevision(current, definitions[current.id]);
   }
   return histories;
 }
@@ -182,13 +214,13 @@ function checkDraft(draft, histories, definitions) {
       const replacements = revision.gates ? draft.gateTermReplacements : undefined;
       const vocabulary = replacements ? replaceGateTerms(published, replacements, source) : published;
       validateRevision(revision, vocabulary);
-      validateHeadGates(revision, vocabulary);
+      validateCurrentRevision(revision, vocabulary);
       return describeDraftRule(revision, previous, vocabulary, replacements);
     })
     .join("\n\n");
 }
 
-function writeIndex(text) {
+function writeIndex(indexPath, text) {
   const dir = mkdtempSync(join(dirname(indexPath), ".adr-rules-"));
   try {
     const temporary = join(dir, "README.md");
@@ -199,34 +231,54 @@ function writeIndex(text) {
   }
 }
 
+function selectRecordsDir(args) {
+  if (args[0] !== "--records") return "docs/adrs";
+  const [, path] = args.splice(0, 2);
+  if (!path || !statSync(path, { throwIfNoEntry: false })?.isDirectory())
+    throw new Error("--records requires an existing decision directory");
+  const directory = relative(realpathSync("."), realpathSync(path));
+  if (!directory || directory.split("/")[0] === "..") throw new Error("--records must select a directory inside the repository");
+  if (!stages.some((stage) => lstatSync(join(directory, stage), { throwIfNoEntry: false })?.isDirectory()))
+    throw new Error(`${directory}: --records must contain a proposed, accepted, or implemented directory`);
+  return directory;
+}
+
 function main(args) {
+  const recordsDir = selectRecordsDir(args);
+  const indexPath = join(recordsDir, "README.md");
+  const draftsDir = join(recordsDir, "proposed");
   const [option] = args;
   const checkingDraft = option === "--check-draft";
   const knownOption = !option?.startsWith("-") || ["--json", "--check", "--write-index", "--check-draft"].includes(option);
   const validArity = checkingDraft ? args.length === 2 : args.length <= 1;
   if (!knownOption || !validArity) {
-    throw new Error("Usage: node scripts/adr-rules.mjs [rule-id | --json | --check | --write-index | --check-draft <file>]");
+    throw new Error(
+      "Usage: node scripts/adr-rules.mjs [--records <directory>] [rule-id | --json | --check | --write-index | --check-draft <file>]",
+    );
   }
   const draftFile = checkingDraft ? relative(realpathSync("."), realpathSync(args[1])) : undefined;
   if (checkingDraft && dirname(draftFile) !== draftsDir) throw new Error(`Expected a proposal in ${draftsDir}: ${args[1]}`);
-  const records = readRecords(draftFile);
+  const records = readRecords(recordsDir, draftFile);
   const draft = checkingDraft && records.find(({ source }) => source === draftFile);
   if (checkingDraft && !draft) throw new Error(`${draftFile}: expected a standalone .yaml decision file`);
   const needsGlossary = records.some(
-    ({ revisions, status, source }) => revisions.length && (status === "implemented" || status === "superseded" || source === draftFile),
+    ({ revisions, status, source }) =>
+      revisions.some((rule) => !rule.answers) && (status === "implemented" || status === "superseded" || source === draftFile),
   );
   const { gateTerms: terms, localCi } = needsGlossary ? readGlossary() : { gateTerms: {} };
-  const definitions = ruleDefinitions({ gateTerms: terms, localCi });
+  const projectRules = readProjectRules(recordsDir);
+  const definitions = ruleDefinitions({ gateTerms: terms, localCi }, projectRules);
   const rules = implementedHistories(records, definitions);
   if (checkingDraft) return console.log(checkDraft(draft, rules, definitions));
-  if (option === "--json") return console.log(JSON.stringify({ terms, localCi, rules }, null, 2));
+  if (option === "--json") return console.log(JSON.stringify({ terms, localCi, projectRules, rules }, null, 2));
   if (option === "--check" || option === "--write-index") {
     const before = existsSync(indexPath) ? readFileSync(indexPath, "utf8") : "";
     if (!rules.length && !before.includes("<!-- adr-rules")) return console.log("ADR records are valid.");
-    const after = updateRuleIndex(before, renderRuleIndex(rules, definitions));
+    const after = updateRuleIndex(before, renderRuleIndex(rules, definitions, recordsDir));
     if (before === after) return console.log("Typed ADR rules and index are current.");
-    if (option === "--check") throw new Error("Stale ADR index. Run node scripts/adr-rules.mjs --write-index.");
-    writeIndex(after);
+    if (option === "--check")
+      throw new Error(`Stale ADR index at ${indexPath}. Rerun this command with --write-index in place of --check.`);
+    writeIndex(indexPath, after);
     return console.log("Updated the current typed rules in " + indexPath);
   }
   if (!option && !rules.length) return console.log("No implemented rule revisions.");

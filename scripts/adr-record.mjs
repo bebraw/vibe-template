@@ -1,6 +1,7 @@
 import { basename, dirname } from "node:path";
 import Ajv from "ajv";
 import { parseDocument } from "yaml";
+import projectSchema from "../specs/adr-rules/project-rules.schema.json" with { type: "json" };
 import recordSchema from "../specs/adr-rules/record.schema.json" with { type: "json" };
 import termsSchema from "../specs/adr-rules/gate-terms.schema.json" with { type: "json" };
 
@@ -10,6 +11,7 @@ function compile(name, schema) {
 }
 const checkTerms = compile("gate-terms.schema.json", termsSchema);
 const checkRecord = compile("record.schema.json", recordSchema);
+const checkProjectRules = compile("project-rules.schema.json", projectSchema);
 
 function readYaml(source, path, validate) {
   const document = parseDocument(source, { stringKeys: true });
@@ -31,6 +33,10 @@ export function parseGlossary(source, path) {
   return readYaml(match[1], path, checkTerms);
 }
 
+export function parseProjectRules(source, path) {
+  return readYaml(source, path, checkProjectRules);
+}
+
 export function parseAdrRecord(source, path) {
   const record = readYaml(source, path, checkRecord);
   const id = /^(ADR-\d{3,})-.+\.yaml$/.exec(basename(path))?.[1];
@@ -46,7 +52,7 @@ export function parseAdrRecord(source, path) {
 }
 
 export function validateAdrRelations(record, ids, source) {
-  for (const field of ["amends", "amendedBy", "supersedes", "supersededBy"]) {
+  for (const field of ["amends", "amendedBy", "supersedes", "supersededBy", "partiallySupersedes", "partiallySupersededBy"]) {
     for (const id of record[field] ?? []) {
       if (id === record.id || !ids.has(id)) throw new Error(`${source}: invalid related ADR ${id} in ${field}`);
     }

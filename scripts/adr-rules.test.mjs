@@ -99,6 +99,29 @@ function fixture(t) {
   return { root, index, path };
 }
 
+test("a pilot queries its own YAML log and resolves evidence and index links from their respective directories", (t) => {
+  const { root, path, index } = fixture(t);
+  const pilot = "specs/feature/pilot";
+  mkdirSync(join(root, pilot, "implemented"), { recursive: true });
+  writeFileSync(join(root, pilot, "implemented/ADR-001-example.yaml"), readFileSync(path));
+  writeFileSync(join(root, pilot, "README.md"), readFileSync(index));
+  const original = readFileSync(index, "utf8");
+  writeFileSync(join(root, "docs/adrs/implemented/ADR-555-existing.md"), "# Historical decision\n");
+  const stale = run(root, "--records", pilot, "--check");
+  assert.equal(stale.status, 1);
+  assert.ok(stale.stderr.includes(pilot + "/README.md"));
+  const refreshed = run(root, "--records", pilot, "--write-index");
+  assert.equal(refreshed.status, 0, refreshed.stderr);
+  const rendered = readFileSync(join(root, pilot, "README.md"), "utf8");
+  assert.ok(rendered.includes("(implemented/ADR-001-example.yaml)"));
+  assert.ok(rendered.includes("(../../../checks/local.test.mjs)"));
+  assert.equal(readFileSync(index, "utf8"), original);
+  assert.equal(run(root, "--records", pilot, "--check").status, 0);
+  assert.equal(run(root, "--records", pilot + "/implemented", "--check").status, 1);
+  assert.equal(run(root, "--records", "missing", "--check").status, 1);
+  assert.equal(run(root, "--records", "..", "--write-index").status, 1);
+});
+
 const proposedRule = { id, replaces: "ADR-001", gates: { baseline: "incremental" } };
 const proposal = { ...decision, id: "ADR-002", status: "proposed", date: undefined, rules: [proposedRule] };
 
@@ -179,6 +202,31 @@ test("one-way relations can name another lifecycle stage and reject missing or s
     assert.match(invalid.stderr, /related|amendedBy|relation/i);
     assert.ok(invalid.stderr.includes(target), invalid.stderr);
   }
+});
+
+test("rule histories distinguish partial decision relationships from the rule predecessor", (t) => {
+  const { root, path } = fixture(t);
+  writeRecord(path, { ...decision, partiallySupersededBy: ["ADR-002"], rules: [baseline] });
+  writeRecord(join(root, "docs/adrs/implemented/ADR-003-other.yaml"), { ...decision, id: "ADR-003" });
+  writeRecord(join(root, "docs/adrs/implemented/ADR-002-new.yaml"), {
+    ...decision,
+    id: "ADR-002",
+    partiallySupersedes: ["ADR-003"],
+    rules: [{ ...baseline, replaces: "ADR-001" }],
+  });
+  const published = run(root, "--json");
+  assert.equal(published.status, 0, published.stderr);
+  const [previous, current] = JSON.parse(published.stdout).rules[0].history;
+  assert.deepEqual(previous.partiallySupersededBy, ["ADR-002"]);
+  assert.ok(!Object.hasOwn(previous, "partiallySupersedes"));
+  assert.deepEqual(current.partiallySupersedes, ["ADR-003"]);
+  assert.ok(!Object.hasOwn(current, "partiallySupersededBy"));
+  assert.equal(current.replaces, "ADR-001");
+  const answer = run(root, id);
+  assert.equal(answer.status, 0, answer.stderr);
+  assert.match(answer.stdout, /ADR-001 is partially superseded by ADR-002/);
+  assert.match(answer.stdout, /ADR-002 partially supersedes ADR-003/);
+  assert.match(answer.stdout, /History ADR-001 → ADR-002/);
 });
 
 test("decision IDs are unique across lifecycle directories even without semantic rules", (t) => {

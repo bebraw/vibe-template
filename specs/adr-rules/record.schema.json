@@ -24,6 +24,8 @@
     "amendedBy": { "$ref": "#/definitions/relations" },
     "supersedes": { "$ref": "#/definitions/relations" },
     "supersededBy": { "$ref": "#/definitions/relations" },
+    "partiallySupersedes": { "$ref": "#/definitions/relations" },
+    "partiallySupersededBy": { "$ref": "#/definitions/relations" },
     "extraSections": {
       "type": "array",
       "items": {
@@ -40,40 +42,58 @@
         "additionalProperties": false,
         "required": ["id"],
         "properties": {
-          "id": { "enum": ["local-mutation-testing", "local-ci-readiness"] },
+          "id": { "$ref": "#/definitions/termId" },
           "replaces": { "$ref": "#/definitions/id" },
           "gates": true,
           "cases": true,
+          "answers": {
+            "type": "object",
+            "minProperties": 1,
+            "propertyNames": { "$ref": "#/definitions/termId" },
+            "additionalProperties": { "$ref": "#/definitions/termId" }
+          },
           "evidence": { "type": "string" }
         },
-        "if": { "properties": { "id": { "const": "local-mutation-testing" } } },
+        "if": { "required": ["answers"], "properties": { "answers": true } },
         "then": {
-          "required": ["gates"],
           "properties": {
-            "gates": {
-              "description": "Complete snapshot of gates covered by this revision.",
-              "type": "object",
-              "minProperties": 1,
-              "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
-              "additionalProperties": { "enum": ["none", "full", "incremental"] }
-            },
+            "id": { "not": { "enum": ["local-mutation-testing", "local-ci-readiness"] } },
+            "gates": false,
             "cases": false,
-            "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)+[A-Za-z0-9_.-]+\\.test\\.(mjs|js|ts)$" }
+            "evidence": { "$ref": "#/definitions/testEvidence" }
           }
         },
         "else": {
-          "required": ["cases"],
-          "properties": {
-            "cases": {
-              "description": "Use a matching named condition, falling back to otherwise when none match.",
-              "type": "object",
-              "required": ["otherwise"],
-              "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
-              "properties": { "otherwise": { "$ref": "#/definitions/readiness" } },
-              "additionalProperties": { "$ref": "#/definitions/readiness" }
-            },
-            "gates": false,
-            "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.md#[a-z0-9]+(-[a-z0-9]+)*$" }
+          "properties": { "id": { "enum": ["local-mutation-testing", "local-ci-readiness"] } },
+          "if": { "properties": { "id": { "const": "local-mutation-testing" } } },
+          "then": {
+            "required": ["gates"],
+            "properties": {
+              "gates": {
+                "description": "Complete snapshot of gates covered by this revision.",
+                "type": "object",
+                "minProperties": 1,
+                "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+                "additionalProperties": { "enum": ["none", "full", "incremental"] }
+              },
+              "cases": false,
+              "evidence": { "$ref": "#/definitions/testEvidence" }
+            }
+          },
+          "else": {
+            "required": ["cases"],
+            "properties": {
+              "cases": {
+                "description": "Use a matching named condition, falling back to otherwise when none match.",
+                "type": "object",
+                "required": ["otherwise"],
+                "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+                "properties": { "otherwise": { "$ref": "#/definitions/readiness" } },
+                "additionalProperties": { "$ref": "#/definitions/readiness" }
+              },
+              "gates": false,
+              "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.md#[a-z0-9]+(-[a-z0-9]+)*$" }
+            }
           }
         }
       }
@@ -110,6 +130,8 @@
     "recordedStatus": { "properties": { "status": { "enum": ["implemented", "superseded"] } } }
   },
   "definitions": {
+    "testEvidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)+[A-Za-z0-9_.-]+\\.test\\.(mjs|js|ts)$" },
+    "termId": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
     "id": { "type": "string", "pattern": "^ADR-[0-9]{3,}$" },
     "text": { "type": "string", "pattern": "\\S" },
     "readiness": { "enum": ["required", "may-skip"] },

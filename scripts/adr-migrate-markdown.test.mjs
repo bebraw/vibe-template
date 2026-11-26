@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { convertMarkdownAdr } from "./adr-migrate-markdown.mjs";
+import { parseAdrRecord, validateAdrRelations } from "./adr-record.mjs";
 
 const path = "docs/adrs/implemented/ADR-123-example.md";
 const source = [
@@ -57,6 +58,38 @@ test("keeps accepted proposals distinct and omits the date placeholder only for 
   const record = convertMarkdownAdr(template, "docs/adrs/proposed/ADR-000-template.md");
   assert.equal(record.status, "proposed");
   assert.ok(!Object.hasOwn(record, "date"));
+});
+
+test("keeps a partially superseded decision implemented and preserves the direction of each explicit relation", () => {
+  const metadata = [
+    "**Status:** Partially superseded by",
+    "[ADR-140](./ADR-140-new.md) and [ADR-141](./ADR-141-later.md)",
+    "**Superseded in part by:** ADR-142",
+    "**Partially supersedes:**",
+    "[ADR-100](./ADR-100-old.md)",
+    "**Supersedes in part:** ADR-099",
+  ].join("\n");
+  const record = convertMarkdownAdr(source.replace("**Status:** Accepted", metadata), path);
+  assert.equal(record.status, "implemented");
+  assert.deepEqual(record.partiallySupersededBy, ["ADR-140", "ADR-141", "ADR-142"]);
+  assert.deepEqual(record.partiallySupersedes, ["ADR-100", "ADR-099"]);
+  assert.equal(record.supersededBy, undefined);
+  assert.equal(record.supersedes, undefined);
+  assert.equal(record.recordedStatus, undefined);
+});
+
+test("both partial relationship fields accept known IDs and reject missing or self targets", () => {
+  for (const field of ["partiallySupersedes", "partiallySupersededBy"]) {
+    const record = { ...convertMarkdownAdr(source, path), [field]: ["ADR-100"] };
+    const yamlPath = path.replace(".md", ".yaml");
+    const parsed = parseAdrRecord(JSON.stringify(record), yamlPath);
+    assert.doesNotThrow(() => validateAdrRelations(parsed, new Set(["ADR-100"]), yamlPath));
+    assert.throws(() => validateAdrRelations(parsed, new Set(), yamlPath), new RegExp("ADR-100 in " + field));
+    assert.throws(
+      () => validateAdrRelations({ ...parsed, [field]: [parsed.id] }, new Set([parsed.id]), yamlPath),
+      new RegExp("ADR-123 in " + field),
+    );
+  }
 });
 
 test("refuses ambiguous metadata, missing sections, or mismatched lifecycle labels", () => {

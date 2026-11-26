@@ -1,11 +1,17 @@
 import { posix } from "node:path";
 
-function indexLink(label, target, fragment) {
-  const pathname = posix.relative("docs/adrs", target).split("/").map(encodeURIComponent).join("/");
+function indexLink(recordsDir, label, target, fragment) {
+  const pathname = posix.relative(recordsDir, target).split("/").map(encodeURIComponent).join("/");
   return `[${label}](${pathname}${fragment ? "#" + encodeURIComponent(fragment) : ""})`;
 }
 
 function decisionRows(decision, definition, markdown) {
+  if (decision.answers) {
+    return Object.entries(decision.answers).map(([key, choice]) => {
+      const { question, options } = definition.questions[key];
+      return `${question} — ${options[choice]}`;
+    });
+  }
   function command(script) {
     const text = `npm run ${script}`;
     return markdown ? `\`${text}\`` : text;
@@ -28,18 +34,18 @@ function decisionRows(decision, definition, markdown) {
   return rows;
 }
 
-export function renderRuleIndex(histories, definitions) {
+export function renderRuleIndex(histories, definitions, recordsDir = "docs/adrs") {
   return histories
     .map(({ id, history }) => {
       const current = history.at(-1);
       const definition = definitions[id];
-      const links = [indexLink(current.adr, current.source)];
+      const links = [indexLink(recordsDir, current.adr, current.source)];
       if (current.evidence) {
         const [file, fragment] = current.evidence.split("#");
-        links.push(indexLink(definition.evidenceLabel, file, fragment));
+        links.push(indexLink(recordsDir, definition.evidenceLabel, file, fragment));
       }
       const rows = decisionRows(current, definition, true).map((row) => `- ${row}`);
-      const chain = history.map(({ adr, source }) => indexLink(adr, source)).join(" → ");
+      const chain = history.map(({ adr, source }) => indexLink(recordsDir, adr, source)).join(" → ");
       return [`### \`${id}\``, "", `Current decision ${links.join(" · ")}`, "", ...rows, "", `History ${chain}`].join("\n");
     })
     .join("\n\n");
@@ -66,6 +72,9 @@ export function updateRuleIndex(readme, content) {
 
 function describeDecision(decision, definition) {
   const lines = decisionRows(decision, definition, false).map((row) => `  ${row}`);
+  if (decision.partiallySupersedes) lines.push(`  ${decision.adr} partially supersedes ${decision.partiallySupersedes.join(", ")}.`);
+  if (decision.partiallySupersededBy)
+    lines.push(`  ${decision.adr} is partially superseded by ${decision.partiallySupersededBy.join(", ")}.`);
   lines.push(`  Context when ${decision.adr} was written\n  ${decision.rationale}`, `  Source  ${decision.source}`);
   if (decision.evidence) lines.push(`  ${definition.evidenceLabel}  ${decision.evidence}`);
   return lines.join("\n");
@@ -90,8 +99,8 @@ function describeTransition(before, after) {
 }
 
 export function describeDraftRule(draft, previous, definition, replacements = {}) {
-  const before = new Map(Object.entries(previous?.gates ?? previous?.cases ?? {}));
-  const after = new Map(Object.entries(draft.gates ?? draft.cases));
+  const before = new Map(Object.entries(previous?.gates ?? previous?.cases ?? previous?.answers ?? {}));
+  const after = new Map(Object.entries(draft.gates ?? draft.cases ?? draft.answers));
   const keys = new Set([...before.keys(), ...after.keys()]);
   const lines = [`Draft ${draft.adr} · ${draft.id}`, `Implemented head ${previous?.adr ?? "none"}`, "Settings (implemented → proposed)"];
   if (draft.cases) {
@@ -117,6 +126,12 @@ export function describeDraftRule(draft, previous, definition, replacements = {}
   for (const key of changed) {
     const oldValue = before.get(key);
     const proposedValue = after.get(key);
+    if (draft.answers) {
+      const { question, options } = definition.questions[key];
+      const oldAnswer = oldValue === undefined ? "no previous answer" : options[oldValue];
+      lines.push(`  ${question}`, `    ${oldAnswer} → ${options[proposedValue]}`);
+      continue;
+    }
     const term = definition.cases[key];
     const change = changeLabel(oldValue, proposedValue);
     const subject = draft.cases ? `condition ${key}` : `gate ${key} · npm run ${term.script}`;

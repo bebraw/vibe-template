@@ -25,11 +25,15 @@ const relationshipFields = new Map([
   ["Amended by", "amendedBy"],
   ["Supersedes", "supersedes"],
   ["Superseded by", "supersededBy"],
+  ["Partially supersedes", "partiallySupersedes"],
+  ["Supersedes in part", "partiallySupersedes"],
+  ["Partially superseded by", "partiallySupersededBy"],
+  ["Superseded in part by", "partiallySupersededBy"],
 ]);
 
 function addRelationships(record, field, text) {
   const ids = new Set(record[field]);
-  for (const item of text.split(/\s*,\s*/)) {
+  for (const item of text.split(/\s*,\s*(?:and\s+)?|\s+and\s+/)) {
     let id = item;
     if (!/^ADR-\d{3,}$/.test(id)) {
       const link = /^\[(ADR-\d{3,})\]\(([^\s)]+)\)$/.exec(item);
@@ -45,7 +49,11 @@ function addRelationships(record, field, text) {
 function setStatus(record, directory, text) {
   if (record.status) throw new Error("Repeated Status");
   const superseded = /^superseded(?: by (.+))?$/i.exec(text);
-  if (superseded && directory === "implemented") {
+  const partial = /^partially superseded by (.+)$/i.exec(text);
+  if (partial && directory === "implemented") {
+    record.status = "implemented";
+    addRelationships(record, "partiallySupersededBy", partial[1]);
+  } else if (superseded && directory === "implemented") {
     record.status = "superseded";
     if (superseded[1]) addRelationships(record, "supersededBy", superseded[1]);
   } else if (directory === "implemented" && text.toLowerCase() === "accepted") {
@@ -79,7 +87,9 @@ function readMetadata(nodes, record, directory, source) {
       preambleEnd = node.position.end.offset;
       continue;
     }
-    for (const line of text.split(/\r?\n/)) {
+    // Authors soft-wrap long relationship lists in the same Markdown paragraph.
+    const metadata = text.replace(/\r?\n(?!\*\*)/g, " ");
+    for (const line of metadata.split(/\r?\n/)) {
       const field = /^\*\*([^*]+):\*\*[ \t]*(.+)$/.exec(line);
       if (!field) throw new Error("Unrecognized content before the first section: " + line);
       const [, key, raw] = field;

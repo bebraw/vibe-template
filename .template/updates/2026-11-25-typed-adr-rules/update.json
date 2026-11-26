@@ -3,7 +3,11 @@
   "title": "Migrate architecture decisions to YAML with optional typed rule histories",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.yaml", "docs/adrs/implemented/ADR-077-store-decisions-in-yaml.yaml"],
+  "adrs": [
+    "docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.yaml",
+    "docs/adrs/implemented/ADR-077-store-decisions-in-yaml.yaml",
+    "docs/adrs/implemented/ADR-078-keep-product-rules-with-the-project.yaml"
+  ],
   "touches": [
     "package.json",
     "package-lock.json",

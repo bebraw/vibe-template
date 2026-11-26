@@ -1,0 +1,20 @@
+adrSchema: 1
+id: ADR-078
+title: Let a project define questions and answers for its own decision rules
+status: implemented
+date: 2026-11-26
+amends:
+  - ADR-076
+  - ADR-077
+context: |
+  Kirjolab amended its PDF citation-key policy twice while retaining the library UUID as the stable source identity. A whole-record supersession would discard decisions that remain in force. Adding citation terminology to the template would make every adopter depend on one product's vocabulary.
+decision: |
+  A project may define a rule as a finite set of named questions with a set of permitted answers for each. The project owns the questions, answer meanings, and historical revisions. The shared CLI validates those selections, orders revisions, and renders their history. A current revision answers every question and cites a local test.
+
+  Record partial supersession separately in either declared direction. A partially superseded decision can continue to own other current rules. Keep the rationale and the specific clauses affected in the decision prose.
+
+  An explicit records-directory argument selects a complete YAML log for experiments. Paths to product evidence resolve from the project root.
+consequences: |
+  Kirjolab can test the model on three historical decisions using its own vocabulary and regression tests. An author can add a question later and leave it unanswered in older revisions. A renamed meaning needs a fresh ID to preserve the interpretation of old answers. Reviewers remain responsible for inspecting definition edits and checking that tests support the claims.
+alternatives: |
+  A Kirjolab-specific rule handler would centralize PDF semantics in the template. An executable plug-in or a predicate language would require additional code to evaluate product policy. The pilot's questions can be answered by selecting named values.
