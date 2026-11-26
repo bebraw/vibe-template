@@ -33,3 +33,9 @@ function orderRevisions(revisions) {
   if (!head.evidence) throw new Error(`Current revision of ${head.id} in ${head.adr} requires evidence.`);
   return history;
 }
+
+export function evidenceReferences(revision) {
+  const evidence = revision?.evidence;
+  if (!evidence) return [];
+  return Array.isArray(evidence) ? evidence : [evidence];
+}

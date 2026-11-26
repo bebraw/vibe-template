@@ -55,3 +55,15 @@ export function migrateReferences(text, source, targets) {
   }
   return result + updateBarePaths(text.slice(offset), source, targets);
 }
+
+export function migrateManifestReferences(text, source, targets) {
+  JSON.parse(text);
+  // Replace individual JSON string values so formatting and unrelated escapes survive.
+  return text.replace(/"(?:[^"\\]|\\.)*"(\s*:)?/g, (literal, property) => {
+    if (property) return literal;
+    const value = JSON.parse(literal);
+    const isRecordPath = value.endsWith(".md") && targets.has(normalize(value));
+    const after = isRecordPath ? value.slice(0, -3) + ".yaml" : migrateReferences(value, source, targets);
+    return after === value ? literal : JSON.stringify(after);
+  });
+}

@@ -1,4 +1,6 @@
 import { posix } from "node:path";
+import { isDeepStrictEqual } from "node:util";
+import { evidenceReferences } from "./adr-rule-history.mjs";
 
 function indexLink(recordsDir, label, target, fragment) {
   const pathname = posix.relative(recordsDir, target).split("/").map(encodeURIComponent).join("/");
@@ -6,10 +8,20 @@ function indexLink(recordsDir, label, target, fragment) {
 }
 
 function decisionRows(decision, definition, markdown) {
+  function label(text) {
+    if (!markdown) return text;
+    return text
+      .trim()
+      .replace(/\s*[\r\n]+\s*/g, " ")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replace(/[\\`*_[\]~]/g, "\\$&");
+  }
   if (decision.answers) {
     return Object.entries(decision.answers).map(([key, choice]) => {
       const { question, options } = definition.questions[key];
-      return `${question} — ${options[choice]}`;
+      return `${label(question)} — ${label(options[choice])}`;
     });
   }
   function command(script) {
@@ -28,7 +40,7 @@ function decisionRows(decision, definition, markdown) {
       rows.push(`${prefix}${command(term.script)} ${action}.`);
       if (!markdown) rows.push(`  Scope  ${term.definition}`);
     } else {
-      rows.push(`${term.definition} — ${action}.`);
+      rows.push(`${label(term.definition)} — ${action}.`);
     }
   }
   return rows;
@@ -40,9 +52,10 @@ export function renderRuleIndex(histories, definitions, recordsDir = "docs/adrs"
       const current = history.at(-1);
       const definition = definitions[id];
       const links = [indexLink(recordsDir, current.adr, current.source)];
-      if (current.evidence) {
-        const [file, fragment] = current.evidence.split("#");
-        links.push(indexLink(recordsDir, definition.evidenceLabel, file, fragment));
+      const references = evidenceReferences(current);
+      for (const reference of references) {
+        const [file, fragment] = reference.split("#");
+        links.push(indexLink(recordsDir, references.length > 1 ? file : definition.evidenceLabel, file, fragment));
       }
       const rows = decisionRows(current, definition, true).map((row) => `- ${row}`);
       const chain = history.map(({ adr, source }) => indexLink(recordsDir, adr, source)).join(" → ");
@@ -76,7 +89,7 @@ function describeDecision(decision, definition) {
   if (decision.partiallySupersededBy)
     lines.push(`  ${decision.adr} is partially superseded by ${decision.partiallySupersededBy.join(", ")}.`);
   lines.push(`  Context when ${decision.adr} was written\n  ${decision.rationale}`, `  Source  ${decision.source}`);
-  if (decision.evidence) lines.push(`  ${definition.evidenceLabel}  ${decision.evidence}`);
+  for (const file of evidenceReferences(decision)) lines.push(`  ${definition.evidenceLabel}  ${file}`);
   return lines.join("\n");
 }
 
@@ -145,7 +158,11 @@ export function describeDraftRule(draft, previous, definition, replacements = {}
     lines.push("  Fallback when no named condition matches", `    ${describeTransition(oldFallback, nextFallback)}`);
   }
   const label = definition.evidenceLabel.toLowerCase();
-  if (previous?.evidence && previous.evidence !== draft.evidence) lines.push(`Implemented ${label}  ${previous.evidence}`);
-  lines.push(`Proposed ${label}  ${draft.evidence ?? "pending"}`);
+  const implemented = evidenceReferences(previous);
+  const proposed = evidenceReferences(draft);
+  if (!isDeepStrictEqual(implemented, proposed)) {
+    for (const file of implemented) lines.push(`Implemented ${label}  ${file}`);
+  }
+  for (const file of proposed.length ? proposed : ["pending"]) lines.push(`Proposed ${label}  ${file}`);
   return lines.join("\n");
 }

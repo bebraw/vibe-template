@@ -38,7 +38,8 @@ test("keeps preamble, relationships and extra sections without taking metadata f
   const note = "The older [discussion](./why.md#reason) still applies.";
   const code = "```markdown\n## Decision\n**Status:** Accepted\n```";
   const alreadyWritten = source.replace("**Status:** Accepted", metadata).replace("## Context", note + "\n\n## Context");
-  const record = convertMarkdownAdr(alreadyWritten + "\n\n## Verification\n\n" + code, path);
+  const targets = new Set(["ADR-140-new.md", "ADR-127-first.md", "ADR-134-next.md"].map((file) => "docs/adrs/implemented/" + file));
+  const record = convertMarkdownAdr(alreadyWritten + "\n\n## Verification\n\n" + code, path, targets);
   assert.equal(record.status, "superseded");
   assert.deepEqual(record.supersededBy, ["ADR-140"]);
   assert.deepEqual(record.amendedBy, ["ADR-127", "ADR-134"]);
@@ -69,7 +70,8 @@ test("keeps a partially superseded decision implemented and preserves the direct
     "[ADR-100](./ADR-100-old.md)",
     "**Supersedes in part:** ADR-099",
   ].join("\n");
-  const record = convertMarkdownAdr(source.replace("**Status:** Accepted", metadata), path);
+  const targets = new Set(["ADR-140-new.md", "ADR-141-later.md", "ADR-100-old.md"].map((file) => "docs/adrs/implemented/" + file));
+  const record = convertMarkdownAdr(source.replace("**Status:** Accepted", metadata), path, targets);
   assert.equal(record.status, "implemented");
   assert.deepEqual(record.partiallySupersededBy, ["ADR-140", "ADR-141", "ADR-142"]);
   assert.deepEqual(record.partiallySupersedes, ["ADR-100", "ADR-099"]);

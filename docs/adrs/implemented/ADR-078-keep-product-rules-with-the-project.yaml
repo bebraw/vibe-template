@@ -9,7 +9,7 @@ amends:
 context: |
   Kirjolab amended its PDF citation-key policy twice while retaining the library UUID as the stable source identity. A whole-record supersession would discard decisions that remain in force. Adding citation terminology to the template would make every adopter depend on one product's vocabulary.
 decision: |
-  A project may define a rule as a finite set of named questions with a set of permitted answers for each. The project owns the questions, answer meanings, and historical revisions. The shared CLI validates those selections, orders revisions, and renders their history. A current revision answers every question and cites a local test.
+  A project may define a rule as a finite set of named questions with a set of permitted answers for each. The project owns the questions, answer meanings, and historical revisions. The shared CLI validates those selections, orders revisions, and renders their history. A current revision answers every question and cites the local tests that verify those answers. The evidence can span multiple suites.
 
   Record partial supersession separately in either declared direction. A partially superseded decision can continue to own other current rules. Keep the rationale and the specific clauses affected in the decision prose.
 

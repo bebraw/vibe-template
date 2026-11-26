@@ -13,7 +13,7 @@ import {
 import { basename, dirname, join, relative } from "node:path";
 import { parsers } from "prettier/plugins/markdown";
 import { parseAdrRecord, parseGlossary, parseProjectRules, validateAdrRelations } from "./adr-record.mjs";
-import { resolveRuleHistories } from "./adr-rule-history.mjs";
+import { evidenceReferences, resolveRuleHistories } from "./adr-rule-history.mjs";
 import { describeDraftRule, describeRule, renderRuleIndex, updateRuleIndex } from "./adr-rule-output.mjs";
 
 const stages = ["implemented", "accepted", "proposed"];
@@ -63,6 +63,27 @@ function ruleDefinitions({ gateTerms, localCi }, projectRules) {
   return definitions;
 }
 
+function hasPolicyHeading(document, fragment) {
+  const anchors = new Set();
+  function headingText(node) {
+    if (node.children) return node.children.map(headingText).join("");
+    return node.type === "text" || node.type === "inlineCode" ? node.value : "";
+  }
+  function matches(node) {
+    if (node.type !== "heading") return node.children?.some(matches);
+    const base = headingText(node)
+      .trim()
+      .toLowerCase()
+      .replace(/[^\p{L}\p{M}\p{N}\p{Pc} -]/gu, "")
+      .replaceAll(" ", "-");
+    let anchor = base;
+    for (let suffix = 1; anchors.has(anchor); suffix++) anchor = `${base}-${suffix}`;
+    anchors.add(anchor);
+    return anchor === fragment && node.children.length === 1 && node.children[0].type === "text";
+  }
+  return matches(document);
+}
+
 function checkEvidence(reference, source) {
   const [path, fragment] = reference.split("#");
   // Resolve symlinks before accepting a repository-relative evidence reference.
@@ -72,12 +93,7 @@ function checkEvidence(reference, source) {
   }
   if (fragment) {
     const document = parsers.markdown.parse(readFileSync(path, "utf8"), {});
-    const hasHeading = document.children.some((node) => {
-      if (node.type !== "heading" || node.children.length !== 1) return false;
-      const [label] = node.children;
-      return label.type === "text" && label.value.toLowerCase().replaceAll(" ", "-") === fragment;
-    });
-    if (!hasHeading) {
+    if (!hasPolicyHeading(document, fragment)) {
       throw new Error(`${source}: missing policy guidance heading ${reference}`);
     }
   }
@@ -86,7 +102,7 @@ function checkEvidence(reference, source) {
 function validateRevision(rule, vocabulary) {
   const { source } = rule;
   if (!vocabulary) throw new Error(`${source}: missing glossary for ${rule.id}`);
-  if (rule.evidence) checkEvidence(rule.evidence, source);
+  for (const reference of evidenceReferences(rule)) checkEvidence(reference, source);
   if (rule.answers) {
     for (const [key, choice] of Object.entries(rule.answers)) {
       if (!Object.hasOwn(vocabulary.questions, key)) throw new Error(`${source}: unknown question ${key} for ${rule.id}`);

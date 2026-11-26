@@ -453,6 +453,22 @@ test("an invalid readiness snapshot cannot overwrite the published index", (t) =
   }
 });
 
+test("policy evidence resolves punctuation and duplicate GitHub heading anchors", (t) => {
+  const { root, path } = fixture(t);
+  writeGlossary(root, undefined, { script: "verify", cases: { otherwise: "Other changes" } });
+  writeFileSync(join(root, "AGENTS.md"), "## When is **CI** required?\n\n## When is CI required?\n\n## Test & verification\n");
+  function query(fragment) {
+    const readiness = { id: "local-ci-readiness", cases: { otherwise: "required" }, evidence: "AGENTS.md#" + fragment };
+    writeRecord(path, { ...decision, rules: [readiness] });
+    return run(root, readiness.id);
+  }
+  const second = query("when-is-ci-required-1");
+  assert.equal(second.status, 0, second.stderr);
+  const withSpaces = query("test--verification");
+  assert.equal(withSpaces.status, 0, withSpaces.stderr);
+  assert.equal(query("when-is-ci-required-2").status, 1);
+});
+
 test("only implemented rule revisions contribute to queries, index updates and freshness checks", (t) => {
   const { root, index } = fixture(t);
   writeRecord(join(root, "docs/adrs/implemented/ADR-002-unrelated.yaml"), { ...decision, id: "ADR-002" });

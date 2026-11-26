@@ -52,7 +52,7 @@
             "propertyNames": { "$ref": "#/definitions/termId" },
             "additionalProperties": { "$ref": "#/definitions/termId" }
           },
-          "evidence": { "type": "string" }
+          "evidence": true
         },
         "if": { "required": ["answers"], "properties": { "answers": true } },
         "then": {
@@ -60,7 +60,12 @@
             "id": { "not": { "enum": ["local-mutation-testing", "local-ci-readiness"] } },
             "gates": false,
             "cases": false,
-            "evidence": { "$ref": "#/definitions/testEvidence" }
+            "evidence": {
+              "oneOf": [
+                { "$ref": "#/definitions/testEvidence" },
+                { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/definitions/testEvidence" } }
+              ]
+            }
           }
         },
         "else": {
@@ -92,7 +97,7 @@
                 "additionalProperties": { "$ref": "#/definitions/readiness" }
               },
               "gates": false,
-              "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.md#[a-z0-9]+(-[a-z0-9]+)*$" }
+              "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.md#[^/\\s#]+$" }
             }
           }
         }
@@ -130,7 +135,7 @@
     "recordedStatus": { "properties": { "status": { "enum": ["implemented", "superseded"] } } }
   },
   "definitions": {
-    "testEvidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)+[A-Za-z0-9_.-]+\\.test\\.(mjs|js|ts)$" },
+    "testEvidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)*[A-Za-z0-9_.-]+\\.test\\.(mjs|js|ts)$" },
     "termId": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
     "id": { "type": "string", "pattern": "^ADR-[0-9]{3,}$" },
     "text": { "type": "string", "pattern": "\\S" },

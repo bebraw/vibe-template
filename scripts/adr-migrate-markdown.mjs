@@ -1,4 +1,4 @@
-import { basename, dirname } from "node:path";
+import { basename, dirname, join, normalize } from "node:path";
 import { parsers } from "prettier/plugins/markdown";
 import { parseDocument } from "yaml";
 
@@ -31,14 +31,16 @@ const relationshipFields = new Map([
   ["Superseded in part by", "partiallySupersededBy"],
 ]);
 
-function addRelationships(record, field, text) {
+function addRelationships(record, field, text, sourcePath, targets) {
   const ids = new Set(record[field]);
   for (const item of text.split(/\s*,\s*(?:and\s+)?|\s+and\s+/)) {
     let id = item;
     if (!/^ADR-\d{3,}$/.test(id)) {
       const link = /^\[(ADR-\d{3,})\]\(([^\s)]+)\)$/.exec(item);
-      const file = link && /^(ADR-\d{3,})-.+\.md$/.exec(basename(link[2]));
-      if (!link || !file || link[1] !== file[1] || /^[a-z]+:|[?#]/i.test(link[2])) throw new Error("Invalid ADR relationship: " + item);
+      if (!link || /^(?:[a-z][a-z\d+.-]*:|\/\/)|[?#]/i.test(link[2])) throw new Error("Invalid ADR relationship: " + item);
+      const path = decodeURIComponent(link[2]);
+      const target = path.startsWith("/") ? normalize(path.slice(1)) : join(dirname(sourcePath), path);
+      if (!basename(target).startsWith(link[1] + "-") || !targets.has(target)) throw new Error("Invalid ADR relationship: " + item);
       id = link[1];
     }
     ids.add(id);
@@ -46,16 +48,16 @@ function addRelationships(record, field, text) {
   record[field] = [...ids];
 }
 
-function setStatus(record, directory, text) {
+function setStatus(record, directory, text, add) {
   if (record.status) throw new Error("Repeated Status");
   const superseded = /^superseded(?: by (.+))?$/i.exec(text);
   const partial = /^partially superseded by (.+)$/i.exec(text);
   if (partial && directory === "implemented") {
     record.status = "implemented";
-    addRelationships(record, "partiallySupersededBy", partial[1]);
+    add("partiallySupersededBy", partial[1]);
   } else if (superseded && directory === "implemented") {
     record.status = "superseded";
-    if (superseded[1]) addRelationships(record, "supersededBy", superseded[1]);
+    if (superseded[1]) add("supersededBy", superseded[1]);
   } else if (directory === "implemented" && text.toLowerCase() === "accepted") {
     record.status = "implemented";
     record.recordedStatus = "accepted";
@@ -76,7 +78,7 @@ function setDate(record, directory, text) {
   }
 }
 
-function readMetadata(nodes, record, directory, source) {
+function readMetadata(nodes, record, directory, source, add) {
   let preambleEnd;
   for (const node of nodes) {
     const text = source.slice(node.position.start.offset, node.position.end.offset);
@@ -95,11 +97,11 @@ function readMetadata(nodes, record, directory, source) {
       const [, key, raw] = field;
       const value = raw.trim();
       if (key === "Status") {
-        setStatus(record, directory, value);
+        setStatus(record, directory, value, add);
       } else if (key === "Date") {
         setDate(record, directory, value);
       } else if (relationshipFields.has(key)) {
-        addRelationships(record, relationshipFields.get(key), value);
+        add(relationshipFields.get(key), value);
       } else {
         throw new Error("Unsupported metadata: " + key);
       }
@@ -133,7 +135,7 @@ function readRuleHeader(node, directory) {
   return { rules, gateTermReplacements };
 }
 
-function convert(source, sourcePath) {
+function convert(source, sourcePath, targets) {
   const directory = basename(dirname(sourcePath));
   const id = /^(ADR-\d{3,})-.+\.md$/.exec(basename(sourcePath))?.[1];
   if (!id || !["implemented", "accepted", "proposed"].includes(directory))
@@ -146,7 +148,8 @@ function convert(source, sourcePath) {
   if (title?.[1] !== id) throw new Error("ADR title must match filename " + id);
   const record = { adrSchema: 1, id, title: title[2], ...fields };
   const sections = nodes.filter((node) => node.type === "heading" && node.depth <= 2);
-  readMetadata(nodes.slice(0, sections.length ? nodes.indexOf(sections[0]) : nodes.length), record, directory, source);
+  const add = (field, text) => addRelationships(record, field, text, sourcePath, targets);
+  readMetadata(nodes.slice(0, sections.length ? nodes.indexOf(sections[0]) : nodes.length), record, directory, source, add);
   for (const [i, section] of sections.entries()) {
     if (section.depth === 1) throw new Error("Unexpected second level-one heading");
     const name = headingText(section, source);
@@ -163,9 +166,9 @@ function convert(source, sourcePath) {
   return record;
 }
 
-export function convertMarkdownAdr(sourceText, sourcePath) {
+export function convertMarkdownAdr(sourceText, sourcePath, targets = new Set()) {
   try {
-    return convert(sourceText.replace(/^\uFEFF/, ""), sourcePath);
+    return convert(sourceText.replace(/^\uFEFF/, ""), sourcePath, targets);
   } catch (error) {
     throw new Error(sourcePath + ": " + error.message, { cause: error });
   }

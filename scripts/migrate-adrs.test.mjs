@@ -133,6 +133,26 @@ test("a dry run checks the final inventory and relationship targets in every lif
   }
 });
 
+test("linked relationships must resolve to the named record before any sources are removed", (t) => {
+  const repo = repository(t);
+  const original = repo.read(implemented);
+  function amends(link) {
+    repo.put(implemented, original.replace("## Context", `**Amends:** [ADR-415](${link})\n\n## Context`));
+  }
+  for (const link of ["../../../another-log/ADR-415-another-decision.md", "../accepted/ADR-415-different.md"]) {
+    amends(link);
+    const result = repo.run("--write");
+    assert.notEqual(result.status, 0, result.stdout);
+    assert.ok(result.stderr.includes(link), result.stderr);
+    assert.ok(repo.has(implemented));
+    assert.ok(repo.has(accepted));
+  }
+  amends("../accepted/ADR-415-another-decision.md");
+  const result = repo.run("--write");
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(parse(repo.read(implemented.replace(".md", ".yaml"))).amends, ["ADR-415"]);
+});
+
 test("link migration keeps sentence punctuation and resolves parenthesized Markdown destinations without editing remote URLs", (t) => {
   const repo = repository(t);
   const file = "docs/adrs/implemented/ADR-888-scope-(draft).md";
@@ -159,4 +179,16 @@ test("link migration keeps sentence punctuation and resolves parenthesized Markd
       `[external](${external})`,
     ].join("\n\n"),
   );
+});
+
+test("rewrites complete repository paths in update manifests and preserves unrelated JSON text", (t) => {
+  const repo = repository(t);
+  const file = "docs/adrs/implemented/ADR-888-scope (draft).md";
+  repo.put(file, repo.read(implemented).replaceAll("ADR-317", "ADR-888"));
+  const manifest = `{\n  "adrs" : [ "${file}" ],\n  "touches": ["${file}"],\n  "note": "Keep \\u0061 and parentheses (here)."\n}\n`;
+  repo.put(pack, manifest);
+  const result = repo.run("--write");
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(repo.read(pack), manifest.replaceAll("scope (draft).md", "scope (draft).yaml"));
+  assert.ok(repo.has("docs/adrs/implemented/ADR-888-scope (draft).yaml"));
 });

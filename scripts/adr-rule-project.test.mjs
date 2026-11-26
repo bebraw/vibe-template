@@ -52,7 +52,7 @@ function fixture(t) {
   glossary(catalog);
   record("ADR-008", { id: rule, answers: { public: "members" } });
   record("ADR-002", head);
-  return { glossary, record, run, index };
+  return { glossary, record, run, index, root };
 }
 
 test("published project rules resolve local questions and options through the CLI, JSON and generated index", (t) => {
@@ -91,6 +91,28 @@ test("draft review compares project answers in the project's vocabulary", (t) =>
   assert.equal(run("--json").stdout, before);
 });
 
+test("index generation keeps the marker text in an answer visible and repeatable", (t) => {
+  const { glossary, run, index } = fixture(t);
+  const questions = structuredClone(catalog[rule].questions);
+  questions.public.options.all = "Use <!-- adr-rules:start -->";
+  glossary({ [rule]: { questions } });
+  const write = run("--write-index");
+  assert.equal(write.status, 0, write.stderr);
+  const checked = run("--check");
+  assert.equal(checked.status, 0, checked.stderr);
+  assert.match(readFileSync(index, "utf8"), /Use &lt;!-- adr-rules:start --&gt;/);
+  assert.match(run(rule).stdout, /Use <!-- adr-rules:start -->/);
+});
+
+test("a project can cite a test file in the repository root", (t) => {
+  const { root, record, run, index } = fixture(t);
+  writeFileSync(join(root, "policy.test.ts"), "// Root-level policy test.\n");
+  record("ADR-002", { ...head, evidence: "policy.test.ts" });
+  const write = run("--write-index");
+  assert.equal(write.status, 0, write.stderr);
+  assert.match(readFileSync(index, "utf8"), /\[Verification\]\(\.\.\/\.\.\/policy\.test\.ts\)/);
+});
+
 test("every selected project answer belongs to its question and current and proposed revisions answer each question", (t) => {
   const { run, record } = fixture(t);
   for (const [revision, error] of [
@@ -112,6 +134,35 @@ test("every selected project answer belongs to its question and current and prop
   const invalid = run("--check-draft", draft);
   assert.equal(invalid.status, 1);
   assert.match(invalid.stderr, /ADR-010-access.yaml.*omits question private/);
+});
+
+test("project evidence spanning multiple suites is checked and discoverable in every query", (t) => {
+  const { root, record, run, index } = fixture(t);
+  const second = "test/archive-api.test.mjs";
+  const evidence = [head.evidence, second];
+  record("ADR-002", { ...head, evidence });
+  const missing = run(rule);
+  assert.equal(missing.status, 1);
+  assert.ok(missing.stderr.includes(second), missing.stderr);
+  writeFileSync(join(root, second), "");
+  const query = run(rule);
+  assert.equal(query.status, 0, query.stderr);
+  for (const file of evidence) assert.ok(query.stdout.includes("Verification  " + file));
+  assert.deepEqual(JSON.parse(run("--json").stdout).rules[0].history.at(-1).evidence, evidence);
+  const write = run("--write-index");
+  assert.equal(write.status, 0, write.stderr);
+  for (const file of evidence) assert.ok(readFileSync(index, "utf8").includes(`[${file}](../../${file})`));
+  assert.equal(run("--check").status, 0);
+
+  const draft = record("ADR-010", { ...head, replaces: "ADR-002", evidence }, "proposed");
+  const review = run("--check-draft", draft);
+  assert.equal(review.status, 0, review.stderr);
+  assert.doesNotMatch(review.stdout, /Implemented verification/);
+  for (const file of evidence) assert.ok(review.stdout.includes("Proposed verification  " + file));
+  for (const invalid of [[], [head.evidence, head.evidence], [head.evidence, "../outside.test.mjs"]]) {
+    record("ADR-002", { ...head, evidence: invalid });
+    assert.equal(run(rule).status, 1, JSON.stringify(invalid));
+  }
 });
 
 test("the project glossary rejects a reserved rule name or malformed question before writing the index", (t) => {

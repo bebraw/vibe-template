@@ -17,7 +17,7 @@ import { isDeepStrictEqual } from "node:util";
 import { format } from "prettier";
 import { stringify } from "yaml";
 import { convertMarkdownAdr } from "./adr-migrate-markdown.mjs";
-import { migrateReferences } from "./adr-migrate-references.mjs";
+import { migrateManifestReferences, migrateReferences } from "./adr-migrate-references.mjs";
 import { parseAdrRecord, validateAdrRelations } from "./adr-record.mjs";
 
 const stages = ["proposed", "accepted", "implemented"];
@@ -111,7 +111,7 @@ async function plan() {
   }
   for (const path of sources) {
     const before = read(path);
-    const record = convertMarkdownAdr(before, path);
+    const record = convertMarkdownAdr(before, path, targets);
     updateProse(record, path, targets);
     const destination = path.replace(/\.md$/, ".yaml");
     const after = await encode(record, destination);
@@ -127,9 +127,8 @@ async function plan() {
       if (removals.has(path) || outputs.has(path) || (path.endsWith(".yaml") && !paths.includes(path))) continue;
       if (!lstatSync(path, { throwIfNoEntry: false })?.isFile()) continue;
       const before = read(path);
-      const after = migrateReferences(before, path, targets);
+      const after = isManifest(path) ? migrateManifestReferences(before, path, targets) : migrateReferences(before, path, targets);
       if (after === before) continue;
-      if (isManifest(path)) JSON.parse(after);
       if (path.endsWith(".yaml")) parseAdrRecord(after, path);
       outputs.set(path, { before, after });
     }
