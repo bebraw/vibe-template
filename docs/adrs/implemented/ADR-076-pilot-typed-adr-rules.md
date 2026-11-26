@@ -19,6 +19,8 @@ Pilot two rule kinds under `ruleSchema: 1`. Use this format selectively for recu
 
 Review a typed proposal against the latest implemented revision of each rule it changes. Keep this comparison read-only so contributors can inspect a scope change or a new exception before it appears in the current-rule index. Proposal evidence can be pending during review. The existing schemas and evidence requirements govern implementation.
 
+A mutation proposal may include `gateTermReplacements` to preview a change in the scope of an existing npm command while its published definition remains in force. Implementation promotes the new term into the quality-gate glossary and retains the old definition as retired. [Draft example and promotion steps](../../../specs/adr-rules/spec.md#reviewing-a-proposal)
+
 Author the rule and glossary schemas directly in JSON Schema Draft 7. Promote Ajv 8.20.0 from the existing lockfile to a direct development dependency so the CLI can validate the same schema files that editors and other tools consume. [Ajv validation guide](https://ajv.js.org/guide/getting-started.html)
 
 ## Consequences
@@ -26,6 +28,8 @@ Author the rule and glossary schemas directly in JSON Schema Draft 7. Promote Aj
 A contributor can retrieve both current answers and trace each change to its decision. Changing a typed rule requires a valid successor and an index refresh. The glossary retains the retired `all-changes-local-gate` alongside its active successor, `baseline-local-gate`. Text queries show each gate's scope with its command so a reader can distinguish the two uses of `npm run quality:gate`.
 
 We replayed ADR-046 as a proposal against the Local CI policy in `76701ce`, using the pilot's vocabulary to encode both decisions. Two independent model reviewers, one reading the decision prose and one reading the draft comparison, agreed on all three scenarios. An explicit full release-readiness request required replay even for a docs-only edit, ordinary test changes became optional, and dependency installation changes still required replay. The draft checker also caught a deliberately misspelled case ID before publication. This supports optional authoring validation. The retrospective showed equal review accuracy and did not measure authoring time.
+
+In a second replay, an agent read the pre-ADR-025 gate definition and existing decision prose, then saved a typed proposal in 47 seconds. The first draft passed validation. It narrowed the gate to non-documentation changes while retaining `npm run quality:gate` and full mutation testing. A reviewer understood the change but briefly read the separate removal and addition as dropping mutation testing. The review now pairs both definitions under the inherited command and reports the mutation mode separately. The published text, JSON and index stayed byte-identical during the replay. The timing covers one agent adding metadata to settled prose.
 
 ## Alternatives Considered
 

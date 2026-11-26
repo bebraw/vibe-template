@@ -132,6 +132,106 @@ test("reviewing a typed proposal compares it to the implemented rule without pub
   assert.doesNotMatch(rules, /ADR-002/);
 });
 
+function narrowerGateDraft(proposal) {
+  return proposal
+    .replace(
+      "rules:\n",
+      ["gateTermReplacements:", "  code-edits: { replaces: baseline, definition: Code changes only. }", "rules:\n"].join("\n"),
+    )
+    .replace("baseline: incremental", "code-edits: none");
+}
+
+test("a draft can narrow a gate's scope while the published rule still answers for all edits", (t) => {
+  const { root, index, draft, proposal } = draftFixture(t);
+  const glossary = join(root, "specs/quality-gate/spec.md");
+  const glossaryText = readFileSync(glossary, "utf8").replace("Local readiness.", "Every edit.");
+  writeFileSync(glossary, glossaryText);
+  const candidate = narrowerGateDraft(proposal);
+  writeFileSync(draft, candidate);
+  const published = run(root, "--write-index");
+  assert.equal(published.status, 0, published.stderr);
+  const before = readFileSync(index);
+  const json = run(root, "--json").stdout;
+  const review = run(root, "--check-draft", draft);
+  assert.equal(review.status, 0, review.stderr);
+  assert.match(review.stdout, /Proposed gate scope baseline → code-edits · npm run verify/);
+  assert.match(review.stdout, /Every edit\./);
+  assert.match(review.stdout, /Code changes only\./);
+  assert.match(review.stdout, /none \(unchanged\)/);
+  assert.match(run(root, id).stdout, /Every edit\./);
+  assert.doesNotMatch(json, /code-edits/);
+  assert.equal(run(root, "--json").stdout, json);
+  assert.equal(run(root, "--check").status, 0);
+  assert.deepEqual(readFileSync(index), before);
+  assert.equal(readFileSync(glossary, "utf8"), glossaryText);
+});
+
+test("a draft can only replace each active gate once and must name its successor in the rule", (t) => {
+  const { root, draft, proposal } = draftFixture(t);
+  const glossary = join(root, "specs/quality-gate/spec.md");
+  writeFileSync(
+    glossary,
+    readFileSync(glossary, "utf8").replace(
+      "gateTerms:\n",
+      "gateTerms:\n  old: { script: verify, definition: Original scope., retired: true }\n",
+    ),
+  );
+  const candidate = narrowerGateDraft(proposal);
+  for (const [invalid, diagnostic] of [
+    [candidate.replace("code-edits: {", "baseline: {"), /baseline already exists/],
+    [candidate.replace("code-edits: {", "old: {"), /old already exists/],
+    [candidate.replace("replaces: baseline", "replaces: old"), /old is retired/],
+    [candidate.replace("replaces: baseline", "replaces: missing"), /unknown gate to replace missing/],
+    [candidate.replace("rules:\n", "  other: { replaces: baseline, definition: Other scope. }\nrules:\n"), /already replaced/],
+    [candidate.replace("code-edits: none", "baseline: none"), /retired gate baseline/],
+    [candidate.replace("definition: Code changes only.", "definition: '  '"), /pattern/],
+    [candidate.replace("replaces: baseline,", "script: another, replaces: baseline,"), /additional properties/],
+    [
+      candidate
+        .replace("local-mutation-testing", "local-ci-readiness")
+        .replace("gates: { code-edits: none }", "cases: { otherwise: required }"),
+      /must contain/,
+    ],
+  ]) {
+    writeFileSync(draft, invalid);
+    const result = run(root, "--check-draft", draft);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, diagnostic);
+    assert.equal(result.stdout, "");
+  }
+});
+
+test("adopting a scope change moves its definition to the glossary and preserves the predecessor", (t) => {
+  const { root, draft, proposal } = draftFixture(t);
+  const candidate = narrowerGateDraft(proposal);
+  const implemented = join(root, "docs/adrs/implemented/ADR-002-review.md");
+  writeFileSync(implemented, candidate);
+  assert.match(run(root, "--json").stderr, /additional properties/);
+  rmSync(draft);
+  const glossary = join(root, "specs/quality-gate/spec.md");
+  writeFileSync(
+    glossary,
+    readFileSync(glossary, "utf8").replace(
+      "definition: Local readiness. }",
+      "definition: Local readiness., retired: true }\n  code-edits: { script: verify, definition: Code changes only. }",
+    ),
+  );
+  writeFileSync(
+    implemented,
+    proposal.replace("baseline: incremental", "code-edits: none").replace("    gates:", "    evidence: checks/local.test.mjs\n    gates:"),
+  );
+  const result = run(root, "--json");
+  assert.equal(result.status, 0, result.stderr);
+  const { terms, rules } = JSON.parse(result.stdout);
+  assert.deepEqual(
+    rules[0].history.map(({ gates }) => gates),
+    [{ baseline: "none" }, { "code-edits": "none" }],
+  );
+  assert.equal(terms.baseline.retired, true);
+  assert.equal(terms["code-edits"].definition, "Code changes only.");
+  assert.equal(terms["code-edits"].script, terms.baseline.script);
+});
+
 test("draft errors identify the offending proposal without printing a partial review", (t) => {
   const { root, index, path, draft, proposal } = draftFixture(t);
   const before = readFileSync(index);

@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Draft ADR rule revisions",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ruleSchema", "rules"],
+  "properties": {
+    "ruleSchema": { "$ref": "rules.schema.json#/properties/ruleSchema" },
+    "rules": { "$ref": "rules.schema.json#/properties/rules" },
+    "gateTermReplacements": {
+      "description": "Proposed gate scopes keyed by new term ID. Each inherits the npm script of the active term it replaces.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["replaces", "definition"],
+        "properties": {
+          "replaces": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
+          "definition": { "$ref": "gate-terms.schema.json#/definitions/description" }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "gateTermReplacements": {
+      "properties": {
+        "rules": {
+          "type": "array",
+          "contains": { "type": "object", "properties": { "id": { "const": "local-mutation-testing" } }, "required": ["id"] }
+        }
+      }
+    }
+  }
+}

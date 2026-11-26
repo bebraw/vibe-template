@@ -23,7 +23,7 @@
     "gateTerms": {
       "type": "object",
       "minProperties": 1,
-      "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+      "propertyNames": { "$ref": "#/definitions/gateId" },
       "additionalProperties": {
         "type": "object",
         "additionalProperties": false,
@@ -36,5 +36,8 @@
       }
     }
   },
-  "definitions": { "description": { "type": "string", "pattern": "\\S" } }
+  "definitions": {
+    "gateId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "description": { "type": "string", "pattern": "\\S" }
+  }
 }

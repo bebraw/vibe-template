@@ -3,14 +3,19 @@ import { basename, dirname, join, relative } from "node:path";
 import Ajv from "ajv";
 import { parsers } from "prettier/plugins/markdown";
 import { parseDocument } from "yaml";
+import draftSchema from "../specs/adr-rules/draft.schema.json" with { type: "json" };
 import rulesSchema from "../specs/adr-rules/rules.schema.json" with { type: "json" };
 import termsSchema from "../specs/adr-rules/gate-terms.schema.json" with { type: "json" };
 import { resolveRuleHistories } from "./adr-rule-history.mjs";
 import { describeDraftRule, describeRule, renderRuleIndex, updateRuleIndex } from "./adr-rule-output.mjs";
 
 const ajv = new Ajv({ strict: true, ownProperties: true });
-const validateRules = ajv.compile(rulesSchema);
-const validateTerms = ajv.compile(termsSchema);
+function compileSchema(name, schema) {
+  return ajv.compile({ ...schema, $id: new URL(`../specs/adr-rules/${name}`, import.meta.url).href });
+}
+const validateRules = compileSchema("rules.schema.json", rulesSchema);
+const validateTerms = compileSchema("gate-terms.schema.json", termsSchema);
+const validateDraft = compileSchema("draft.schema.json", draftSchema);
 const indexPath = "docs/adrs/README.md";
 const decisionsDir = "docs/adrs/implemented";
 const draftsDir = "docs/adrs/proposed";
@@ -94,8 +99,8 @@ function checkEvidence(reference, source) {
   }
 }
 
-function validateRevision(rule, definitions, source) {
-  const vocabulary = definitions[rule.id];
+function validateRevision(rule, vocabulary) {
+  const { source } = rule;
   if (!vocabulary) throw new Error(`${source}: missing glossary for ${rule.id}`);
   const commands = new Set();
   for (const key of Object.keys(rule.gates ?? rule.cases)) {
@@ -113,11 +118,11 @@ function adrId(name) {
   return /^(ADR-\d{3,})-.+\.md$/.exec(name)?.[1];
 }
 
-function readDecision(source, definitions) {
+function readDecision(source, validate) {
   const text = readFileSync(source, "utf8");
-  const header = frontmatter(text, source, ["ruleSchema", "rules"]);
+  const header = frontmatter(text, source, ["ruleSchema", "rules", "gateTermReplacements"]);
   if (!header) return undefined;
-  assertSchema(validateRules, header, source);
+  assertSchema(validate, header, source);
 
   const adr = adrId(basename(source));
   if (!adr || !text.split(/\r?\n/).some((line) => line.startsWith(`# ${adr}: `))) {
@@ -127,21 +132,18 @@ function readDecision(source, definitions) {
   const rationale = context?.trim().split(/\r?\n[ \t]*\r?\n/, 1)[0];
   if (!rationale) throw new Error(`${source}: missing rationale in Context section`);
 
-  const revisions = header.rules.map((rule) => {
-    validateRevision(rule, definitions, source);
-    return { ...rule, adr, source, rationale };
-  });
-  return { adr, revisions, superseded: /^\*\*Status:\*\* Superseded\b/m.test(text) };
+  const revisions = header.rules.map((rule) => ({ ...rule, adr, source, rationale }));
+  return { adr, revisions, gateTermReplacements: header.gateTermReplacements, superseded: /^\*\*Status:\*\* Superseded\b/m.test(text) };
 }
 
-function validateHeadGates(revision, definitions) {
+function validateHeadGates(revision, vocabulary) {
   if (!revision.gates) return;
-  const terms = definitions[revision.id].cases;
+  const terms = vocabulary.cases;
   for (const term of Object.keys(revision.gates)) {
-    if (terms[term].retired) throw new Error(`${revision.source}: current rule uses retired gate ${term}`);
+    if (terms[term].retired) throw new Error(`${revision.source}: rule uses retired gate ${term}`);
   }
   for (const [term, { retired }] of Object.entries(terms)) {
-    if (!retired && !Object.hasOwn(revision.gates, term)) throw new Error(`${revision.source}: current rule omits ${term}`);
+    if (!retired && !Object.hasOwn(revision.gates, term)) throw new Error(`${revision.source}: rule omits ${term}`);
   }
 }
 
@@ -153,24 +155,40 @@ function readDecisions(definitions) {
     if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
     const id = adrId(entry.name);
     if (id) implementedIds.add(id);
-    const decision = readDecision(join(decisionsDir, entry.name), definitions);
+    const decision = readDecision(join(decisionsDir, entry.name), validateRules);
     if (!decision) continue;
     if (decision.superseded) superseded.add(decision.adr);
-    revisions.push(...decision.revisions);
+    for (const rule of decision.revisions) {
+      validateRevision(rule, definitions[rule.id]);
+      revisions.push(rule);
+    }
   }
   const histories = resolveRuleHistories(revisions);
   for (const { history } of histories) {
     const current = history.at(-1);
     if (superseded.has(current.adr)) throw new Error(`Current rule in superseded ${current.adr} needs a successor.`);
-    validateHeadGates(current, definitions);
+    validateHeadGates(current, definitions[current.id]);
   }
   return { histories, implementedIds };
+}
+
+function replaceGateTerms(vocabulary, replacements, source) {
+  const cases = { ...vocabulary.cases };
+  for (const [id, { replaces, definition }] of Object.entries(replacements)) {
+    if (Object.hasOwn(vocabulary.cases, id)) throw new Error(`${source}: replacement gate ID ${id} already exists`);
+    if (!Object.hasOwn(vocabulary.cases, replaces)) throw new Error(`${source}: unknown gate to replace ${replaces}`);
+    const previous = cases[replaces];
+    if (previous.retired) throw new Error(`${source}: gate ${replaces} is retired or already replaced`);
+    cases[replaces] = { ...previous, retired: true };
+    cases[id] = { script: previous.script, definition };
+  }
+  return { ...vocabulary, cases };
 }
 
 function checkDraft(file, { histories, implementedIds }, definitions) {
   const source = relative(realpathSync("."), realpathSync(file));
   if (dirname(source) !== draftsDir) throw new Error(`Expected a proposal in ${draftsDir}: ${file}`);
-  const draft = readDecision(source, definitions);
+  const draft = readDecision(source, validateDraft);
   if (!draft) throw new Error(`${source}: no typed rule revisions to review`);
   if (implementedIds.has(draft.adr)) throw new Error(`${source}: ${draft.adr} is already implemented`);
   if (draft.superseded) throw new Error(`${source}: proposal is marked superseded`);
@@ -184,8 +202,12 @@ function checkDraft(file, { histories, implementedIds }, definitions) {
         const expected = previous ? `must replace the implemented head ${previous.adr}` : "has no implemented predecessor";
         throw new Error(`${source}: ${revision.id} ${expected}`);
       }
-      validateHeadGates(revision, definitions);
-      return describeDraftRule(revision, previous, definitions[revision.id]);
+      const published = definitions[revision.id];
+      const replacements = revision.gates ? draft.gateTermReplacements : undefined;
+      const vocabulary = replacements ? replaceGateTerms(published, replacements, source) : published;
+      validateRevision(revision, vocabulary);
+      validateHeadGates(revision, vocabulary);
+      return describeDraftRule(revision, previous, vocabulary, replacements);
     })
     .join("\n\n");
 }

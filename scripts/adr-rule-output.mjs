@@ -85,7 +85,11 @@ function changeLabel(before, after) {
   return "Changed";
 }
 
-export function describeDraftRule(draft, previous, definition) {
+function describeTransition(before, after) {
+  return before === after ? `${before} (unchanged)` : `${before} → ${after}`;
+}
+
+export function describeDraftRule(draft, previous, definition, replacements = {}) {
   const before = new Map(Object.entries(previous?.gates ?? previous?.cases ?? {}));
   const after = new Map(Object.entries(draft.gates ?? draft.cases));
   const keys = new Set([...before.keys(), ...after.keys()]);
@@ -94,9 +98,22 @@ export function describeDraftRule(draft, previous, definition) {
     keys.delete("otherwise");
     lines.push(`Command npm run ${definition.script}`, "Any matching named condition takes precedence over the fallback.");
   }
+  const scopes = Object.entries(replacements);
+  for (const [id, { replaces, definition: proposedScope }] of scopes) {
+    keys.delete(replaces);
+    keys.delete(id);
+    const current = definition.cases[replaces];
+    const oldMode = before.get(replaces) ?? (previous ? "no declaration" : "no implemented rule");
+    lines.push(
+      `  Proposed gate scope ${replaces} → ${id} · npm run ${current.script}`,
+      `    Current scope  ${current.definition}`,
+      `    Proposed scope  ${proposedScope}`,
+      `    Mutation mode  ${describeTransition(oldMode, after.get(id))}`,
+    );
+  }
   const changed = [...keys].filter((key) => before.get(key) !== after.get(key));
   const sameFallback = before.get("otherwise") === after.get("otherwise");
-  if (changed.length === 0 && sameFallback) lines.push("No changed settings.");
+  if (scopes.length === 0 && changed.length === 0 && sameFallback) lines.push("No changed settings.");
   for (const key of changed) {
     const oldValue = before.get(key);
     const proposedValue = after.get(key);
@@ -110,8 +127,7 @@ export function describeDraftRule(draft, previous, definition) {
   if (draft.cases) {
     const oldFallback = definition.outcomes[before.get("otherwise")] ?? "no implemented rule";
     const nextFallback = definition.outcomes[after.get("otherwise")];
-    const fallback = sameFallback ? `${oldFallback} (unchanged)` : `${oldFallback} → ${nextFallback}`;
-    lines.push("  Fallback when no named condition matches", `    ${fallback}`);
+    lines.push("  Fallback when no named condition matches", `    ${describeTransition(oldFallback, nextFallback)}`);
   }
   const label = definition.evidenceLabel.toLowerCase();
   if (previous?.evidence && previous.evidence !== draft.evidence) lines.push(`Implemented ${label}  ${previous.evidence}`);

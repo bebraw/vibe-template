@@ -30,7 +30,37 @@ An omitted historical gate has no declaration in that revision. Every historical
 
 Run `node scripts/adr-rules.mjs --check-draft <file>` with one typed ADR under `docs/adrs/proposed/`. For each rule it declares, the command validates the draft against the existing schema and glossary and compares it with that rule's latest implemented revision. A successor must name that revision in `replaces`. A supported rule with no implemented history can start without a predecessor. The review reports missing proposal evidence as pending and validates any evidence reference supplied. Evidence is required when the revision becomes current.
 
-For mutation testing, the draft and the implemented head both use the active gate IDs in the repository's glossary. A draft can change the mutation mode assigned to each. For Local CI, the report shows additions and removals of named cases separately from changes to the `otherwise` fallback. A named match takes precedence even for mixed work. An ordinary source edit that also changes browser CI meets the named browser CI condition. Draft review is read-only. The generated index and `--json` continue to describe implemented rules.
+For Local CI, the report shows additions and removals of named cases separately from changes to the `otherwise` fallback. A named match takes precedence even for mixed work. An ordinary source edit that also changes browser CI meets the named browser CI condition.
+
+Mutation proposals normally use the active gate IDs in the quality-gate glossary. To preview a new meaning for an existing npm command, add the optional top-level `gateTermReplacements` map. Give the proposed term a fresh ID, identify the active term it would replace, and define the new scope. The proposed term inherits its predecessor's npm script. Include the new ID and the other active gates in the draft's complete mutation revision. [Draft schema](draft.schema.json)
+
+To try the example against ADR-043, save it as `docs/adrs/proposed/ADR-077-narrow-local-gate.md` and pass that path to `--check-draft`.
+
+```markdown
+---
+ruleSchema: 1
+gateTermReplacements:
+  worker-source-local-gate:
+    replaces: baseline-local-gate
+    definition: The local readiness check for changes to deployed Worker source.
+rules:
+  - id: local-mutation-testing
+    replaces: ADR-043
+    gates:
+      worker-source-local-gate: none
+      deep-local-gate: incremental
+---
+
+# ADR-077: Narrow the local readiness gate
+
+**Status:** Proposed
+
+## Context
+
+The ordinary readiness gate currently covers tooling changes as well as deployed Worker source. This proposal would limit it to Worker source.
+```
+
+Draft review is read-only. Published queries, JSON, and the index continue to use the canonical glossary and implemented revisions. At implementation, mark the old term `retired: true` in the quality-gate glossary and add the new term with the inherited script and reviewed definition. Remove `gateTermReplacements` from the ADR, keep the new ID in `gates`, and cite the test that verifies the implemented gate in `evidence`.
 
 ### Query and verification
 

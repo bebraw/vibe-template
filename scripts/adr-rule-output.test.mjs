@@ -168,6 +168,52 @@ test("draft comparisons distinguish gate meanings sharing a command and distingu
   assert.match(answer, /Added gate replacement · npm run quality:gate — Source changes\.\n\s+no declaration → skips mutation testing/);
 });
 
+const scopeDefinition = {
+  ...definitions[rule.id],
+  cases: {
+    ...definitions[rule.id].cases,
+    "source-local-gate": { script: "quality:gate", definition: "The local check for source changes." },
+  },
+};
+const scopeReplacement = { "source-local-gate": { replaces: "baseline-local-gate", definition: "The local check for source changes." } };
+
+test("a proposed gate scope change pairs both definitions and identifies preserved full mutation testing", () => {
+  const previous = rule.history[0];
+  const draft = { id: rule.id, adr: "ADR-025", gates: { "source-local-gate": "full" } };
+  assert.equal(
+    output.describeDraftRule(draft, previous, scopeDefinition, scopeReplacement),
+    [
+      "Draft ADR-025 · local-mutation-testing",
+      "Implemented head ADR-022",
+      "Settings (implemented → proposed)",
+      "  Proposed gate scope baseline-local-gate → source-local-gate · npm run quality:gate",
+      "    Current scope  The routine local check.",
+      "    Proposed scope  The local check for source changes.",
+      "    Mutation mode  full (unchanged)",
+      "Proposed verification  pending",
+    ].join("\n"),
+  );
+});
+
+test("the scope pair reports a changed mutation mode alongside changes to other gates", () => {
+  const previous = { ...rule.history[0], gates: { "baseline-local-gate": "full", "deep-local-gate": "none" } };
+  const draft = { id: rule.id, adr: "ADR-025", gates: { "source-local-gate": "incremental", "deep-local-gate": "full" } };
+  const answer = output.describeDraftRule(draft, previous, scopeDefinition, scopeReplacement);
+  assert.match(answer, /Mutation mode  full → incremental/);
+  assert.match(
+    answer,
+    /Changed gate deep-local-gate · npm run quality:gate:deep[^\n]*\n\s+skips mutation testing → runs full mutation testing/,
+  );
+});
+
+test("previewing new vocabulary for the first typed mutation rule identifies the missing implemented mode", () => {
+  const draft = { id: rule.id, adr: "ADR-001", gates: { "source-local-gate": "full" } };
+  const answer = output.describeDraftRule(draft, undefined, scopeDefinition, scopeReplacement);
+  assert.match(answer, /Implemented head none/);
+  assert.match(answer, /Current scope  The routine local check\./);
+  assert.match(answer, /Mutation mode  no implemented rule → full/);
+});
+
 test("a Local CI draft shows removed and added conditions even when the outcomes for isolated cases stay the same", () => {
   const id = "local-ci-readiness";
   const previous = { id, adr: "ADR-019", cases: { workflow: "required", otherwise: "may-skip" } };
