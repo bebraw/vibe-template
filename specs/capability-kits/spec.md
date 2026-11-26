@@ -43,7 +43,7 @@ The template is useful both as a starter repo and as a source of specific practi
 - **Public contracts:** room choice/status/snapshot/vote result types, participant-aware `RoomState` RPC methods, conventional HTML GET/POST semantics, strict vote-origin validation, configurable voter-cookie lifetime, and authorized initialize/seed/reset/status helpers
 - **Dependency direction:** Worker routing and administration composition depend on the room RPC contract; room state does not depend on browser enhancement or application-specific choices
 
-- **Initialization contract:** `initializeChoices(choices)` seeds only when no choices exist, opens the room, and advances revision once. Existing rooms return their current aggregate snapshot without validating unused input or changing choices, votes, status, or revision. Invalid initial choices leave an empty room unchanged. The check and seed must not yield, preserving atomicity against concurrent setup and voting. `seedChoices` remains destructive; `resetVotes` preserves choices and status. See [ADR-063](../../docs/adrs/implemented/ADR-063-add-non-destructive-room-initialization.md).
+- **Initialization contract:** `initializeChoices(choices)` seeds only when no choices exist, opens the room, and advances revision once. Existing rooms return their current aggregate snapshot without validating unused input or changing choices, votes, status, or revision. Invalid initial choices leave an empty room unchanged. The check and seed must not yield, preserving atomicity against concurrent setup and voting. `seedChoices` remains destructive; `resetVotes` preserves choices and status. See [ADR-063](../../docs/adrs/implemented/ADR-063-add-non-destructive-room-initialization.yaml).
 
 #### Progressive Interaction Kit
 

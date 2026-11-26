@@ -33,7 +33,7 @@ export function renderRuleIndex(histories, definitions) {
     .map(({ id, history }) => {
       const current = history.at(-1);
       const definition = definitions[id];
-      const links = [indexLink(current.adr, current.source), indexLink("Rationale", current.source, "context")];
+      const links = [indexLink(current.adr, current.source)];
       if (current.evidence) {
         const [file, fragment] = current.evidence.split("#");
         links.push(indexLink(definition.evidenceLabel, file, fragment));
@@ -66,7 +66,7 @@ export function updateRuleIndex(readme, content) {
 
 function describeDecision(decision, definition) {
   const lines = decisionRows(decision, definition, false).map((row) => `  ${row}`);
-  lines.push(`  Context when ${decision.adr} was written\n  ${decision.rationale}`, `  Source  ${decision.source}#context`);
+  lines.push(`  Context when ${decision.adr} was written\n  ${decision.rationale}`, `  Source  ${decision.source}`);
   if (decision.evidence) lines.push(`  ${definition.evidenceLabel}  ${decision.evidence}`);
   return lines.join("\n");
 }

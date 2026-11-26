@@ -4,9 +4,9 @@
   "status": "implemented",
   "risk": "medium",
   "adrs": [
-    "docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md",
-    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md",
-    "docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md"
+    "docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.yaml",
+    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.yaml",
+    "docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.yaml"
   ],
   "touches": [
     "package.json",
@@ -16,7 +16,7 @@
     ".capabilities/",
     ".codex/skills/modern-web-guidance/SKILL.md",
     "docs/development.md",
-    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md",
+    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.yaml",
     "specs/quality-gate/spec.md",
     "specs/agent-skills/spec.md"
   ],

@@ -13,7 +13,7 @@ This replaces only the Modern Web Guidance coordinates from `2026-10-02-dependen
 3. Adopt focused capability queries, one rephrasing attempt for weak results, and complete reading of temporary guide output. Continue to skip unrelated guides and use primary documentation when needed.
 4. Route explicit broad modernization or legacy-pattern audits to `legacy-scan <path> --json`. Check `keepWhen` / `dropWhen` before reporting candidates. Audit-only requests do not authorize code edits. Authorized modernization uses the pinned retrieval command, preserves fallbacks, and runs relevant checks plus a rescan. Ignore the unpinned `retrieveCommand` emitted in JSON.
 5. Keep component-specific work on focused retrieval. Document that scan coverage is limited, docs and tests are skipped by default, and exit code zero is not a clean-audit result. Do not change safe fallback code just to clear findings.
-6. Record the new artifact and instruction coordinates from [ADR-072](../../../docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md) in the target's existing spec and ADR structure. Use its next available ADR number and update links. Record update ID `2026-11-11-modern-web-guidance-v1` in its existing template-update record.
+6. Record the new artifact and instruction coordinates from [ADR-072](../../../docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.yaml) in the target's existing spec and ADR structure. Use its next available ADR number and update links. Record update ID `2026-11-11-modern-web-guidance-v1` in its existing template-update record.
 
 ## Manual Fallback
 

@@ -1,0 +1,31 @@
+adrSchema: 1
+id: ADR-076
+title: Pilot Typed ADR Rules
+status: implemented
+date: 2026-11-25
+context: |-
+  When ADR-022 added full mutation testing in `a16c344`, the readiness instructions already required `npm run quality:gate` for every change. In `604c021`, ADR-025 narrowed the baseline to non-documentation changes while keeping the same command and full run. ADR-028 changed that run to incremental, and ADR-043 moved it into a separately requested deep gate. A reader following only the command name would miss the change in scope. Marking all of ADR-022 superseded would discard its still-current decisions about Stryker and the standalone mutation command.
+
+  Local CI readiness evolved through a different kind of decision. ADR-019 documented a baseline for contributors, ADR-025 exempted qualifying documentation-only work, and ADR-046 narrowed the requirement to workflow-sensitive changes and explicit full-readiness requests. This history tests whether the same query can explain a written policy whose evidence is contributor guidance.
+decision: |-
+  Pilot two rule kinds under `ruleSchema: 1`. Use this format selectively for recurring questions whose answers change across amendments. Each participating ADR records the complete settings for its rule and identifies its predecessor. Both kinds share history resolution, query commands, and the renderer that produces their CLI and index rows. The quality-gate spec defines the vocabulary and commands. [Rule contract](../../../specs/adr-rules/spec.md) · [Quality-gate glossary](../../../specs/quality-gate/spec.md)
+
+  - `local-mutation-testing` records each gate's mutation phase in `gates`. ADR-043 cites the tests that exercise phase selection. The standalone mutation command, GitHub workflow, concurrency settings, and score threshold have their own contracts.
+  - `local-ci-readiness` records when a contributor should run Local CI in `cases`. Specific cases are alternatives with a common outcome, and `otherwise` covers every nonmatching change or request. ADR-046 cites the verification instructions as policy evidence. Contributors apply this guidance when assessing readiness. [Verification policy](../../../AGENTS.md#verification)
+
+  Review a typed proposal against the latest implemented revision of each rule it changes. Keep this comparison read-only so contributors can inspect a scope change or a new exception before it appears in the current-rule index. Proposal evidence can be pending during review. The existing schemas and evidence requirements govern implementation.
+
+  A mutation proposal may include `gateTermReplacements` to preview a change in the scope of an existing npm command while its published definition remains in force. Implementation promotes the new term into the quality-gate glossary and retains the old definition as retired. [Draft example and promotion steps](../../../specs/adr-rules/spec.md#reviewing-a-proposal)
+
+  Author the rule and glossary schemas directly in JSON Schema Draft 7. Promote Ajv 8.20.0 from the existing lockfile to a direct development dependency so the CLI can validate the same schema files that editors and other tools consume. [Ajv validation guide](https://ajv.js.org/guide/getting-started.html)
+consequences: |-
+  A contributor can retrieve both current answers and trace each change to its decision. Changing a typed rule requires a valid successor and an index refresh. The glossary retains the retired `all-changes-local-gate` alongside its active successor, `baseline-local-gate`. Text queries show each gate's scope with its command so a reader can distinguish the two uses of `npm run quality:gate`.
+
+  We replayed ADR-046 as a proposal against the Local CI policy in `76701ce`, using the pilot's vocabulary to encode both decisions. Two independent model reviewers, one reading the decision prose and one reading the draft comparison, agreed on all three scenarios. An explicit full release-readiness request required replay even for a docs-only edit, ordinary test changes became optional, and dependency installation changes still required replay. The draft checker also caught a deliberately misspelled case ID before publication. This supports optional authoring validation. The retrospective showed equal review accuracy and did not measure authoring time.
+
+  In a second replay, an agent read the pre-ADR-025 gate definition and existing decision prose, then saved a typed proposal in 47 seconds. The first draft passed validation. It narrowed the gate to non-documentation changes while retaining `npm run quality:gate` and full mutation testing. A reviewer understood the change but briefly read the separate removal and addition as dropping mutation testing. The review now pairs both definitions under the inherited command and reports the mutation mode separately. The published text, JSON and index stayed byte-identical during the replay. The timing covers one agent adding metadata to settled prose.
+alternatives: |-
+  - A hand-maintained table of current rules would duplicate the decision history and leave another place for a stale summary.
+  - Inferring current rules from ADR status and date would lose partial amendments and treat legacy status labels as implementation state.
+  - A repository-wide metadata migration would require classifying unrelated historical decisions before this rule can demonstrate the value of the approach.
+  - In a five-case trial, Valibot 1.5.0 and Ajv 8.20.0 agreed on a valid record, an invalid enum, a missing field, and extra fields at two nesting levels. Valibot also inferred the exact TypeScript union. Its separate `@valibot/to-json-schema` converter preserved those constraints. For this Markdown workflow, authoring the portable schema directly avoids maintaining a conversion step. [Valibot conversion guide](https://valibot.dev/guides/json-schema/)

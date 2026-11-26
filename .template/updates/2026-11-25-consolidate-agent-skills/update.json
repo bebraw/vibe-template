@@ -3,7 +3,7 @@
   "title": "Retire the simplify skill and consolidate frontend guidance",
   "status": "implemented",
   "risk": "low",
-  "adrs": ["docs/adrs/implemented/ADR-075-consolidate-local-skill-routing.md"],
+  "adrs": ["docs/adrs/implemented/ADR-075-consolidate-local-skill-routing.yaml"],
   "touches": [
     ".codex/skills/simplify/SKILL.md",
     ".codex/skills/minimal-visual-style/SKILL.md",

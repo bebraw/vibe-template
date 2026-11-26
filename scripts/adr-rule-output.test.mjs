@@ -25,14 +25,14 @@ const rule = {
     {
       id: "local-mutation-testing",
       adr: "ADR-022",
-      source: "docs/adrs/implemented/ADR-022-add-mutation-testing-gate.md",
+      source: "docs/adrs/implemented/ADR-022-add-mutation-testing-gate.yaml",
       rationale: "Coverage alone cannot show whether assertions would catch a regression.",
       gates: { "baseline-local-gate": "full" },
     },
     {
       id: "local-mutation-testing",
       adr: "ADR-043",
-      source: "docs/adrs/implemented/ADR-043-make-local-mutation-opt-in.md",
+      source: "docs/adrs/implemented/ADR-043-make-local-mutation-opt-in.yaml",
       rationale: "The first `incremental` run still tests every mutant.\nThe baseline runs on every change.",
       gates: { "baseline-local-gate": "none", "deep-local-gate": "incremental" },
       replaces: "ADR-022",
@@ -47,12 +47,12 @@ test("links the current gate policy and its decision history from the ADR index"
     [
       "### `local-mutation-testing`",
       "",
-      "Current decision [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md) · [Rationale](implemented/ADR-043-make-local-mutation-opt-in.md#context) · [Verification](../../scripts/run-quality-gate.test.mjs)",
+      "Current decision [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.yaml) · [Verification](../../scripts/run-quality-gate.test.mjs)",
       "",
       "- `npm run quality:gate` skips mutation testing.",
       "- `npm run quality:gate:deep` runs incremental mutation testing.",
       "",
-      "History [ADR-022](implemented/ADR-022-add-mutation-testing-gate.md) → [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.md)",
+      "History [ADR-022](implemented/ADR-022-add-mutation-testing-gate.yaml) → [ADR-043](implemented/ADR-043-make-local-mutation-opt-in.yaml)",
     ].join("\n"),
   );
 });
@@ -63,7 +63,7 @@ test("prints Local CI conditions before the fallback in both outputs and links t
     {
       id,
       adr: "ADR-046",
-      source: "docs/adrs/implemented/ADR-046-example.md",
+      source: "docs/adrs/implemented/ADR-046-example.yaml",
       rationale: "A clean container matters when the workflow changes.",
       cases: { otherwise: "may-skip", workflow: "required" },
       evidence: "AGENTS.md#verification",
@@ -79,10 +79,11 @@ test("prints Local CI conditions before the fallback in both outputs and links t
   assert.match(answer, /Policy guidance  AGENTS\.md#verification/);
 });
 
-test("encodes a hash in an ADR filename independently of its rationale fragment", () => {
-  const current = { ...rule.history.at(-1), source: "docs/adrs/implemented/ADR-043-name#tag.md" };
+test("encodes a hash in a YAML source filename and links to the file itself", () => {
+  const current = { ...rule.history.at(-1), source: "docs/adrs/implemented/ADR-043-name#tag.yaml" };
   const index = output.renderRuleIndex([{ id: rule.id, history: [current] }], definitions);
-  assert.match(index, /\[Rationale\]\(implemented\/ADR-043-name%23tag\.md#context\)/);
+  assert.match(index, /\[ADR-043\]\(implemented\/ADR-043-name%23tag\.yaml\)/);
+  assert.doesNotMatch(index, /#context/);
 });
 
 const start = "<!-- adr-rules:start -->";
@@ -135,17 +136,17 @@ test("explains the current commands and traces earlier decisions back to their r
   assert.match(result, /deep-local-gate[^\n]*\n[^\n]*The explicit local depth check\./);
   assert.match(result, /ADR-022 → ADR-043/);
   assert.match(result, /npm run quality:gate runs full mutation testing/);
-  assert.match(result, /docs\/adrs\/implemented\/ADR-022-add-mutation-testing-gate\.md#context/);
-  assert.match(result, /docs\/adrs\/implemented\/ADR-043-make-local-mutation-opt-in\.md#context/);
+  assert.match(result, /docs\/adrs\/implemented\/ADR-022-add-mutation-testing-gate\.yaml$/m);
+  assert.match(result, /docs\/adrs\/implemented\/ADR-043-make-local-mutation-opt-in\.yaml$/m);
   assert.match(result, /scripts\/run-quality-gate\.test\.mjs/);
 });
 
-test("prints the current decision's rationale verbatim with its Context link before the history", () => {
+test("prints the current decision's rationale verbatim with its YAML source before the history", () => {
   const currentOutput = output.describeRule(rule, definitions).split("\n\nHistory ")[0];
   assert.match(currentOutput, /Context when ADR-043 was written/);
   assert.ok(
     currentOutput.includes(
-      "The first `incremental` run still tests every mutant.\nThe baseline runs on every change.\n  Source  docs/adrs/implemented/ADR-043-make-local-mutation-opt-in.md#context",
+      "The first `incremental` run still tests every mutant.\nThe baseline runs on every change.\n  Source  docs/adrs/implemented/ADR-043-make-local-mutation-opt-in.yaml",
     ),
   );
 });

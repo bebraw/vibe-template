@@ -3,7 +3,7 @@
   "title": "Protect local secrets and preserve existing Git hooks",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-070-preserve-existing-git-hook-configuration.md"],
+  "adrs": ["docs/adrs/implemented/ADR-070-preserve-existing-git-hook-configuration.yaml"],
   "touches": [".gitignore", "scripts/", ".capabilities/pre-push-quality-gate/"],
   "checks": [
     "node --test scripts/affected-file-utils.test.mjs scripts/setup-git-hooks.test.mjs",

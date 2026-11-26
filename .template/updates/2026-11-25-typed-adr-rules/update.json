@@ -1,12 +1,15 @@
 {
   "id": "2026-11-25-typed-adr-rules",
-  "title": "Query mutation scheduling and Local CI readiness across architecture decisions",
+  "title": "Migrate architecture decisions to YAML with optional typed rule histories",
   "status": "implemented",
-  "risk": "low",
-  "adrs": ["docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.md"],
+  "risk": "medium",
+  "adrs": ["docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.yaml", "docs/adrs/implemented/ADR-077-store-decisions-in-yaml.yaml"],
   "touches": [
     "package.json",
     "package-lock.json",
+    "scripts/adr-record.mjs",
+    "scripts/adr-migrate-*.mjs",
+    "scripts/migrate-adrs*.mjs",
     "scripts/adr-rule*.mjs",
     "specs/adr-rules/",
     "specs/quality-gate/spec.md",
@@ -16,10 +19,9 @@
   ],
   "checks": [
     "npm ci",
-    "node scripts/adr-rules.mjs local-mutation-testing",
-    "node scripts/adr-rules.mjs local-ci-readiness",
+    "node scripts/migrate-adrs.mjs",
     "node scripts/adr-rules.mjs --check",
-    "node --test scripts/adr-rule*.test.mjs scripts/run-quality-gate.test.mjs",
+    "node --test scripts/adr-rule*.test.mjs scripts/adr-migrate-*.test.mjs scripts/migrate-adrs.test.mjs",
     "npm run quality:gate",
     "npm run ci:local"
   ]

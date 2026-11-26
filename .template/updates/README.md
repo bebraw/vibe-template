@@ -28,7 +28,7 @@ Each update lives under `.template/updates/{update-id}/` and contains:
   "status": "implemented",
   "risk": "low",
   "supersedes": ["2026-05-31-local-agent-ci-install-lock"],
-  "adrs": ["docs/adrs/implemented/ADR-031-use-agent-ci-warm-cache-serialization.md"],
+  "adrs": ["docs/adrs/implemented/ADR-031-use-agent-ci-warm-cache-serialization.yaml"],
   "touches": ["package.json", ".github/workflows/ci.yml", "docs/", "specs/"],
   "checks": ["npm run quality:gate", "npm run ci:local"]
 }

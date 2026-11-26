@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-045-adopt-type-aware-fallow-diagnostics.md"],
+  "adrs": ["docs/adrs/implemented/ADR-045-adopt-type-aware-fallow-diagnostics.yaml"],
   "touches": [".fallowrc.json", "package.json", "package-lock.json", "docs/", "specs/"],
   "checks": [
     "npm run diagnostics:readability",

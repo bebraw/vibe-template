@@ -3,7 +3,7 @@
   "title": "Add approval-gated project start",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-051-add-approval-gated-project-start.md"],
+  "adrs": ["docs/adrs/implemented/ADR-051-add-approval-gated-project-start.yaml"],
   "touches": [".codex/skills/", ".template/updates/AGENT_SYNC.md", "AGENTS.md", "ARCHITECTURE.md", "README.md", "docs/", "specs/"],
   "checks": ["npm run quality:gate"]
 }

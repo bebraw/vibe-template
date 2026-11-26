@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-059-harden-anonymous-room-state.md"],
+  "adrs": ["docs/adrs/implemented/ADR-059-harden-anonymous-room-state.yaml"],
   "touches": [".capabilities/room-state/", ".template/updates/", "docs/", "specs/"],
   "checks": ["npm run capabilities:verify", "npm run quality:gate"]
 }

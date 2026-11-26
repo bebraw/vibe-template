@@ -3,7 +3,7 @@
   "title": "Use relative Stryker worker concurrency",
   "status": "implemented",
   "risk": "low",
-  "adrs": ["docs/adrs/implemented/ADR-029-use-relative-stryker-concurrency.md"],
+  "adrs": ["docs/adrs/implemented/ADR-029-use-relative-stryker-concurrency.yaml"],
   "touches": ["stryker.config.mjs", ".capabilities/mutation-testing/", "docs/", "specs/"],
   "checks": ["npm run mutation:incremental", "npm run quality:gate"]
 }

@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-039-skip-expensive-ci-for-non-runtime-changes.md"],
+  "adrs": ["docs/adrs/implemented/ADR-039-skip-expensive-ci-for-non-runtime-changes.yaml"],
   "touches": [".github/workflows/ci.yml", "package.json", "scripts/", "ARCHITECTURE.md", "docs/", "specs/"],
   "checks": ["npm run test:tooling", "npm run quality:gate", "npm run ci:local"]
 }

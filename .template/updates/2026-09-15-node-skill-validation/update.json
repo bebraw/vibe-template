@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-064-use-node-skill-validation.md"],
+  "adrs": ["docs/adrs/implemented/ADR-064-use-node-skill-validation.yaml"],
   "touches": [
     "AGENTS.md",
     "ARCHITECTURE.md",
@@ -15,7 +15,7 @@
     "specs/agent-skills/spec.md",
     "docs/development.md",
     "docs/adrs/README.md",
-    "docs/adrs/implemented/ADR-064-use-node-skill-validation.md"
+    "docs/adrs/implemented/ADR-064-use-node-skill-validation.yaml"
   ],
   "checks": ["npm run skill:validate -- .codex/skills/modern-web-guidance", "npm run quality:gate", "npm run ci:local"]
 }

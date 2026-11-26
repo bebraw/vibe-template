@@ -1,0 +1,19 @@
+adrSchema: 1
+id: ADR-077
+title: Store architecture decisions in standalone YAML
+status: implemented
+date: 2026-11-26
+amends:
+  - ADR-076
+context: |
+  The typed-rule pilot could answer two policy questions, but it still had to extract each decision's ID, lifecycle and rationale from Markdown headings. Contributors also need a predictable way to validate ordinary decisions and their links. Downstream projects have their own decision numbers and may have no reason to adopt this template's two policy histories.
+decision: |
+  Store each ADR in a single YAML file with a versioned schema. Keep Markdown available in prose fields and reserve typed rule revisions for policies whose amendments warrant a queryable history. Validate the complete decision log independently of this template's policy assertions.
+
+  Provide a one-time downstream converter. It previews the change, preserves authored prose and relationships, and updates repository links to the migrated files.
+consequences: |
+  Tools can check decision identity, lifecycle, dates, and declared relationships directly. Reviewers still judge whether the prose accurately describes the decision and whether a term's meaning has changed. Existing external links and Markdown heading anchors need updating when a project converts.
+alternatives: |
+  Keeping YAML frontmatter in Markdown would preserve GitHub's rendered page and existing links. A reader would still need a Markdown parser to find decision text under headings.
+
+  Supporting both file types indefinitely would let adopters migrate gradually. It would also require every reader and authoring workflow to handle two representations of a decision.

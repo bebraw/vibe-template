@@ -1,18 +1,31 @@
-# Feature: Typed ADR Rules
+# Architecture decision records and typed rules
 
 ## Blueprint
 
-The pilot answers two questions. Which local quality gate runs mutation tests? When does a contributor need to run Local CI? Each participating ADR owns a revision of the relevant rule. The quality-gate spec owns the terms and npm script names used to interpret both histories. The ADR index displays their current answers. [Quality-gate glossary](../quality-gate/spec.md) · [Current rules](../../docs/adrs/README.md#current-typed-rules) · [ADR-076](../../docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.md)
+Each architecture decision lives in one standalone YAML record. Its identity, lifecycle, relationships, and optional rule revisions are machine-readable. Its context and decision are Markdown strings. The template models two recurring policy questions. Which gate runs mutation tests? When does a contributor need to run Local CI? [Record schema](record.schema.json) · [Current rules](../../docs/adrs/README.md#current-typed-rules) · [Format decision](../../docs/adrs/implemented/ADR-077-store-decisions-in-yaml.yaml)
 
-Opt in when contributors repeatedly need a decision's current answer and amendments have changed which cases it covers or what they require. One-off decisions and rationale remain in ordinary ADR prose.
+### Record format
 
-### Sources
+Start from the [proposal template](../../docs/adrs/proposed/ADR-000-template.yaml). Use `ADR-<number>-<slug>.yaml` and the same ID in the record. Set `adrSchema: 1`, a title, status, context, and decision. Accepted, implemented, and superseded records require a calendar date in `YYYY-MM-DD` format. A proposed record can omit the date. Move the file when its lifecycle changes. Superseded decisions stay in `implemented/`. IDs remain unique across all three directories.
 
-- Read opted-in Markdown decisions from `docs/adrs/implemented/`. This directory establishes implementation under [ADR-021](../../docs/adrs/implemented/ADR-021-add-accepted-adr-state.md). Legacy `Accepted` headers can occur here. A superseded decision supplies historical context. Draft and approved-but-pending decisions live outside this directory.
-- YAML frontmatter declares `ruleSchema: 1` and a `rules` list. Each revision's `id` selects its payload. `local-mutation-testing` uses `gates`, and `local-ci-readiness` uses `cases`. A successor names its predecessor's ADR identifier in `replaces`. Each current revision cites its `evidence`. [Rule schema](rules.schema.json)
-- The quality-gate glossary defines the local gate scripts in `gateTerms`, the Local CI command in `localCi.script`, and the meanings of its readiness cases in `localCi.cases`. [Glossary schema](gate-terms.schema.json)
+Use separate fields for the trigger, consequences, alternatives, or a preamble when they exist. Use `extraSections` for named sections specific to a decision. Markdown lists, code blocks, and links can appear in prose fields. Relative paths resolve from the record's directory. YAML source files have no Markdown section anchors.
 
-Each term keeps its meaning across revisions. Introduce a new identifier when a gate's scope or meaning changes, even if its npm command keeps the same name. Retain the previous definition with `retired: true` when the gate leaves current use. It may name a removed script or a name later reused by another gate. The CLI checks vocabulary references. Reviewers check that revised wording preserves each term's meaning.
+The optional `amends`, `amendedBy`, `supersedes`, and `supersededBy` fields contain ADR IDs. The validator checks each target exists and differs from the source. Record each direction explicitly when warranted. Historical records can describe partial amendments in prose, and an incoming edge can exist without its inverse.
+
+The CLI in `scripts/adr-rules.mjs` assembles the record reader, rule histories, and index renderer. The shared reader in `scripts/adr-record.mjs` applies the same schema to authoring, queries, and migration. Only the one-time migration command imports the legacy Markdown reader. A normal query reads the log and glossary. An explicit index refresh writes the generated block in `docs/adrs/README.md`.
+
+### One-time Markdown migration
+
+From the downstream repository root, run `node scripts/migrate-adrs.mjs` to preview the conversion. Review diagnostics and the planned paths, then run `node scripts/migrate-adrs.mjs --write`. The converter reads legacy template headings and metadata across the three lifecycle directories. It preserves authored Markdown within the corresponding prose fields, any existing rule revisions, and the original accepted label of historical decisions filed as implemented. Review the resulting Git diff and update links from external repositories separately. [Downstream update pack](../../.template/updates/2026-11-25-typed-adr-rules/README.md)
+
+### Optional policy histories
+
+Add `rules` when contributors repeatedly need a policy's current answer and amendments have changed its scope or outcome. A project can validate ordinary records with an empty rule history. Only implemented or superseded records contribute revisions to published answers.
+
+- Each revision's `id` selects its payload. `local-mutation-testing` uses `gates` and `local-ci-readiness` uses `cases`. A successor names its predecessor's ADR identifier in `replaces`. Each current revision cites its `evidence`. [Record schema](record.schema.json)
+- The quality-gate glossary defines the local gate scripts in `gateTerms`, the Local CI command in `localCi.script`, and the meanings of its readiness cases in `localCi.cases`. [Glossary](../quality-gate/spec.md) · [Glossary schema](gate-terms.schema.json)
+
+Projects can publish either rule independently. The glossary needs only the vocabulary for the policies the project uses. Each term keeps its meaning across revisions. Introduce a new identifier when a gate's scope or meaning changes, even if its npm command keeps the same name. Retain the previous definition with `retired: true` when the gate leaves current use. It may name a removed script or a name later reused by another gate. The CLI checks vocabulary references. Reviewers check that revised wording preserves each term's meaning.
 
 ## Contract
 
@@ -32,13 +45,17 @@ Run `node scripts/adr-rules.mjs --check-draft <file>` with one typed ADR under `
 
 For Local CI, the report shows additions and removals of named cases separately from changes to the `otherwise` fallback. A named match takes precedence even for mixed work. An ordinary source edit that also changes browser CI meets the named browser CI condition.
 
-Mutation proposals normally use the active gate IDs in the quality-gate glossary. To preview a new meaning for an existing npm command, add the optional top-level `gateTermReplacements` map. Give the proposed term a fresh ID, identify the active term it would replace, and define the new scope. The proposed term inherits its predecessor's npm script. Include the new ID and the other active gates in the draft's complete mutation revision. [Draft schema](draft.schema.json)
+Mutation proposals normally use the active gate IDs in the quality-gate glossary. To preview a new meaning for an existing npm command, add the optional top-level `gateTermReplacements` map. Give the proposed term a fresh ID, identify the active term it would replace, and define the new scope. The proposed term inherits its predecessor's npm script. Include the new ID and the other active gates in the draft's complete mutation revision. [Record schema](record.schema.json)
 
-To try the example against ADR-043, save it as `docs/adrs/proposed/ADR-077-narrow-local-gate.md` and pass that path to `--check-draft`.
+To try the example against ADR-043, save it as `docs/adrs/proposed/ADR-078-narrow-local-gate.yaml` and pass that path to `--check-draft`.
 
-```markdown
----
-ruleSchema: 1
+```yaml
+adrSchema: 1
+id: ADR-078
+title: Narrow the local readiness gate
+status: proposed
+context: The ordinary readiness gate currently covers tooling changes as well as deployed Worker source.
+decision: Limit the ordinary readiness gate to Worker source.
 gateTermReplacements:
   worker-source-local-gate:
     replaces: baseline-local-gate
@@ -49,15 +66,6 @@ rules:
     gates:
       worker-source-local-gate: none
       deep-local-gate: incremental
----
-
-# ADR-077: Narrow the local readiness gate
-
-**Status:** Proposed
-
-## Context
-
-The ordinary readiness gate currently covers tooling changes as well as deployed Worker source. This proposal would limit it to Worker source.
 ```
 
 Draft review is read-only. Published queries, JSON, and the index continue to use the canonical glossary and implemented revisions. At implementation, mark the old term `retired: true` in the quality-gate glossary and add the new term with the inherited script and reviewed definition. Remove `gateTermReplacements` from the ADR, keep the new ID in `gates`, and cite the test that verifies the implemented gate in `evidence`.
@@ -73,6 +81,8 @@ Draft review is read-only. Published queries, JSON, and the index continue to us
 | `node scripts/adr-rules.mjs --check`                | Check metadata, references to npm scripts and evidence files, and the generated index section without writing files. A stale section or invalid rule fails the check. |
 | `node scripts/adr-rules.mjs --write-index`          | Refresh only the section between the `adr-rules:start` and `adr-rules:end` comments in the ADR index.                                                                 |
 | `node --test scripts/run-quality-gate.test.mjs`     | Exercise baseline and deep gate selection through the runner.                                                                                                         |
-| `node --test scripts/adr-rules.test.mjs`            | Verify both rule queries, the documented Local CI outcomes, and mutation scheduling against the actual gate commands.                                                 |
+| `node --test scripts/adr-rules.test.mjs`            | Verify the portable validator and queries against disposable projects.                                                                                                |
 
-The CLI reads the repository from the current working directory. Text queries show the gate's scope alongside its command. JSON `terms` preserves the definitions for both active and retired gates. In both outputs, each revision's rationale comes from the first paragraph of the ADR's `## Context` section. The index's lifecycle tables remain manually maintained. Prose-only ADRs and records with unrelated frontmatter remain discoverable there. The CLI owns the generated block, which lists only current typed rules and can be rebuilt from the checked-in decisions and glossary.
+The CLI reads the repository from the current working directory. Normal commands validate the records in all lifecycle directories. Draft review checks the named proposal against the implemented history. Text queries show the gate scope alongside its command. JSON `terms` preserves both active and retired definitions. Each revision takes its rationale from the first paragraph of `context`.
+
+The index's lifecycle tables retain their human-written summaries. For published rules, place `<!-- adr-rules:start -->` and `<!-- adr-rules:end -->` on separate lines around the generated section. Projects with zero published rules can omit the glossary, npm scripts, and index markers. The template's own policy regression tests live in `scripts/template-adr-policy.test.mjs`. Downstream teams can use the portable fixtures with their own decision numbers and add tests for their own policies.

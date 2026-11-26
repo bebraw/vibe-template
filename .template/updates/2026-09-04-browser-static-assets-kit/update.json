@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-057-add-browser-static-assets-kit.md"],
+  "adrs": ["docs/adrs/implemented/ADR-057-add-browser-static-assets-kit.yaml"],
   "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "README.md", "scripts/", "specs/"],
   "checks": ["npm run capabilities:verify", "npm run quality:gate"]
 }

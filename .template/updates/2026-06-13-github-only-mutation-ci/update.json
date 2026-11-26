@@ -3,7 +3,7 @@
   "title": "Reserve full mutation CI for GitHub",
   "status": "implemented",
   "risk": "low",
-  "adrs": ["docs/adrs/implemented/ADR-030-reserve-full-mutation-ci-for-github.md"],
+  "adrs": ["docs/adrs/implemented/ADR-030-reserve-full-mutation-ci-for-github.yaml"],
   "touches": [".github/workflows/ci.yml", "docs/", "specs/"],
   "checks": ["npm run quality:gate", "npm run ci:local"]
 }

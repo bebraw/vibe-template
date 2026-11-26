@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-040-use-full-stryker-concurrency-in-ci.md"],
+  "adrs": ["docs/adrs/implemented/ADR-040-use-full-stryker-concurrency-in-ci.yaml"],
   "touches": [".github/workflows/ci.yml", "ARCHITECTURE.md", "docs/", "specs/"],
   "checks": ["npm run mutation -- --concurrency 100%", "npm run quality:gate", "npm run ci:local"]
 }

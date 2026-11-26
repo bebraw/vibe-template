@@ -52,4 +52,4 @@ When a justified browser API lacks TypeScript declarations, consider [modern-web
 
 Skip this skill for copy-only work, routine changes that apply established repository patterns, backend-only Worker code, CI, and general tooling.
 
-Provenance and current package coordinates are recorded in `docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md` and `specs/agent-skills/spec.md`; `ADR-052` records the original scoped integration.
+Provenance and current package coordinates are recorded in `docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.yaml` and `specs/agent-skills/spec.md`; `ADR-052` records the original scoped integration.

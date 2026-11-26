@@ -3,7 +3,7 @@
   "title": "Adopt the web quality baseline",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-035-adopt-a-web-response-baseline.md"],
+  "adrs": ["docs/adrs/implemented/ADR-035-adopt-a-web-response-baseline.yaml"],
   "touches": [
     "src/views/shared.ts",
     "src/views/home.ts",

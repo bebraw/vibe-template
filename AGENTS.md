@@ -37,7 +37,7 @@ Ask only when the action is not already authorized in the conversation. Existing
 - Add or update a template update pack in `.template/updates/` when a reusable template maintenance change should be portable to downstream projects.
 - Treat every lasting architectural decision as explicit documentation work, not implied context.
 - Add or update an ADR in `docs/adrs/` in the same change set whenever a decision introduces or changes a lasting architectural constraint, selects between credible alternatives, or supersedes an earlier architecture decision. Keep drafts in `docs/adrs/proposed/`, approved-but-not-yet-implemented decisions in `docs/adrs/accepted/`, and implemented decisions in `docs/adrs/implemented/`.
-- Opt into a typed rule when contributors repeatedly need the current answer and successive ADRs amend its scope or outcome. Keep one-off decisions in prose. [Typed ADR rule contract](./specs/adr-rules/spec.md)
+- Author each ADR as a standalone YAML record using the proposal template. Keep Markdown in the prose fields. Opt into a typed rule when contributors repeatedly need the current answer and successive ADRs amend its scope or outcome. Keep one-off decisions in prose. [Typed ADR rule contract](./specs/adr-rules/spec.md)
 - Record global architecture rules in `ARCHITECTURE.md` and feature-level contracts in `specs/{feature-domain}/spec.md`.
 - Treat completed feature work as spec work: create a new `specs/{feature-domain}/spec.md` or update the relevant existing spec in the same change set whenever feature behavior, contracts, workflows, or quality guardrails change.
 - Treat `package.json` as the source of truth for pinned Node and npm versions, with `.nvmrc` kept in sync as a convenience mirror for `nvm use`.

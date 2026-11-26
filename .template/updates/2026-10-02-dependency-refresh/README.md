@@ -25,7 +25,7 @@ Use this pack for a project that already adopted the template's tooling or capab
 3. Keep Vitest and its coverage providers at `4.1.11`. The reviewed Cloudflare testing plugin requires `^4.1.0`; do not mechanically adopt Vitest 5. Retain the TypeScript 6 compiler-API compatibility package and TypeScript 7 typecheck alias.
 4. Update existing capability manifests and installation recipes. Change the browser CI image to `mcr.microsoft.com/playwright:v1.63.0-noble` and install the corresponding browser binaries with `npm run playwright:install`.
 5. Run the target package manager's dependency installation and review compatible transitive fixes. The npm template uses `npm audit fix --ignore-scripts` without `--force` or dependency overrides. Patched paths include `@grpc/grpc-js` `1.14.5`, `brace-expansion` `5.0.12`, `fast-uri` `3.1.8`, and `qs` `6.16.0`; Wrangler resolves patched Sharp and Undici versions through Miniflare.
-6. If Modern Web Guidance is adopted, review [ADR-067](../../../docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md), pin both telemetry-disabled commands to `0.0.191`, and copy the current instruction revision, source tag/commit, and npm integrity into the target's owned provenance record. Preserve narrow routing, local authority, and Baseline fallback policy.
+6. If Modern Web Guidance is adopted, review [ADR-067](../../../docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.yaml), pin both telemetry-disabled commands to `0.0.191`, and copy the current instruction revision, source tag/commit, and npm integrity into the target's owned provenance record. Preserve narrow routing, local authority, and Baseline fallback policy.
 
 ## Fallback
 

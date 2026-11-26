@@ -11,7 +11,7 @@ Projects using the template's focused `test-review`, `debug`, or `wrangler` skil
 3. Merge debug guidance to check the declared runtime and toolchain before blaming source. Prove the regression guard rejects the original failure and accepts the fix; allow a lint or configuration guard when it is the appropriate boundary.
 4. For Wrangler adopters, document that `secret put/delete` deploy immediately while `versions secret put/delete` stage a version. Confirm current Cloudflare semantics and the environment before acting; retain the target's authorization and promotion workflow. Applying this pack does not change any secret.
 5. Update `test-review` and `debug` provenance to `cniska/skills` revision `2c83858f1d801369355a761ce3ba9b492f5c642f`. Leave `correctness-review` at `7d79c7754f2b9d656f7db7b9ecefcb7532b6d256`; preserve all adjacent MIT licenses. Keep intentional distribution copies synchronized.
-6. Record the workflow changes in the target's skill contract and ADR structure. Adapt [ADR-073](../../../docs/adrs/implemented/ADR-073-refresh-review-and-debug-guidance.md) to the next available ADR number and update its links. Record `2026-11-11-skill-quality-refresh` in the existing template-update record.
+6. Record the workflow changes in the target's skill contract and ADR structure. Adapt [ADR-073](../../../docs/adrs/implemented/ADR-073-refresh-review-and-debug-guidance.yaml) to the next available ADR number and update its links. Record `2026-11-11-skill-quality-refresh` in the existing template-update record.
 
 ## Manual Fallback
 

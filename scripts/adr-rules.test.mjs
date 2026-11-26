@@ -5,149 +5,222 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { selectQualityGateSteps } from "./run-quality-gate.mjs";
+import { stringify } from "yaml";
 
-const repo = fileURLToPath(new URL("../", import.meta.url));
-const cli = join(repo, "scripts/adr-rules.mjs");
+const cli = fileURLToPath(new URL("./adr-rules.mjs", import.meta.url));
 const id = "local-mutation-testing";
 
 function run(cwd, ...args) {
   return spawnSync(process.execPath, [cli, ...args], { cwd, encoding: "utf8" });
 }
 
-test("the typed local mutation history ends at the policy exercised by the gate commands", () => {
-  const result = run(repo, "--json");
+const decision = {
+  adrSchema: 1,
+  id: "ADR-001",
+  title: "Keep feedback fast",
+  status: "implemented",
+  date: "2025-01-23",
+  context: "This gate runs on every edit.",
+  decision: "Keep feedback fast.",
+};
+
+function writeRecord(path, record) {
+  writeFileSync(path, stringify(record));
+}
+
+function repository(t) {
+  const root = mkdtempSync(join(tmpdir(), "adr-repository-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  for (const stage of ["proposed", "accepted", "implemented"]) mkdirSync(join(root, "docs/adrs", stage), { recursive: true });
+  const index = join(root, "docs/adrs/README.md");
+  writeFileSync(index, "Before\n<!-- adr-rules:start -->\n<!-- adr-rules:end -->\nAfter\n");
+  return { root, index };
+}
+
+test("decisions without semantic rules need no glossary or project tooling at any lifecycle stage", (t) => {
+  const { root } = repository(t);
+  writeRecord(join(root, "docs/adrs/implemented/ADR-001-example.yaml"), decision);
+  writeRecord(join(root, "docs/adrs/accepted/ADR-012-second.yaml"), { ...decision, id: "ADR-012", status: "accepted", rules: [] });
+  const draft = join(root, "docs/adrs/proposed/ADR-501-third.yaml");
+  writeRecord(draft, { ...decision, id: "ADR-501", status: "proposed", date: undefined });
+  const result = run(root, "--json");
   assert.equal(result.status, 0, result.stderr);
-  const { rules, terms } = JSON.parse(result.stdout);
-  const history = rules.find((rule) => rule.id === id).history;
+  assert.deepEqual(JSON.parse(result.stdout).rules, []);
+  const review = run(root, "--check-draft", draft);
+  assert.equal(review.status, 0, review.stderr);
+  assert.match(review.stdout, /ADR-501/);
+  const write = run(root, "--write-index");
+  assert.equal(write.status, 0, write.stderr);
+  const check = run(root, "--check");
+  assert.equal(check.status, 0, check.stderr);
+});
+
+const baseline = { id, gates: { baseline: "none" }, evidence: "checks/local.test.mjs" };
+const gateTerms = { baseline: { script: "verify", definition: "Local readiness." } };
+
+function writeGlossary(root, terms, localCi) {
+  const path = join(root, "specs/quality-gate/spec.md");
+  writeFileSync(path, "---\n" + stringify({ gateTerms: terms, localCi }) + "---\n");
+  return path;
+}
+
+test("a downstream project can publish a Local CI history with only its readiness glossary and command", (t) => {
+  const { root } = repository(t);
+  mkdirSync(join(root, "specs/quality-gate"), { recursive: true });
+  writeFileSync(join(root, "package.json"), JSON.stringify({ scripts: { replay: "node checks/replay.mjs" } }));
+  const localCi = { script: "replay", cases: { otherwise: "Any release change" } };
+  writeGlossary(root, undefined, localCi);
+  writeFileSync(join(root, "CONTRIBUTING.md"), "## Releases\n\nReplay the workflow on release changes.\n");
+  const readiness = { id: "local-ci-readiness", cases: { otherwise: "required" }, evidence: "CONTRIBUTING.md#releases" };
+  writeRecord(join(root, "docs/adrs/implemented/ADR-330-check-releases.yaml"), { ...decision, id: "ADR-330", rules: [readiness] });
+  const published = run(root, "--json");
+  assert.equal(published.status, 0, published.stderr);
+  const { rules, terms, localCi: glossary } = JSON.parse(published.stdout);
+  assert.deepEqual(terms, {});
+  assert.deepEqual(glossary, localCi);
   assert.deepEqual(
-    history.slice(0, 4).map((r) => [r.adr, r.gates]),
-    [
-      ["ADR-022", { "all-changes-local-gate": "full" }],
-      ["ADR-025", { "baseline-local-gate": "full" }],
-      ["ADR-028", { "baseline-local-gate": "incremental" }],
-      ["ADR-043", { "baseline-local-gate": "none", "deep-local-gate": "incremental" }],
-    ],
+    rules.map(({ id }) => id),
+    ["local-ci-readiness"],
   );
-  const current = history.at(-1);
-  assert.equal(terms["all-changes-local-gate"].script, "quality:gate");
-  assert.equal(terms["baseline-local-gate"].script, "quality:gate");
-  assert.equal(terms["deep-local-gate"].script, "quality:gate:deep");
-  const scripts = JSON.parse(readFileSync(join(repo, "package.json"), "utf8")).scripts;
-  assert.equal(scripts.mutation, "stryker run");
-  assert.equal(scripts["mutation:incremental"], "stryker run --incremental");
-  for (const [term, mode] of Object.entries(current.gates)) {
-    const [node, runner, ...args] = scripts[terms[term].script].split(" ");
-    assert.equal(node, "node");
-    assert.equal(runner, "./scripts/run-quality-gate.mjs");
-    const phases = selectQualityGateSteps(args).map((phase) => phase.script);
-    const expected = { none: [], incremental: ["mutation:incremental"], full: ["mutation"] }[mode];
-    assert.deepEqual(
-      phases.filter((phase) => phase === "mutation" || phase === "mutation:incremental"),
-      expected,
-      term,
-    );
-  }
-});
-
-test("the committed current-rule index is reproducible", () => {
-  const result = run(repo, "--check");
-  assert.equal(result.status, 0, result.stderr);
-});
-
-test("Local CI history distinguishes change scope, explicit readiness and the fallback", () => {
-  const result = run(repo, "--json");
-  assert.equal(result.status, 0, result.stderr);
-  const { rules, localCi } = JSON.parse(result.stdout);
-  const rule = rules.find(({ id }) => id === "local-ci-readiness");
-  assert.ok(rule, "missing Local CI rule");
-  const [baseline, docsException, scoped] = rule.history;
-  assert.deepEqual([baseline.adr, docsException.adr, scoped.adr], ["ADR-019", "ADR-025", "ADR-046"]);
-  assert.deepEqual(baseline.cases, { otherwise: "required" });
-  assert.deepEqual(docsException.cases, { "documentation-only": "may-skip", otherwise: "required" });
-  assert.deepEqual(scoped.cases, {
-    "github-actions-workflows": "required",
-    "package-or-installation": "required",
-    "build-or-container": "required",
-    "browser-ci": "required",
-    "explicit-full-readiness": "required",
-    otherwise: "may-skip",
-  });
-  assert.equal(scoped.evidence, "AGENTS.md#verification");
-  assert.equal(localCi.script, "ci:local");
-  const answer = run(repo, rule.id);
+  const answer = run(root, "local-ci-readiness");
   assert.equal(answer.status, 0, answer.stderr);
-  assert.match(answer.stdout, /npm run ci:local/);
-  assert.match(answer.stdout, /ADR-019 → ADR-025 → ADR-046/);
-  assert.match(answer.stdout, /Policy guidance.*AGENTS\.md#verification/);
+  assert.match(answer.stdout, /npm run replay/);
+  assert.match(answer.stdout, /CONTRIBUTING\.md#releases/);
 });
 
 function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), "adr-rule-pilot-"));
-  t.after(() => rmSync(root, { recursive: true, force: true }));
-  for (const dir of ["specs/quality-gate", "docs/adrs/implemented", "checks"]) mkdirSync(join(root, dir), { recursive: true });
+  const { root, index } = repository(t);
+  for (const dir of ["specs/quality-gate", "checks"]) mkdirSync(join(root, dir), { recursive: true });
   writeFileSync(join(root, "package.json"), JSON.stringify({ scripts: { verify: "node --test" } }));
-  writeFileSync(
-    join(root, "specs/quality-gate/spec.md"),
-    "---\ngateTerms:\n  baseline: { script: verify, definition: Local readiness. }\n---\n",
-  );
-  writeFileSync(join(root, "checks/local.test.mjs"), 'throw new Error("evidence files are never executed by the CLI");');
-  const index = join(root, "docs/adrs/README.md");
-  writeFileSync(index, "Before\n<!-- adr-rules:start -->\n<!-- adr-rules:end -->\nAfter\n");
-  const path = join(root, "docs/adrs/implemented/ADR-001-example.md");
-  const text =
-    "---\nruleSchema: 1\nrules:\n  - id: local-mutation-testing\n    gates: { baseline: none }\n    evidence: checks/local.test.mjs\n---\n\n# ADR-001: Example\n\n## Context\n\nThis gate runs on every edit.\n\n## Decision\n\nKeep feedback fast.\n";
-  writeFileSync(path, text);
-  return { root, index, path, text };
+  writeGlossary(root, gateTerms);
+  writeFileSync(join(root, baseline.evidence), 'throw new Error("evidence files are never executed by the CLI");');
+  const path = join(root, "docs/adrs/implemented/ADR-001-example.yaml");
+  writeRecord(path, { ...decision, rules: [baseline] });
+  return { root, index, path };
 }
+
+const proposedRule = { id, replaces: "ADR-001", gates: { baseline: "incremental" } };
+const proposal = { ...decision, id: "ADR-002", status: "proposed", date: undefined, rules: [proposedRule] };
 
 function draftFixture(t) {
   const files = fixture(t);
-  const { root, text } = files;
-  const directory = join(root, "docs/adrs/proposed");
-  mkdirSync(directory);
-  const draft = join(directory, "ADR-002-review.md");
-  const proposal = text
-    .replace("ADR-001:", "ADR-002:")
-    .replace("    gates:", "    replaces: ADR-001\n    gates:")
-    .replace("baseline: none", "baseline: incremental")
-    .replace("    evidence: checks/local.test.mjs\n", "");
-  writeFileSync(draft, proposal);
-  return { ...files, draft, proposal };
+  const draft = join(files.root, "docs/adrs/proposed/ADR-002-review.yaml");
+  writeRecord(draft, proposal);
+  return { ...files, draft };
 }
 
-test("reviewing a typed proposal compares it to the implemented rule without publishing it", (t) => {
-  const { root, index, draft, proposal } = draftFixture(t);
-  writeFileSync(join(root, "docs/adrs/proposed/ADR-003-unrelated.md"), "---\nruleSchema: 99\n---\n");
+test("normal reads validate YAML records and explain the Markdown migration in every lifecycle directory", (t) => {
+  const { root, index } = fixture(t);
+  const before = readFileSync(index);
+  for (const stage of ["proposed", "accepted", "implemented"]) {
+    const directory = join(root, "docs/adrs", stage);
+    const path = join(directory, "ADR-820-weekly-release.yaml");
+    writeRecord(path, { ...decision, id: "ADR-820", status: stage, decision: "  " });
+    const invalid = run(root, "--json");
+    assert.equal(invalid.status, 1, stage);
+    assert.match(invalid.stderr, /ADR-820-weekly-release\.yaml/);
+    assert.match(invalid.stderr, /decision/i);
+    rmSync(path);
+
+    const markdown = join(directory, "ADR-820-weekly-release.md");
+    writeFileSync(markdown, "# ADR-820: Weekly release\n\n## Decision\n\nShip on Fridays.\n");
+    const legacy = run(root, "--write-index");
+    assert.equal(legacy.status, 1, stage);
+    assert.match(legacy.stderr, /ADR-820-weekly-release\.md/);
+    assert.match(legacy.stderr, /migrat.*Markdown/i);
+    assert.deepEqual(readFileSync(index), before);
+    rmSync(markdown);
+  }
+});
+
+test("the lifecycle directory constrains status and requires a date for accepted and implemented decisions", (t) => {
+  const { root } = repository(t);
+  for (const stage of ["accepted", "implemented"]) {
+    const path = join(root, "docs/adrs", stage, "ADR-001-example.yaml");
+    writeRecord(path, { ...decision, status: stage, date: undefined });
+    const undated = run(root, "--json");
+    assert.equal(undated.status, 1, stage);
+    assert.match(undated.stderr, /date/i);
+    writeRecord(path, { ...decision, status: stage, date: "January 23, 2025" });
+    const malformed = run(root, "--json");
+    assert.equal(malformed.status, 1, stage);
+    assert.match(malformed.stderr, /date/i);
+    writeRecord(path, { ...decision, status: "proposed" });
+    const misplaced = run(root, "--json");
+    assert.equal(misplaced.status, 1, stage);
+    assert.match(misplaced.stderr, /status|proposed/i);
+    rmSync(path);
+  }
+});
+
+test("calendar dates distinguish leap days from impossible dates", (t) => {
+  const { root } = repository(t);
+  const path = join(root, "docs/adrs/implemented/ADR-001-example.yaml");
+  writeRecord(path, { ...decision, date: "2024-02-29" });
+  const leap = run(root, "--json");
+  assert.equal(leap.status, 0, leap.stderr);
+  writeRecord(path, { ...decision, date: "2025-02-29" });
+  const invalid = run(root, "--json");
+  assert.equal(invalid.status, 1);
+  assert.match(invalid.stderr, /date/i);
+});
+
+test("one-way relations can name another lifecycle stage and reject missing or self targets", (t) => {
+  const { root } = repository(t);
+  const current = join(root, "docs/adrs/implemented/ADR-001-example.yaml");
+  writeRecord(join(root, "docs/adrs/accepted/ADR-250-next.yaml"), { ...decision, id: "ADR-250", status: "accepted" });
+  writeRecord(current, { ...decision, amendedBy: ["ADR-250"] });
+  const valid = run(root, "--json");
+  assert.equal(valid.status, 0, valid.stderr);
+  for (const target of ["ADR-019", "ADR-001"]) {
+    writeRecord(current, { ...decision, amendedBy: [target] });
+    const invalid = run(root, "--json");
+    assert.equal(invalid.status, 1);
+    assert.match(invalid.stderr, /related|amendedBy|relation/i);
+    assert.ok(invalid.stderr.includes(target), invalid.stderr);
+  }
+});
+
+test("decision IDs are unique across lifecycle directories even without semantic rules", (t) => {
+  const { root } = repository(t);
+  writeRecord(join(root, "docs/adrs/implemented/ADR-001-example.yaml"), decision);
+  writeRecord(join(root, "docs/adrs/accepted/ADR-001-other.yaml"), { ...decision, status: "accepted" });
+  const duplicate = run(root, "--json");
+  assert.equal(duplicate.status, 1);
+  assert.match(duplicate.stderr, /duplicate.*ADR-001/i);
+});
+
+test("reviewing one proposal ignores unrelated drafts and preserves published results and both inputs", (t) => {
+  const { root, index, draft } = draftFixture(t);
   const published = run(root, "--write-index");
   assert.equal(published.status, 0, published.stderr);
   const before = readFileSync(index);
+  const draftBefore = readFileSync(draft);
   const rules = run(root, "--json").stdout;
+  const unrelated = join(root, "docs/adrs/proposed/ADR-003-unrelated.yaml");
+  const legacy = join(root, "docs/adrs/proposed/ADR-004-legacy.md");
+  writeFileSync(unrelated, "adrSchema: 99\n");
+  writeFileSync(legacy, "# ADR-004: Unmigrated proposal\n");
   const review = run(root, "--check-draft", draft);
   assert.equal(review.status, 0, review.stderr);
   for (const detail of [/ADR-002/, /ADR-001/, /local-mutation-testing/, /incremental/, /pending/i]) assert.match(review.stdout, detail);
   assert.deepEqual(readFileSync(index), before);
-  assert.equal(readFileSync(draft, "utf8"), proposal);
+  assert.deepEqual(readFileSync(draft), draftBefore);
+  rmSync(unrelated);
+  rmSync(legacy);
   assert.equal(run(root, "--json").stdout, rules);
   assert.doesNotMatch(rules, /ADR-002/);
 });
 
-function narrowerGateDraft(proposal) {
-  return proposal
-    .replace(
-      "rules:\n",
-      ["gateTermReplacements:", "  code-edits: { replaces: baseline, definition: Code changes only. }", "rules:\n"].join("\n"),
-    )
-    .replace("baseline: incremental", "code-edits: none");
-}
+const replacement = { replaces: "baseline", definition: "Code changes only." };
+const narrowerRule = { ...proposedRule, gates: { "code-edits": "none" } };
+const narrower = { ...proposal, gateTermReplacements: { "code-edits": replacement }, rules: [narrowerRule] };
 
 test("a draft can narrow a gate's scope while the published rule still answers for all edits", (t) => {
-  const { root, index, draft, proposal } = draftFixture(t);
-  const glossary = join(root, "specs/quality-gate/spec.md");
-  const glossaryText = readFileSync(glossary, "utf8").replace("Local readiness.", "Every edit.");
-  writeFileSync(glossary, glossaryText);
-  const candidate = narrowerGateDraft(proposal);
-  writeFileSync(draft, candidate);
+  const { root, index, draft } = draftFixture(t);
+  const glossary = writeGlossary(root, { baseline: { script: "verify", definition: "Every edit." } });
+  const glossaryText = readFileSync(glossary);
+  writeRecord(draft, narrower);
   const published = run(root, "--write-index");
   assert.equal(published.status, 0, published.stderr);
   const before = readFileSync(index);
@@ -163,37 +236,24 @@ test("a draft can narrow a gate's scope while the published rule still answers f
   assert.equal(run(root, "--json").stdout, json);
   assert.equal(run(root, "--check").status, 0);
   assert.deepEqual(readFileSync(index), before);
-  assert.equal(readFileSync(glossary, "utf8"), glossaryText);
+  assert.deepEqual(readFileSync(glossary), glossaryText);
 });
 
 test("a draft can only replace each active gate once and must name its successor in the rule", (t) => {
-  const { root, draft, proposal } = draftFixture(t);
-  const glossary = join(root, "specs/quality-gate/spec.md");
-  writeFileSync(
-    glossary,
-    readFileSync(glossary, "utf8").replace(
-      "gateTerms:\n",
-      "gateTerms:\n  old: { script: verify, definition: Original scope., retired: true }\n",
-    ),
-  );
-  const candidate = narrowerGateDraft(proposal);
-  for (const [invalid, diagnostic] of [
-    [candidate.replace("code-edits: {", "baseline: {"), /baseline already exists/],
-    [candidate.replace("code-edits: {", "old: {"), /old already exists/],
-    [candidate.replace("replaces: baseline", "replaces: old"), /old is retired/],
-    [candidate.replace("replaces: baseline", "replaces: missing"), /unknown gate to replace missing/],
-    [candidate.replace("rules:\n", "  other: { replaces: baseline, definition: Other scope. }\nrules:\n"), /already replaced/],
-    [candidate.replace("code-edits: none", "baseline: none"), /retired gate baseline/],
-    [candidate.replace("definition: Code changes only.", "definition: '  '"), /pattern/],
-    [candidate.replace("replaces: baseline,", "script: another, replaces: baseline,"), /additional properties/],
-    [
-      candidate
-        .replace("local-mutation-testing", "local-ci-readiness")
-        .replace("gates: { code-edits: none }", "cases: { otherwise: required }"),
-      /must contain/,
-    ],
+  const { root, draft } = draftFixture(t);
+  writeGlossary(root, { ...gateTerms, old: { script: "verify", definition: "Original scope.", retired: true } });
+  for (const [change, diagnostic] of [
+    [{ gateTermReplacements: { baseline: replacement } }, /baseline already exists/],
+    [{ gateTermReplacements: { old: replacement } }, /old already exists/],
+    [{ gateTermReplacements: { "code-edits": { ...replacement, replaces: "old" } } }, /old is retired/],
+    [{ gateTermReplacements: { "code-edits": { ...replacement, replaces: "missing" } } }, /unknown gate to replace missing/],
+    [{ gateTermReplacements: { "code-edits": replacement, other: { ...replacement } } }, /already replaced/],
+    [{ rules: [proposedRule] }, /retired gate baseline/],
+    [{ gateTermReplacements: { "code-edits": { ...replacement, definition: "  " } } }, /pattern|nonblank/],
+    [{ gateTermReplacements: { "code-edits": { ...replacement, script: "another" } } }, /additional properties/],
+    [{ rules: [{ id: "local-ci-readiness", cases: { otherwise: "required" } }] }, /must contain/],
   ]) {
-    writeFileSync(draft, invalid);
+    writeRecord(draft, { ...narrower, ...change });
     const result = run(root, "--check-draft", draft);
     assert.equal(result.status, 1);
     assert.match(result.stderr, diagnostic);
@@ -202,24 +262,19 @@ test("a draft can only replace each active gate once and must name its successor
 });
 
 test("adopting a scope change moves its definition to the glossary and preserves the predecessor", (t) => {
-  const { root, draft, proposal } = draftFixture(t);
-  const candidate = narrowerGateDraft(proposal);
-  const implemented = join(root, "docs/adrs/implemented/ADR-002-review.md");
-  writeFileSync(implemented, candidate);
-  assert.match(run(root, "--json").stderr, /additional properties/);
+  const { root, draft } = draftFixture(t);
+  const implemented = join(root, "docs/adrs/implemented/ADR-002-review.yaml");
   rmSync(draft);
-  const glossary = join(root, "specs/quality-gate/spec.md");
-  writeFileSync(
-    glossary,
-    readFileSync(glossary, "utf8").replace(
-      "definition: Local readiness. }",
-      "definition: Local readiness., retired: true }\n  code-edits: { script: verify, definition: Code changes only. }",
-    ),
-  );
-  writeFileSync(
-    implemented,
-    proposal.replace("baseline: incremental", "code-edits: none").replace("    gates:", "    evidence: checks/local.test.mjs\n    gates:"),
-  );
+  const record = { ...narrower, status: "implemented", date: "2025-02-05", rules: [{ ...narrowerRule, evidence: baseline.evidence }] };
+  writeRecord(implemented, record);
+  const invalid = run(root, "--json");
+  assert.equal(invalid.status, 1);
+  assert.match(invalid.stderr, /ADR-002-review\.yaml/);
+  writeGlossary(root, {
+    baseline: { ...gateTerms.baseline, retired: true },
+    "code-edits": { script: "verify", definition: "Code changes only." },
+  });
+  writeRecord(implemented, { ...record, gateTermReplacements: undefined });
   const result = run(root, "--json");
   assert.equal(result.status, 0, result.stderr);
   const { terms, rules } = JSON.parse(result.stdout);
@@ -233,65 +288,54 @@ test("adopting a scope change moves its definition to the glossary and preserves
 });
 
 test("draft errors identify the offending proposal without printing a partial review", (t) => {
-  const { root, index, path, draft, proposal } = draftFixture(t);
+  const { root, index, path, draft } = draftFixture(t);
   const before = readFileSync(index);
-  const firstRule = proposal.split("rules:\n")[1].split("---\n")[0];
-  for (const [invalid, problem] of [
-    [proposal.replace("baseline:", "typo:"), /unknown gate term typo/],
-    [proposal.replace("incremental", "always"), /allowed values/],
-    [proposal.replace("replaces: ADR-001", "replaces: ADR-099"), /must replace.*ADR-001/],
-    [proposal.replace("    replaces: ADR-001\n", ""), /must replace.*ADR-001/],
-    [proposal.replace(firstRule, firstRule + firstRule), /duplicate draft revision/],
-    [proposal.replace("    gates:", "    evidence: checks/missing.test.mjs\n    gates:"), /evidence/],
-    ["# ADR-002: Ordinary proposal\n", /no typed rule/],
+  for (const [rules, problem] of [
+    [[{ ...proposedRule, gates: { typo: "incremental" } }], /unknown gate term typo/],
+    [[{ ...proposedRule, gates: { baseline: "always" } }], /allowed values/],
+    [[{ ...proposedRule, replaces: "ADR-099" }], /must replace.*ADR-001/],
+    [[{ ...proposedRule, replaces: undefined }], /must replace.*ADR-001/],
+    [[proposedRule, { ...proposedRule, gates: { ...proposedRule.gates } }], /duplicate draft revision/],
+    [[{ ...proposedRule, evidence: "checks/missing.test.mjs" }], /evidence/],
   ]) {
-    writeFileSync(draft, invalid);
+    writeRecord(draft, { ...proposal, rules });
     const result = run(root, "--check-draft", draft);
     assert.equal(result.status, 1);
     assert.match(result.stderr, problem);
     assert.equal(result.stdout, "");
     assert.deepEqual(readFileSync(index), before);
   }
-  writeFileSync(draft, proposal);
-  writeFileSync(join(root, "docs/adrs/implemented/ADR-002-prose.md"), "# ADR-002: Published prose\n");
-  assert.match(run(root, "--check-draft", draft).stderr, /ADR-002 is already implemented/);
-  assert.match(run(root, "--check-draft", path).stderr, /expected a proposal/i);
+  writeRecord(draft, proposal);
+  writeRecord(join(root, "docs/adrs/implemented/ADR-002-published.yaml"), { ...decision, id: "ADR-002" });
+  assert.match(run(root, "--check-draft", draft).stderr, /ADR-002.*already|duplicate.*ADR-002/i);
+  assert.match(run(root, "--check-draft", path).stderr, /expected a proposal|proposed/i);
   assert.match(run(root, "--check-draft").stderr, /usage/i);
 });
 
 test("the first typed proposal starts without a predecessor", (t) => {
-  const { root, path, draft, proposal } = draftFixture(t);
-  writeFileSync(path, "# ADR-001: Legacy prose\n");
+  const { root, path, draft } = draftFixture(t);
+  writeRecord(path, decision);
   const dangling = run(root, "--check-draft", draft);
   assert.equal(dangling.status, 1);
   assert.match(dangling.stderr, /no implemented predecessor/);
-  writeFileSync(draft, proposal.replace("    replaces: ADR-001\n", ""));
+  writeRecord(draft, { ...proposal, rules: [{ ...proposedRule, replaces: undefined }] });
   const first = run(root, "--check-draft", draft);
   assert.equal(first.status, 0, first.stderr);
   assert.match(first.stdout, /ADR-002/);
 });
 
 test("a proposal amending two rules must replace the implemented head of each", (t) => {
-  const { root, draft, proposal, text } = draftFixture(t);
-  const glossary = join(root, "specs/quality-gate/spec.md");
-  writeFileSync(
-    glossary,
-    readFileSync(glossary, "utf8").replace(/---\n$/, "localCi:\n  script: verify\n  cases: { otherwise: Other work }\n---\n"),
-  );
+  const { root, draft } = draftFixture(t);
+  writeGlossary(root, gateTerms, { script: "verify", cases: { otherwise: "Other work" } });
   writeFileSync(join(root, "AGENTS.md"), "## Verification\nRun the workflow.\n");
-  const record = "  - id: local-ci-readiness\n    cases: { otherwise: required }\n    evidence: AGENTS.md#verification\n";
-  const implemented = text.replace(/rules:\n[^]*?---\n/, "rules:\n" + record + "---\n").replace("ADR-001:", "ADR-003:");
-  writeFileSync(join(root, "docs/adrs/implemented/ADR-003-workflow.md"), implemented);
-  const candidate = proposal.replace(
-    /---\n\n# ADR-002:/,
-    record.replace("    cases:", "    replaces: ADR-003\n    cases:") + "---\n\n# ADR-002:",
-  );
-  writeFileSync(draft, candidate);
+  const readiness = { id: "local-ci-readiness", cases: { otherwise: "required" }, evidence: "AGENTS.md#verification" };
+  writeRecord(join(root, "docs/adrs/implemented/ADR-003-workflow.yaml"), { ...decision, id: "ADR-003", rules: [readiness] });
+  writeRecord(draft, { ...proposal, rules: [proposedRule, { ...readiness, replaces: "ADR-003" }] });
   const review = run(root, "--check-draft", draft);
   assert.equal(review.status, 0, review.stderr);
   assert.match(review.stdout, /local-mutation-testing\nImplemented head ADR-001/);
   assert.match(review.stdout, /local-ci-readiness\nImplemented head ADR-003/);
-  writeFileSync(draft, candidate.replace("replaces: ADR-003", "replaces: ADR-001"));
+  writeRecord(draft, { ...proposal, rules: [proposedRule, { ...readiness, replaces: "ADR-001" }] });
   const stale = run(root, "--check-draft", draft);
   assert.equal(stale.status, 1);
   assert.match(stale.stderr, /local-ci-readiness must replace the implemented head ADR-003/);
@@ -299,81 +343,77 @@ test("a proposal amending two rules must replace the implemented head of each", 
 });
 
 test("a retired gate keeps its meaning when a successor reuses or removes its command", (t) => {
-  const { root, path, text } = fixture(t);
-  const glossary = join(root, "specs/quality-gate/spec.md");
-  const original = readFileSync(glossary, "utf8");
-  writeFileSync(path, text.replace("baseline: none", "all-edits: full"));
-  const next = text.replace("ADR-001:", "ADR-002:").replace("    gates:", "    replaces: ADR-001\n    gates:");
-  const successor = join(root, "docs/adrs/implemented/ADR-002-successor.md");
-  writeFileSync(successor, next);
+  const { root, path } = fixture(t);
+  writeRecord(path, { ...decision, rules: [{ ...baseline, gates: { "all-edits": "full" } }] });
+  const successorRule = { ...baseline, replaces: "ADR-001" };
+  const next = { ...decision, id: "ADR-002", rules: [successorRule] };
+  const successor = join(root, "docs/adrs/implemented/ADR-002-successor.yaml");
+  writeRecord(successor, next);
 
   for (const script of ["old-verify", "verify"]) {
-    const retired = `  all-edits: { script: ${script}, definition: Every edit., retired: true }\n`;
-    writeFileSync(glossary, original.replace("gateTerms:\n", "gateTerms:\n" + retired));
+    writeGlossary(root, { ...gateTerms, "all-edits": { script, definition: "Every edit.", retired: true } });
     const answer = run(root, id);
     assert.equal(answer.status, 0, answer.stderr);
     const [current, previous] = answer.stdout.split("\n\nADR-001\n");
     assert.match(current, /baseline — npm run verify skips mutation testing/);
     assert.match(current, /Local readiness\./);
     assert.doesNotMatch(current, /all-edits/);
-    assert.ok(previous.includes(`all-edits — npm run ${script} runs full mutation testing`));
+    assert.ok(previous.includes("all-edits — npm run " + script + " runs full mutation testing"));
     assert.match(previous, /Every edit\./);
     assert.doesNotMatch(previous, /Local readiness\./);
   }
-  writeFileSync(successor, next.replace("baseline: none", "all-edits: none"));
+  writeRecord(successor, { ...next, rules: [{ ...successorRule, gates: { "all-edits": "none" } }] });
   const retiredHead = run(root, "--check");
   assert.equal(retiredHead.status, 1);
   assert.match(retiredHead.stderr, /retired.*all-edits|all-edits.*retired/);
 
-  writeFileSync(successor, next);
-  writeFileSync(path, text.replace("baseline: none", "all-edits: full, baseline: none"));
+  writeRecord(successor, next);
+  writeRecord(path, { ...decision, rules: [{ ...baseline, gates: { "all-edits": "full", baseline: "none" } }] });
   const ambiguous = run(root, "--check");
   assert.equal(ambiguous.status, 1);
   assert.match(ambiguous.stderr, /duplicate.*verify|verify.*twice/);
 });
 
 test("an invalid readiness snapshot cannot overwrite the published index", (t) => {
-  const { root, index, path, text } = fixture(t);
-  const glossary = join(root, "specs/quality-gate/spec.md");
-  const original = readFileSync(glossary, "utf8");
-  writeFileSync(
-    glossary,
-    original.replace(
-      /---\n$/,
-      "localCi:\n  script: replay\n  cases: { build: Build changes, docs: Documentation edits, otherwise: Other work }\n---\n",
-    ),
-  );
+  const { root, index, path } = fixture(t);
+  writeGlossary(root, gateTerms, {
+    script: "replay",
+    cases: { build: "Build changes", docs: "Documentation edits", otherwise: "Other work" },
+  });
   writeFileSync(join(root, "package.json"), JSON.stringify({ scripts: { verify: "node --test", replay: "local-ci run" } }));
   writeFileSync(join(root, "AGENTS.md"), "## Verification\n\nReplay the workflow for build changes.\n\n~~~md\n## Example\n~~~\n");
-  const snapshot = text
-    .replace("local-mutation-testing", "local-ci-readiness")
-    .replace("gates: { baseline: none }", "cases: { build: required, otherwise: may-skip }")
-    .replace("checks/local.test.mjs", "AGENTS.md#verification");
-  writeFileSync(path, snapshot);
+  const readiness = { id: "local-ci-readiness", cases: { build: "required", otherwise: "may-skip" }, evidence: "AGENTS.md#verification" };
+  writeRecord(path, { ...decision, rules: [readiness] });
   const publish = run(root, "--write-index");
   assert.equal(publish.status, 0, publish.stderr);
   const before = readFileSync(index, "utf8");
-  for (const [from, to, diagnostic] of [
-    ["otherwise: may-skip", "docs: required", /otherwise/],
-    ["build: required", "build: sometimes", /allowed values/],
-    ["build: required", "buid: required", /unknown case buid/],
-    ["build: required", "build: required, docs: may-skip", /same outcome/],
-    ["cases: {", "gates: {", /cases/],
-    ["AGENTS.md#verification", "checks/local.test.mjs", /pattern/],
-    ["AGENTS.md#verification", "AGENTS.md#removed", /heading/],
-    ["AGENTS.md#verification", "AGENTS.md#example", /heading/],
+  for (const [change, diagnostic] of [
+    [{ cases: { build: "required", docs: "required" } }, /otherwise/],
+    [{ cases: { build: "sometimes", otherwise: "may-skip" } }, /allowed values/],
+    [{ cases: { buid: "required", otherwise: "may-skip" } }, /unknown case buid/],
+    [{ cases: { build: "required", docs: "may-skip", otherwise: "may-skip" } }, /same outcome/],
+    [{ cases: undefined, gates: readiness.cases }, /cases/],
+    [{ evidence: "checks/local.test.mjs" }, /pattern/],
+    [{ evidence: "AGENTS.md#removed" }, /heading/],
+    [{ evidence: "AGENTS.md#example" }, /heading/],
   ]) {
-    writeFileSync(path, snapshot.replace(from, to));
+    writeRecord(path, { ...decision, rules: [{ ...readiness, ...change }] });
     const result = run(root, "--write-index");
-    assert.equal(result.status, 1, to);
-    assert.match(result.stderr, diagnostic, to);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, diagnostic);
     assert.equal(readFileSync(index, "utf8"), before);
   }
 });
 
-test("query, freshness check and explicit index update work in a mixed legacy corpus", (t) => {
+test("only implemented rule revisions contribute to queries, index updates and freshness checks", (t) => {
   const { root, index } = fixture(t);
-  writeFileSync(join(root, "docs/adrs/implemented/ADR-002-legacy.md"), "---\nowner: &lead Jamie\nreviewers: [*lead]\n---\nLegacy prose.\n");
+  writeRecord(join(root, "docs/adrs/implemented/ADR-002-unrelated.yaml"), { ...decision, id: "ADR-002" });
+  for (const [stage, adr] of [
+    ["accepted", "ADR-003"],
+    ["proposed", "ADR-004"],
+  ]) {
+    writeRecord(join(root, "docs/adrs", stage, adr + "-next.yaml"), { ...proposal, id: adr, status: stage, date: "2025-02-07" });
+  }
   const before = readFileSync(index, "utf8");
   const stale = run(root, "--check");
   assert.equal(stale.status, 1);
@@ -386,43 +426,49 @@ test("query, freshness check and explicit index update work in a mixed legacy co
   const answer = run(root, id);
   assert.equal(answer.status, 0, answer.stderr);
   assert.match(answer.stdout, /This gate runs on every edit\./);
+  assert.doesNotMatch(answer.stdout, /ADR-002|ADR-003|ADR-004/);
   assert.equal(run(root, "unrecognized-rule").status, 1);
 });
 
 test("closed schema, canonical terms and evidence are validated before an index write", (t) => {
-  const { root, index, path, text } = fixture(t);
+  const { root, index, path } = fixture(t);
   const before = readFileSync(index, "utf8");
-  for (const [from, to, diagnostic] of [
-    ["ruleSchema: 1", "ruleSchema: 2", /constant/],
-    ["ruleSchema: 1", "ruleSchema: 1\nruleSchema: 1", /unique/],
-    ["baseline: none", "baseline: optional", /allowed values/],
-    ["baseline: none", "base-line: full", /unknown gate term/],
-    ["gates: {", "gatez: {", /required|additional properties/],
-    ["checks/local.test.mjs", "checks/missing.test.mjs", /evidence/],
-    ["checks/local.test.mjs", "../private.test.mjs", /pattern/],
-    ["# ADR-001:", "# ADR-101:", /title/],
-    ["## Context", "## Background", /Context/],
-    ["## Context", "**Status:** Superseded by ADR-003\n\n## Context", /superseded ADR-001/],
+  for (const [change, diagnostic] of [
+    [{ adrSchema: 2 }, /constant/],
+    [{ unexpected: true }, /additional properties/],
+    [{ rules: [{ ...baseline, gates: { baseline: "optional" } }] }, /allowed values/],
+    [{ rules: [{ ...baseline, gates: { "base-line": "full" } }] }, /unknown gate term/],
+    [{ rules: [{ ...baseline, gates: undefined, gatez: baseline.gates }] }, /required|additional properties/],
+    [{ rules: [{ ...baseline, evidence: "checks/missing.test.mjs" }] }, /evidence/],
+    [{ rules: [{ ...baseline, evidence: "../private.test.mjs" }] }, /pattern/],
+    [{ id: "ADR-101" }, /filename|file name/i],
+    [{ context: undefined }, /context/i],
+    [{ title: "  " }, /title/i],
+    [{ status: "superseded" }, /superseded ADR-001.*successor/i],
   ]) {
-    writeFileSync(path, text.replace(from, to));
+    writeRecord(path, { ...decision, rules: [baseline], ...change });
     const result = run(root, "--write-index");
-    assert.equal(result.status, 1, to);
-    assert.match(result.stderr, diagnostic, to);
-    assert.equal(readFileSync(index, "utf8"), before, to);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, diagnostic);
+    assert.equal(readFileSync(index, "utf8"), before);
   }
+  const duplicate = stringify(decision) + "adrSchema: 1\n";
+  writeFileSync(path, duplicate);
+  const invalid = run(root, "--write-index");
+  assert.equal(invalid.status, 1);
+  assert.match(invalid.stderr, /unique|duplicate/i);
+  assert.equal(readFileSync(index, "utf8"), before);
 });
 
 test("current policies cover every glossary term and refer to distinct existing commands", (t) => {
   const { root } = fixture(t);
-  const glossary = join(root, "specs/quality-gate/spec.md");
-  const original = readFileSync(glossary, "utf8");
   writeFileSync(join(root, "package.json"), JSON.stringify({ scripts: { verify: "node --test", deep: "node --test --deep" } }));
   for (const [script, diagnostic] of [
     ["deep", /omits deep/],
     ["verify", /duplicate gate command/],
     ["unknown", /unknown npm script/],
   ]) {
-    writeFileSync(glossary, original.trimEnd().replace(/---$/, `  deep: {script: ${script}, definition: Extended readiness.}\n---\n`));
+    writeGlossary(root, { ...gateTerms, deep: { script, definition: "Extended readiness." } });
     const result = run(root, "--json");
     assert.equal(result.status, 1, script);
     assert.match(result.stderr, diagnostic, script);

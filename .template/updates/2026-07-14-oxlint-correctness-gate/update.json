@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-037-adopt-oxlint-correctness-gate.md"],
+  "adrs": ["docs/adrs/implemented/ADR-037-adopt-oxlint-correctness-gate.yaml"],
   "touches": ["package.json", "package-lock.json", "scripts/", "ARCHITECTURE.md", "docs/", "specs/"],
   "checks": ["npm run lint", "npm run quality:gate", "npm run ci:local"]
 }

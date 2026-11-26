@@ -1,6 +1,6 @@
 # Consolidate local skill routing
 
-Use this pack if your project adopted the template's `simplify` or `minimal-visual-style` skill. After the migration you can ask for a behavior-preserving simplification directly. Use `$frontend-design` for both starter UI extensions and a requested redesign. [Decision and evidence](../../../docs/adrs/implemented/ADR-075-consolidate-local-skill-routing.md)
+Use this pack if your project adopted the template's `simplify` or `minimal-visual-style` skill. After the migration you can ask for a behavior-preserving simplification directly. Use `$frontend-design` for both starter UI extensions and a requested redesign. [Decision and evidence](../../../docs/adrs/implemented/ADR-075-consolidate-local-skill-routing.yaml)
 
 ## Apply
 

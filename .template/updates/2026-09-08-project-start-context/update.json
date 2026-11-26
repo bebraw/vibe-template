@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md"],
+  "adrs": ["docs/adrs/implemented/ADR-062-retain-durable-implementation-context.yaml"],
   "touches": [
     ".codex/skills/start-project/SKILL.md",
     "AGENTS.md",

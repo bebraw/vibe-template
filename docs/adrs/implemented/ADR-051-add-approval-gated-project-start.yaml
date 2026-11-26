@@ -1,0 +1,52 @@
+adrSchema: 1
+id: ADR-051
+title: Add Approval-Gated Project Start
+status: implemented
+date: 2026-08-03
+context: |-
+  `vibe-template` is intended to be easy to clone and prune, but a fresh clone does not distinguish distribution-only material from active governance, coupled tooling, or starter behavior that still protects a working seam. Ad hoc cleanup can delete useful architecture history, leave broken references, or remove the local update packs without preserving an upstream sync path.
+
+  The Kirjolab case study also showed that product requirements can outrun architecture early. Project initialization should therefore define one current closed product loop and explicit deferred capabilities before inherited structure or new feature areas expand.
+decision: |-
+  Add an explicitly invoked `start-project` skill. Its first phase is read-only and produces a Project Start Plan covering product focus, exact keep and removal targets, replace-later seams, unresolved decisions, coupled documentation changes, template-update provenance, and verification. Repository edits and deletions begin only after the user approves that exact plan.
+
+  Treat distribution kits, historical update packs, starter behavior, agent skills, methodology references, architecture history, and coupled tooling as separate audit classes rather than one cleanup set. Keep implemented ADRs and living specs by default. Remove starter behavior only after its replacement or abandonment is approved and verifiable.
+
+  When a downstream project prunes local update-pack history, record the actual template source, baseline Git revision, and applied update IDs in existing package metadata or durable documentation, and retain a discoverable sync entrypoint.
+trigger: "After adding early architecture feedback, the user approved the recommended next step: an explicit workflow for establishing the first product loop and safely pruning a fresh clone without losing its template update path."
+consequences: |-
+  **Positive:**
+
+  - Fresh projects begin with a visible product horizon instead of an open-ended feature list.
+  - Destructive pruning becomes reviewable and scoped to exact targets.
+  - Working starter seams remain available until replacements are real.
+  - Downstream projects can shed template distribution history while retaining update provenance.
+  - The workflow adds no runtime dependency or external tracker.
+
+  **Negative:**
+
+  - Initialization requires a planning and approval round before cleanup.
+  - The agent must trace references and coupled tooling rather than applying a fixed deletion list.
+  - Downstream package metadata or docs retain a small amount of template provenance.
+
+  **Neutral:**
+
+  - Start Project does not discover a product strategy or implement the first loop.
+  - Projects may keep all inherited material when that is the deliberate choice.
+  - The skill can remove itself last after the project no longer needs initialization guidance.
+alternatives: |-
+  ### Ship A Fixed Cleanup Script
+
+  This would be fast for an unchanged clone but unsafe as soon as the user edits starter code, retains a capability kit, or chooses different tooling. The destructive portion needs repository-specific judgment and approval.
+
+  ### Keep The Full Template In Every Project
+
+  This preserves every update and governance surface but leaves distribution infrastructure and unused skills competing with product context indefinitely.
+
+  ### Document A Manual Checklist Only
+
+  A checklist improves discoverability but does not reliably inventory references, coupled copies, and worktree changes at execution time.
+
+  ### Create A Dedicated Project Manifest
+
+  A manifest could make initialization deterministic, but it adds a new state authority. Existing package metadata and durable documentation can record project focus and update provenance without another persistent format.

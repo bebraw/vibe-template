@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Architecture decision record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["adrSchema", "id", "title", "status", "context", "decision"],
+  "properties": {
+    "adrSchema": { "const": 1 },
+    "id": { "$ref": "#/definitions/id" },
+    "title": { "$ref": "#/definitions/text" },
+    "status": { "enum": ["proposed", "accepted", "implemented", "superseded"] },
+    "date": { "type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$" },
+    "recordedStatus": {
+      "const": "accepted",
+      "description": "Original label retained when an accepted Markdown decision already lived in the implemented log."
+    },
+    "preamble": { "$ref": "#/definitions/text" },
+    "context": { "$ref": "#/definitions/text" },
+    "trigger": { "$ref": "#/definitions/text" },
+    "decision": { "$ref": "#/definitions/text" },
+    "consequences": { "$ref": "#/definitions/text" },
+    "alternatives": { "$ref": "#/definitions/text" },
+    "amends": { "$ref": "#/definitions/relations" },
+    "amendedBy": { "$ref": "#/definitions/relations" },
+    "supersedes": { "$ref": "#/definitions/relations" },
+    "supersededBy": { "$ref": "#/definitions/relations" },
+    "extraSections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["heading", "body"],
+        "properties": { "heading": { "$ref": "#/definitions/text" }, "body": { "type": "string" } }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": { "enum": ["local-mutation-testing", "local-ci-readiness"] },
+          "replaces": { "$ref": "#/definitions/id" },
+          "gates": true,
+          "cases": true,
+          "evidence": { "type": "string" }
+        },
+        "if": { "properties": { "id": { "const": "local-mutation-testing" } } },
+        "then": {
+          "required": ["gates"],
+          "properties": {
+            "gates": {
+              "description": "Complete snapshot of gates covered by this revision.",
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+              "additionalProperties": { "enum": ["none", "full", "incremental"] }
+            },
+            "cases": false,
+            "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)+[A-Za-z0-9_.-]+\\.test\\.(mjs|js|ts)$" }
+          }
+        },
+        "else": {
+          "required": ["cases"],
+          "properties": {
+            "cases": {
+              "description": "Use a matching named condition, falling back to otherwise when none match.",
+              "type": "object",
+              "required": ["otherwise"],
+              "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+              "properties": { "otherwise": { "$ref": "#/definitions/readiness" } },
+              "additionalProperties": { "$ref": "#/definitions/readiness" }
+            },
+            "gates": false,
+            "evidence": { "type": "string", "pattern": "^([A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\\.md#[a-z0-9]+(-[a-z0-9]+)*$" }
+          }
+        }
+      }
+    },
+    "gateTermReplacements": {
+      "description": "Proposed gate scopes keyed by new term ID. Each inherits the npm script of the active term it replaces.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["replaces", "definition"],
+        "properties": {
+          "replaces": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
+          "definition": { "$ref": "gate-terms.schema.json#/definitions/description" }
+        }
+      }
+    }
+  },
+  "if": { "properties": { "status": { "enum": ["accepted", "implemented", "superseded"] } } },
+  "then": { "required": ["date"], "properties": { "date": true } },
+  "dependencies": {
+    "gateTermReplacements": {
+      "properties": {
+        "rules": {
+          "type": "array",
+          "contains": { "type": "object", "properties": { "id": { "const": "local-mutation-testing" } }, "required": ["id"] }
+        },
+        "status": { "const": "proposed" }
+      },
+      "required": ["rules"]
+    },
+    "recordedStatus": { "properties": { "status": { "enum": ["implemented", "superseded"] } } }
+  },
+  "definitions": {
+    "id": { "type": "string", "pattern": "^ADR-[0-9]{3,}$" },
+    "text": { "type": "string", "pattern": "\\S" },
+    "readiness": { "enum": ["required", "may-skip"] },
+    "relations": { "type": "array", "uniqueItems": true, "minItems": 1, "items": { "$ref": "#/definitions/id" } }
+  }
+}

@@ -65,7 +65,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - **Remote expensive-gate classifier:** `scripts/classify-expensive-ci.mjs`
 - **Remote expensive-gate policy:** skip browser and mutation setup/execution only when every changed file is in a documented non-runtime area; run on unknown paths or unavailable ranges
 - **CI dependency install:** plain `npm ci`
-- **Temporary dependency replacement:** Local CI 0.18.1 resolves DTU from the committed archive in `vendor/dtu-github-actions/` using a scoped npm override; [ADR-074](../../docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md) records the decision and removal condition
+- **Temporary dependency replacement:** Local CI 0.18.1 resolves DTU from the committed archive in `vendor/dtu-github-actions/` using a scoped npm override; [ADR-074](../../docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.yaml) records the decision and removal condition
 - **Action pinning:** every GitHub Actions `uses:` reference must use a full commit SHA
 - **Git hook path:** `.githooks/`
 - **Hook setup script:** `scripts/setup-git-hooks.mjs`
@@ -159,7 +159,7 @@ The template needs a verification baseline that stays strict enough for end-to-e
 - The CI workflow must pin every GitHub Actions `uses:` action reference to a full commit SHA, with any tag information kept only as a comment.
 - The browser CI job must use a container image whose version exactly matches the pinned `@playwright/test` version instead of reinstalling Chromium at runtime.
 - The browser gate must collect screenshot trace events from both the default headless shell and the full Chromium executable used by Lighthouse; a browser disconnect, incomplete trace, or missing screenshot events must fail the gate.
-- Browser dependency refreshes must also pass full mobile and desktop Lighthouse audits with screenshot collection enabled in Linux ARM64 Local CI before their pins are distributed. [ADR-068](../../docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md) records the verification policy and earlier rollback.
+- Browser dependency refreshes must also pass full mobile and desktop Lighthouse audits with screenshot collection enabled in Linux ARM64 Local CI before their pins are distributed. [ADR-068](../../docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.yaml) records the verification policy and earlier rollback.
 - The coverage gate must only require unit tests when runtime `src/` code exists.
 - The coverage gate must work in both the normal workspace and Local CI's warmed `node_modules` layout.
 - The Worker client-code guard must allow only empty same-origin `/assets/*.js` module tags independent of attribute order, and must fail on inline, malformed, classic, remote, or non-asset scripts, inline event-handler attributes, and `javascript:` URLs in Worker/view runtime files while preserving source locations.

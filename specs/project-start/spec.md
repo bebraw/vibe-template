@@ -17,7 +17,7 @@ The project needs a lightweight one-time workflow that establishes the first clo
 - **Public contracts:** the read-only Project Start Plan, the approved target list, and the resulting project docs/specs/ADRs
 - **Dependency direction:** the skill reads template and project surfaces; those surfaces do not depend on the skill after initialization
 - **Update provenance:** template source, baseline Git revision, and applied update IDs in existing package metadata or durable docs when local update history is pruned
-- **Decision:** [ADR-062](../../docs/adrs/implemented/ADR-062-retain-durable-implementation-context.md) extends [ADR-051](../../docs/adrs/implemented/ADR-051-add-approval-gated-project-start.md) without changing its initialization or pruning approval boundaries
+- **Decision:** [ADR-062](../../docs/adrs/implemented/ADR-062-retain-durable-implementation-context.yaml) extends [ADR-051](../../docs/adrs/implemented/ADR-051-add-approval-gated-project-start.yaml) without changing its initialization or pruning approval boundaries
 
 ### Out of Scope
 

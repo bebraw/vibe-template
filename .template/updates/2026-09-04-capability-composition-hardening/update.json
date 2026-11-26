@@ -5,10 +5,10 @@
   "risk": "medium",
   "supersedes": [],
   "adrs": [
-    "docs/adrs/implemented/ADR-024-disallow-inline-client-code-in-worker-views.md",
-    "docs/adrs/implemented/ADR-056-verify-executable-capability-kits.md",
-    "docs/adrs/implemented/ADR-057-add-browser-static-assets-kit.md",
-    "docs/adrs/implemented/ADR-060-refresh-worker-operational-contracts.md"
+    "docs/adrs/implemented/ADR-024-disallow-inline-client-code-in-worker-views.yaml",
+    "docs/adrs/implemented/ADR-056-verify-executable-capability-kits.yaml",
+    "docs/adrs/implemented/ADR-057-add-browser-static-assets-kit.yaml",
+    "docs/adrs/implemented/ADR-060-refresh-worker-operational-contracts.yaml"
   ],
   "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "package.json", "scripts/", "specs/"],
   "checks": ["npm run capabilities:verify", "npm run capabilities:verify:browser", "npm run quality:gate", "npm run ci:local"]

@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-063-add-non-destructive-room-initialization.md"],
+  "adrs": ["docs/adrs/implemented/ADR-063-add-non-destructive-room-initialization.yaml"],
   "touches": [".capabilities/room-state/", "ARCHITECTURE.md", "docs/adrs/", "specs/capability-kits/spec.md"],
   "checks": ["npm run capabilities:verify", "npm run quality:gate"]
 }

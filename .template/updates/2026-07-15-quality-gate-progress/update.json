@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-042-emit-quality-gate-progress.md"],
+  "adrs": ["docs/adrs/implemented/ADR-042-emit-quality-gate-progress.yaml"],
   "touches": ["package.json", "scripts/", "docs/", "specs/"],
   "checks": ["npm run quality:gate", "npm run ci:local"]
 }

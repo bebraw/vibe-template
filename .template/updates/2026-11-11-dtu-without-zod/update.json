@@ -3,7 +3,7 @@
   "title": "Remove Local CI's Zod dependency with a scoped DTU replacement",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md"],
+  "adrs": ["docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.yaml"],
   "touches": [
     "package.json",
     "package-lock.json",
