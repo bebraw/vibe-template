@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-061-enable-starter-worker-observability.md"],
+  "adrs": ["docs/adrs/implemented/ADR-061-enable-starter-worker-observability.yaml"],
   "touches": [
     ".capabilities/",
     ".template/updates/",

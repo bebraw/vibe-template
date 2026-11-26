@@ -1,0 +1,31 @@
+adrSchema: 1
+id: ADR-077
+title: Store architecture decisions in standalone YAML
+status: implemented
+date: 2026-11-26
+amends:
+  - ADR-076
+context: |
+  The typed-rule pilot could answer two policy questions, but it still had to extract each decision's ID, lifecycle and rationale from Markdown headings. Contributors also need a predictable way to validate ordinary decisions and their links. Downstream projects have their own decision numbers and may have no reason to adopt this template's two policy histories.
+decision: |
+  Store each ADR in a single YAML file with a versioned schema. Keep Markdown available in prose fields and reserve typed rule revisions for policies whose amendments warrant a queryable history. Validate the complete decision log independently of this template's policy assertions.
+
+  Provide a one-time downstream converter. It previews the change, preserves authored prose and relationships, and updates repository links to the migrated files.
+
+  Keep the repository's schema as the authoring format. Revisit interoperability when a downstream project identifies a tool that needs to read or write these records. A read-only consumer may need only an export.
+consequences: |
+  Tools can check decision identity, lifecycle, dates, and declared relationships directly. Reviewers still judge whether the prose accurately describes the decision and whether a term's meaning has changed. Existing external links and Markdown heading anchors need updating when a project converts.
+
+  We own schema evolution and migration. In the template pilot, six of the 78 records in the implemented directory declared rule revisions. The other records needed only the decision format.
+alternatives: |
+  Keeping YAML frontmatter in Markdown would preserve GitHub's rendered page and existing links. A reader would still need a Markdown parser to find decision text under headings.
+
+  Supporting both file types indefinitely would let adopters migrate gradually. It would also require every reader and authoring workflow to handle two representations of a decision.
+
+  YADR, the ADR community's YAML version of MADR, could carry our rule fields in the same file and give YADR consumers access to the common fields. Its schema requires decision drivers, considered options, and a chosen option with a link and justification. Adopting it would require restructuring the historical prose. We would still maintain rule histories and evidence checks. Neither pilot identified a tool that needed YADR input. [YADR templates](https://github.com/adr/yadr) · [YADR schema](https://github.com/adr/yadr/blob/main/schemas/yadr-schema.json)
+extraSections:
+  - heading: Standards and related formats
+    body: |
+      ISO/IEC/IEEE 42010:2022 covers recording architecture decisions and rationale and leaves the format and medium open. The RFC Series uses RFCXML as its definitive publication format and distinguishes documents that update an earlier RFC from those that obsolete it. These are precedents for structured records and amendment links. [ISO 42010](https://www.iso.org/standard/74393.html) · [RFC formats](https://www.rfc-editor.org/rfc/rfc9720.html) · [RFC relationships](https://www.rfc-editor.org/series/rfc/)
+
+      ADR Governance also stores standalone YAML decisions with Markdown prose and uses a JSON Schema that can cite implementation evidence such as test suites. Among the formats reviewed, we found none that also specifies how to recover a project's current answer across partial amendments. [ADR Governance schema](https://github.com/ivanstambuk/adr-governance/blob/main/schemas/adr.schema.json) · [Project rule decision](./ADR-078-keep-product-rules-with-the-project.yaml)

@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-038-scope-prettier-to-owned-files.md"],
+  "adrs": ["docs/adrs/implemented/ADR-038-scope-prettier-to-owned-files.yaml"],
   "touches": [".prettierignore", "ARCHITECTURE.md", "docs/", "specs/"],
   "checks": ["npm run format:check", "npm run quality:gate", "npm run ci:local"]
 }

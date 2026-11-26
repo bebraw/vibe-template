@@ -3,7 +3,7 @@
   "title": "Use incremental mutation in the local gate",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-028-use-incremental-local-mutation-gate.md"],
+  "adrs": ["docs/adrs/implemented/ADR-028-use-incremental-local-mutation-gate.yaml"],
   "touches": ["package.json", ".github/workflows/ci.yml", "docs/", "specs/"],
   "checks": ["npm run mutation:incremental", "npm run quality:gate", "npm run ci:local"]
 }

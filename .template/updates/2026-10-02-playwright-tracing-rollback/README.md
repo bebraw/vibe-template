@@ -14,7 +14,7 @@ The preceding Playwright `1.62.1` browser, Chromium `151.0.7922.34`, collects sc
 2. Change the existing browser CI image to `mcr.microsoft.com/playwright:v1.62.1-noble`, preserving the target's workflow and image-digest policy. Install the matching local browsers through the target's existing browser-install command.
 3. If retained, update current capability manifests and recipes to the same browser version. Keep Lighthouse `13.5.0`, Chrome launcher `1.2.2`, and the other dependency refreshes.
 4. Copy or adapt `src/browser-tracing.e2e.ts` into the target's existing Playwright test suite. Ensure its `testMatch` includes the test. It exercises both Chromium executables on an in-memory page and requires real screenshot trace events, without saved trace files or an external URL.
-5. Document the retained browser pin and verification requirement in the target's existing development and quality-gate documentation. [ADR-068](../../../docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md) records the template's rationale.
+5. Document the retained browser pin and verification requirement in the target's existing development and quality-gate documentation. [ADR-068](../../../docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.yaml) records the template's rationale.
 
 ## Fallback
 

@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-034-emit-agent-ci-progress-events.md"],
+  "adrs": ["docs/adrs/implemented/ADR-034-emit-agent-ci-progress-events.yaml"],
   "touches": ["package.json", ".codex/skills/agent-ci/", ".capabilities/agent-ci/", "docs/", "specs/"],
   "checks": ["npm run quality:gate", "npm run ci:local"]
 }

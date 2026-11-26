@@ -3,7 +3,7 @@
   "title": "Restore verified Playwright screenshot tracing on Linux ARM64",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.md"],
+  "adrs": ["docs/adrs/implemented/ADR-068-verify-browser-screenshot-tracing.yaml"],
   "touches": [
     "package.json",
     "package-lock.json",

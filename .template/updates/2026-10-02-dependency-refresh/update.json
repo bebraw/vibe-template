@@ -3,7 +3,7 @@
   "title": "Refresh compatible tooling and reviewed web guidance",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md"],
+  "adrs": ["docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.yaml"],
   "touches": [
     "package.json",
     "package-lock.json",

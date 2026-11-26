@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../../specs/adr-rules/record.schema.json
+adrSchema: 1
+id: ADR-000
+title: "{Title}"
+status: proposed
+context: "{What problem needs solving? What constraints or pressures make this decision necessary?}"
+decision: "{What was decided? State it clearly and unambiguously.}"
+trigger: "{What change, proposal, or tension made this decision explicit now?}"
+consequences: |-
+  **Positive:**
+
+  - {Benefit 1}
+
+  **Negative:**
+
+  - {Trade-off 1}
+
+  **Neutral:**
+
+  - {Change 1}
+alternatives: |-
+  ### {Alternative 1}
+
+  {Why it was considered and why it was not chosen.}
+
+  ### {Alternative 2}
+
+  {Why it was considered and why it was not chosen.}

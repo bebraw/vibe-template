@@ -3,7 +3,7 @@
   "title": "Add advisory Fallow codebase diagnostics",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-033-add-advisory-fallow-diagnostics.md"],
+  "adrs": ["docs/adrs/implemented/ADR-033-add-advisory-fallow-diagnostics.yaml"],
   "touches": [
     "package.json",
     "package-lock.json",

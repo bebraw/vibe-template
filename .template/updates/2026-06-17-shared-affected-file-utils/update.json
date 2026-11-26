@@ -3,7 +3,7 @@
   "title": "Extract shared affected-file helper logic",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-026-run-affected-guardrails-when-possible.md"],
+  "adrs": ["docs/adrs/implemented/ADR-026-run-affected-guardrails-when-possible.yaml"],
   "touches": [
     "scripts/affected-file-utils.mjs",
     "scripts/run-affected-guardrails.mjs",

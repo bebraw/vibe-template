@@ -3,7 +3,7 @@
   "title": "Add early architecture feedback",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-050-add-early-architecture-feedback.md"],
+  "adrs": ["docs/adrs/implemented/ADR-050-add-early-architecture-feedback.yaml"],
   "touches": [".codex/skills/", "AGENTS.md", "ARCHITECTURE.md", "README.md", "package.json", "scripts/", "specs/"],
   "checks": ["npm run quality:gate", "npm run ci:local"]
 }

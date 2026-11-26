@@ -5,8 +5,8 @@
   "risk": "medium",
   "supersedes": ["2026-07-10-playwright-1-61-ci-image", "2026-07-14-agent-ci-cache-isolation"],
   "adrs": [
-    "docs/adrs/implemented/ADR-009-split-fast-and-browser-verification.md",
-    "docs/adrs/implemented/ADR-053-adopt-local-ci-canonical-interface.md"
+    "docs/adrs/implemented/ADR-009-split-fast-and-browser-verification.yaml",
+    "docs/adrs/implemented/ADR-053-adopt-local-ci-canonical-interface.yaml"
   ],
   "touches": [
     "package.json",

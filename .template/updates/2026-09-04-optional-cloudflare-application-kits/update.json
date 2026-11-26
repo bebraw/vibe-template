@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-055-add-optional-cloudflare-application-kits.md"],
+  "adrs": ["docs/adrs/implemented/ADR-055-add-optional-cloudflare-application-kits.yaml"],
   "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "README.md", "docs/", "package.json", "scripts/", "specs/"],
   "checks": ["npm run quality:gate", "npm run ci:local"]
 }

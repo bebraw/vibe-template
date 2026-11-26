@@ -3,7 +3,7 @@
   "title": "Scope agent context and approvals to the requested task",
   "status": "implemented",
   "risk": "low",
-  "adrs": ["docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md"],
+  "adrs": ["docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.yaml"],
   "touches": ["AGENTS.md", "ARCHITECTURE.md", ".codex/skills/to-spec/", "specs/agent-skills/spec.md", "docs/adrs/"],
   "checks": [
     "npm run skill:validate -- .codex/skills/to-spec",

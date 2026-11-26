@@ -1,0 +1,52 @@
+adrSchema: 1
+id: ADR-048
+title: Adopt Repository-Local Wayfinding
+status: implemented
+date: 2026-08-03
+context: |-
+  Large initiatives can remain too uncertain for a responsible spec or implementation plan while also exceeding one agent session. The upstream `mattpocock/skills` Wayfinder workflow addresses this with a map of questions, dependencies, decision fog, and progressive resolution.
+
+  Its default implementation uses an issue tracker as the canonical map, creates child issues and labels, claims work through assignments, and depends on several companion skills. This template intentionally keeps related development context in the repository and should not require GitHub Issues or a larger workflow suite for occasional discovery work.
+
+  The repository already treats `ARCHITECTURE.md`, ADRs, and feature specs as durable authority. A planning workflow must preserve that boundary rather than leaving lasting decisions only in transient map entries.
+decision: |-
+  Adopt a project-local `wayfinder` skill derived from `mattpocock/skills` revision `2ab958093e83e0ec752e6c1c5932da465bf23e0c`, retaining the upstream MIT license and recording its provenance in the skill.
+
+  Make Wayfinder explicitly invoked and limit it to large, uncertain, multi-session initiatives. Store each effort as one reviewable `docs/wayfinding/<effort>.md` file by default. Do not require an issue tracker, labels, assignments, coordination branches, setup files, or companion skills.
+
+  Treat a wayfinding map as working context. When a resolution changes a lasting architectural constraint or feature contract, update the appropriate architecture document, ADR, or feature spec and keep only a concise pointer in the map. Keep throwaway research and prototypes outside the repository unless the user approves a durable artifact.
+trigger: The user approved adapting the evaluated Wayfinder approach for the template and asked that it remain lightweight and repository-local because the project does not use GitHub Issues.
+consequences: |-
+  **Positive:**
+
+  - Multi-session discovery has an explicit, reviewable home in the repository.
+  - The useful destination, frontier, blocking, fog, and early-exit concepts remain available without tracker infrastructure.
+  - The workflow composes with the template's existing brainstorming, ADR, spec, and architecture conventions.
+  - Downstream projects can remove the skill and its maps without affecting runtime behavior.
+
+  **Negative:**
+
+  - Concurrent sessions editing the same map can create ordinary Git conflicts.
+  - A single-file map is less visually interactive than native tracker relationships.
+  - Agents must actively promote durable decisions instead of treating the map as sufficient documentation.
+
+  **Neutral:**
+
+  - Wayfinding does not implement the destination or replace normal specification and planning.
+  - The skill adds no package dependency or external service requirement.
+alternatives: |-
+  ### Use The Upstream Skill Unchanged
+
+  This preserves its collaborative tracker workflow but introduces issue-tracker state, setup documentation, and companion-skill dependencies that do not fit the template's lightweight repository-local model.
+
+  ### Install The Complete Upstream Skill Suite
+
+  This provides every referenced workflow but duplicates existing project skills and creates a much larger maintenance and invocation surface.
+
+  ### Use Specs As The Discovery Map
+
+  This avoids another document type but mixes unresolved questions and temporary fog into a durable feature contract. Specs should describe accepted state, not the full path taken to discover it.
+
+  ### Keep Discovery Only In Conversation History
+
+  This has no repository cost but loses context across sessions and makes the route difficult to review or resume.

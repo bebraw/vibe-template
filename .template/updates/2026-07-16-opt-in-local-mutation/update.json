@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": ["2026-06-12-incremental-local-mutation"],
-  "adrs": ["docs/adrs/implemented/ADR-043-make-local-mutation-opt-in.md"],
+  "adrs": ["docs/adrs/implemented/ADR-043-make-local-mutation-opt-in.yaml"],
   "touches": ["package.json", "scripts/", ".capabilities/mutation-testing/", "docs/", "specs/"],
   "checks": ["npm run test:tooling", "npm run quality:gate", "npm run quality:gate:deep", "npm run ci:local"]
 }

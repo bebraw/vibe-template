@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-060-refresh-worker-operational-contracts.md"],
+  "adrs": ["docs/adrs/implemented/ADR-060-refresh-worker-operational-contracts.yaml"],
   "touches": [".capabilities/", ".template/updates/", "ARCHITECTURE.md", "docs/", "package.json", "scripts/", "specs/", "wrangler.jsonc"],
   "checks": ["npm run capabilities:verify", "npm run quality:gate", "npm run ci:local"]
 }

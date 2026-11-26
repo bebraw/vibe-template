@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-047-use-cloudflare-mcp-as-the-platform-knowledge-layer.md"],
+  "adrs": ["docs/adrs/implemented/ADR-047-use-cloudflare-mcp-as-the-platform-knowledge-layer.yaml"],
   "touches": [".codex/skills/", ".github/skills/", "AGENTS.md", "ARCHITECTURE.md", "specs/"],
   "checks": ["npm run format:check"]
 }

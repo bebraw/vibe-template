@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-046-scope-local-agent-ci-to-workflow-sensitive-changes.md"],
+  "adrs": ["docs/adrs/implemented/ADR-046-scope-local-agent-ci-to-workflow-sensitive-changes.yaml"],
   "touches": ["AGENTS.md", "ARCHITECTURE.md", "README.md", "docs/", "specs/"],
   "checks": ["npm run format:check"]
 }

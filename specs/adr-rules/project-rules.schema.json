@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Project rule questions and answer options",
+  "type": "object",
+  "propertyNames": {
+    "$ref": "gate-terms.schema.json#/definitions/gateId"
+  },
+  "properties": { "local-mutation-testing": false, "local-ci-readiness": false },
+  "additionalProperties": {
+    "type": "object",
+    "required": ["questions"],
+    "additionalProperties": false,
+    "properties": {
+      "questions": {
+        "type": "object",
+        "minProperties": 1,
+        "propertyNames": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
+        "additionalProperties": {
+          "type": "object",
+          "required": ["question", "options"],
+          "additionalProperties": false,
+          "properties": {
+            "question": { "$ref": "#/definitions/label" },
+            "options": {
+              "type": "object",
+              "minProperties": 1,
+              "propertyNames": { "$ref": "gate-terms.schema.json#/definitions/gateId" },
+              "additionalProperties": { "$ref": "#/definitions/label" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "label": { "type": "string", "pattern": "^(?=.*\\S)[^\\r\\n]+$" }
+  }
+}

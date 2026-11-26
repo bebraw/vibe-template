@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-041-cache-prettier-checks-by-content.md"],
+  "adrs": ["docs/adrs/implemented/ADR-041-cache-prettier-checks-by-content.yaml"],
   "touches": ["package.json", "ARCHITECTURE.md", "docs/", "specs/"],
   "checks": ["npm run format:check", "npm run quality:gate", "npm run ci:local"]
 }

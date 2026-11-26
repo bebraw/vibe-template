@@ -3,7 +3,7 @@
   "title": "Add repository-local wayfinding",
   "status": "implemented",
   "risk": "low",
-  "adrs": ["docs/adrs/implemented/ADR-048-adopt-repository-local-wayfinding.md"],
+  "adrs": ["docs/adrs/implemented/ADR-048-adopt-repository-local-wayfinding.yaml"],
   "touches": [".codex/skills/", "AGENTS.md", "ARCHITECTURE.md", "docs/", "specs/"],
   "checks": ["npm run quality:gate"]
 }

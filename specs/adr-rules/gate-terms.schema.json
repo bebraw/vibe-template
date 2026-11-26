@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Quality gate and Local CI glossary",
+  "type": "object",
+  "minProperties": 1,
+  "additionalProperties": false,
+  "properties": {
+    "localCi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["script", "cases"],
+      "properties": {
+        "script": { "type": "string", "pattern": "^[a-z][a-z0-9:-]*$" },
+        "cases": {
+          "type": "object",
+          "required": ["otherwise"],
+          "propertyNames": { "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+          "properties": { "otherwise": { "$ref": "#/definitions/description" } },
+          "additionalProperties": { "$ref": "#/definitions/description" }
+        }
+      }
+    },
+    "gateTerms": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/definitions/gateId" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["script", "definition"],
+        "properties": {
+          "script": { "type": "string", "pattern": "^[a-z][a-z0-9:-]*$" },
+          "definition": { "$ref": "#/definitions/description" },
+          "retired": { "const": true, "description": "Keep this gate term for historical revisions only." }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "gateId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "description": { "type": "string", "pattern": "\\S" }
+  }
+}

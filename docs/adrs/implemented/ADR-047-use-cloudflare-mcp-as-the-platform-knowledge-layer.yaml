@@ -1,0 +1,43 @@
+adrSchema: 1
+id: ADR-047
+title: Use Cloudflare MCP As The Platform Knowledge Layer
+status: implemented
+date: 2026-07-31
+context: |-
+  The template vendors broad and product-specific Cloudflare skills in both `.codex/skills/` and `.github/skills/`. Much of that material duplicates current documentation and API knowledge now available through the connected Cloudflare MCP, while increasing repository size and maintenance work.
+
+  The Worker starter still benefits from focused implementation guardrails and Wrangler workflow guidance that apply directly to its source, tests, and local development setup.
+decision: |-
+  Use the connected Cloudflare MCP for current product documentation, API discovery, and account operations.
+
+  Keep `workers-best-practices` and `wrangler` as the template's baseline Cloudflare skills in both supported skill locations. Remove the general `cloudflare`, `agents-sdk`, `cloudflare-email-service`, and `durable-objects` bundles. Add product-specific skills later only when a project adopts the corresponding capability.
+trigger: The user adopted Cloudflare's MCP and asked whether the existing vendored Cloudflare skill suite was still necessary, then approved pruning it.
+consequences: |-
+  **Positive:**
+
+  - Current Cloudflare facts and API shapes come from the connected platform source.
+  - The repository drops a large duplicated documentation snapshot.
+  - Baseline skills stay aligned with the Worker starter's actual implementation and local CLI workflow.
+  - Specialized guidance becomes an explicit, on-demand project choice.
+
+  **Negative:**
+
+  - Cloudflare product work without an MCP connection may require installing a specialized skill or consulting external documentation.
+  - Projects adopting Agents SDK, Durable Objects, or Email Service must add the corresponding guidance deliberately.
+
+  **Neutral:**
+
+  - Wrangler remains the local development and deployment CLI.
+  - The change does not alter Worker runtime behavior or Cloudflare account state.
+alternatives: |-
+  ### Keep Every Cloudflare Skill
+
+  This preserves offline reference material but duplicates the MCP's current documentation and API capabilities while retaining substantial maintenance and repository weight.
+
+  ### Remove Every Cloudflare Skill
+
+  This is smaller, but it discards useful Worker implementation guardrails and local Wrangler procedures that the MCP does not replace.
+
+  ### Keep Only The General Cloudflare Skill
+
+  The general skill is broadest but overlaps most heavily with MCP retrieval. It is less useful for this starter than the focused Worker and Wrangler workflows.

@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "medium",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-056-verify-executable-capability-kits.md"],
+  "adrs": ["docs/adrs/implemented/ADR-056-verify-executable-capability-kits.yaml"],
   "touches": [
     ".capabilities/",
     ".github/workflows/ci.yml",

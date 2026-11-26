@@ -9,7 +9,7 @@ Use this pack when an existing project has a compact skill baseline but still ma
 3. Consolidate duplicated verification instructions in one agent-policy section. Keep the same required checks and workflow-sensitive Local CI boundary. Permit local checks, fixes caused by the requested change, and affected retries within existing authorization; run additional verification only for a new change, failure, or unresolved concern.
 4. Preserve dependency, lasting-write, irreversible-action, and explicit workflow checkpoints. Existing authorization carries through necessary work within its scope and does not permit unrelated actions.
 5. For To Spec, state the target and write the settled contract when the user has requested specification. Ask only about material unresolved choices; do not infer permission to implement the feature.
-6. Update the feature spec, architecture rules, and ADR record. [ADR-066](../../../docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.md) records the template's rationale.
+6. Update the feature spec, architecture rules, and ADR record. [ADR-066](../../../docs/adrs/implemented/ADR-066-scope-agent-guidance-to-the-task.yaml) records the template's rationale.
 
 ## Fallback
 

@@ -3,7 +3,7 @@
   "title": "Add Stryker mutation testing to the quality gate",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-022-add-mutation-testing-gate.md"],
+  "adrs": ["docs/adrs/implemented/ADR-022-add-mutation-testing-gate.yaml"],
   "touches": ["package.json", "stryker.config.mjs", ".github/workflows/ci.yml", ".capabilities/mutation-testing/", "docs/", "specs/"],
   "checks": ["npm run mutation", "npm run quality:gate", "npm run ci:local"]
 }

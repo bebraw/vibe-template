@@ -3,7 +3,7 @@
   "title": "Upgrade scoped Modern Web Guidance to 1.0.0 and add optional modernization audits",
   "status": "implemented",
   "risk": "low",
-  "adrs": ["docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md"],
+  "adrs": ["docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.yaml"],
   "touches": [
     ".codex/skills/modern-web-guidance/",
     "AGENTS.md",
@@ -11,9 +11,9 @@
     "README.md",
     "specs/agent-skills/spec.md",
     "docs/adrs/README.md",
-    "docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md",
-    "docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.md",
-    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.md"
+    "docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.yaml",
+    "docs/adrs/implemented/ADR-067-refresh-reviewed-web-guidance.yaml",
+    "docs/adrs/implemented/ADR-072-adopt-modern-web-guidance-v1.yaml"
   ],
   "checks": [
     "npm run skill:validate -- .codex/skills/modern-web-guidance",

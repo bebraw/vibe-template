@@ -1,0 +1,32 @@
+{
+  "id": "2026-11-25-typed-adr-rules",
+  "title": "Migrate architecture decisions to YAML with optional typed rule histories",
+  "status": "implemented",
+  "risk": "medium",
+  "adrs": [
+    "docs/adrs/implemented/ADR-076-pilot-typed-adr-rules.yaml",
+    "docs/adrs/implemented/ADR-077-store-decisions-in-yaml.yaml",
+    "docs/adrs/implemented/ADR-078-keep-product-rules-with-the-project.yaml"
+  ],
+  "touches": [
+    "package.json",
+    "package-lock.json",
+    "scripts/adr-record.mjs",
+    "scripts/adr-migrate-*.mjs",
+    "scripts/migrate-adrs*.mjs",
+    "scripts/adr-rule*.mjs",
+    "specs/adr-rules/",
+    "specs/quality-gate/spec.md",
+    "docs/adrs/",
+    "AGENTS.md",
+    "ARCHITECTURE.md"
+  ],
+  "checks": [
+    "npm ci",
+    "node scripts/migrate-adrs.mjs",
+    "node scripts/adr-rules.mjs --check",
+    "node --test scripts/adr-rule*.test.mjs scripts/adr-migrate-*.test.mjs scripts/migrate-adrs.test.mjs",
+    "npm run quality:gate",
+    "npm run ci:local"
+  ]
+}

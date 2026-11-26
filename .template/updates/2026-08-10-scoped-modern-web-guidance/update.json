@@ -3,7 +3,7 @@
   "title": "Add scoped Modern Web Guidance",
   "status": "implemented",
   "risk": "medium",
-  "adrs": ["docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.md"],
+  "adrs": ["docs/adrs/implemented/ADR-052-adopt-scoped-modern-web-guidance.yaml"],
   "touches": [
     ".codex/skills/modern-web-guidance/",
     "AGENTS.md",

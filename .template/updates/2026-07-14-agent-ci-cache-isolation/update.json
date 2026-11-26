@@ -4,7 +4,7 @@
   "status": "implemented",
   "risk": "low",
   "supersedes": [],
-  "adrs": ["docs/adrs/implemented/ADR-036-prewarm-agent-ci-dependencies-explicitly.md"],
+  "adrs": ["docs/adrs/implemented/ADR-036-prewarm-agent-ci-dependencies-explicitly.yaml"],
   "touches": ["package.json", "package-lock.json", ".github/workflows/ci.yml", ".capabilities/agent-ci/", "docs/", "specs/"],
   "checks": ["npm run quality:gate", "npm run ci:local"]
 }

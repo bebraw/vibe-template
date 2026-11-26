@@ -4,7 +4,7 @@ Use this pack in npm-based projects using `run-local-ci@0.18.1`. It replaces tha
 
 ## Apply
 
-1. Read `update.json`, [ADR-074](../../../docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.md), and the [artifact provenance and rebuild instructions](../../../vendor/dtu-github-actions/README.md). Review the three-file vendor patch and verify the archive checksum.
+1. Read `update.json`, [ADR-074](../../../docs/adrs/implemented/ADR-074-vendor-dtu-without-zod.yaml), and the [artifact provenance and rebuild instructions](../../../vendor/dtu-github-actions/README.md). Review the three-file vendor patch and verify the archive checksum.
 2. Try `git apply --check <path-to-pack>/patch.diff` in the target checkout. Apply it if compatible; otherwise use the manual steps below. The patch includes the archive as a Git binary patch and deliberately omits the project-specific lockfile.
 3. Copy the complete `vendor/dtu-github-actions/` directory before installing dependencies. Preserve its archive, patch, provenance, and license inside the archive. Merge this root dependency and scoped override into the target's package metadata, preserving other entries:
 
