@@ -16,5 +16,15 @@ decision: |
   An explicit records-directory argument selects a complete YAML log for experiments. Paths to product evidence resolve from the project root.
 consequences: |
   Kirjolab can test the model on three historical decisions using its own vocabulary and regression tests. An author can add a question later and leave it unanswered in older revisions. A renamed meaning needs a fresh ID to preserve the interpretation of old answers. Reviewers remain responsible for inspecting definition edits and checking that tests support the claims.
+
+  In the Kirjolab replay, ADR-083 allowed a newly created PDF draft's key to change until its first project link. ADR-154 allowed further refinement after linking and unlinking while preserving a researcher's custom project alias. The query traced the changes across ADR-076, ADR-083 and ADR-154 and linked the current answers to three test files. [Replay and verification cases](https://github.com/bebraw/kirjolab/blob/8e11e6121eccb67082cf4e3f66b3a3556bd860ae/specs/reference-library/adr-pilot/README.md)
 alternatives: |
   A Kirjolab-specific rule handler would centralize PDF semantics in the template. An executable plug-in or a predicate language would require additional code to evaluate product policy. The pilot's questions can be answered by selecting named values.
+
+  Cloudflare's Codex derives structured requirements from RFC prose by having an agent extract MUST and SHOULD statements. Our authors select answers explicitly so readers can replay the same amendments directly from the records. [Cloudflare Codex workflow](https://blog.cloudflare.com/engineering-standards-enforcement/#codex-organization-and-workflow)
+extraSections:
+  - heading: Vocabulary and semantic drift
+    body: |
+      ADMentor modeled recurring architecture questions and options separately from the choices made in an individual project. The W3C SKOS Recommendation gives vocabulary concepts stable identifiers distinct from their labels and definitions. Both informed our comparison of the pilot with prior work. [ADMentor paper](https://ozimmer.ch/assets/admentor-wicsa2015ubmissionv11nc.pdf) · [SKOS Reference](https://www.w3.org/TR/skos-reference/)
+
+      Historical queries resolve IDs against the checked-in glossary. If an editor broadens an answer's definition under its existing ID, the record still validates and past answers acquire the broader wording. Keep the ID for a wording clarification. Give a changed meaning a new ID and retain the old definition for earlier revisions.
